@@ -1,20 +1,16 @@
 'use client';
 
-import {
-  motion,
-  useMotionValueEvent,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from 'framer-motion';
-import { useState } from 'react';
+import { motion, useMotionValueEvent, useReducedMotion, useScroll } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 /**
  * ChapterRail — fixed left + right vertical rails that show scroll progress
  * across the page, with clickable chapter labels that smooth-scroll to each
- * anchored section. Desktop-only (hidden < lg). The rail is the page's
- * persistent scroll signature.
+ * anchored section. Desktop-only (hidden < lg).
+ *
+ * Active section is detected from real element positions (which section
+ * straddles the viewport mid-line), not from proportional scroll fraction —
+ * MemeReel is 500vh, so equal-sixth math would be wildly wrong.
  */
 const CHAPTERS = [
   { id: 'hero', label: 'BUILD' },
@@ -25,12 +21,18 @@ const CHAPTERS = [
   { id: 'ship', label: 'SHIP' },
 ] as const;
 
+// Six labels distributed inside `inset-y-[12%]` via justify-between.
+// Centers sit at 12% + (76% / 5) × i.
+const POSITIONS = ['12%', '27.2%', '42.4%', '57.6%', '72.8%', '88%'] as const;
+
 function scrollToId(id: string) {
   const el = document.getElementById(id);
   if (!el) return;
   const lenis = (
     window as unknown as {
-      __lenis?: { scrollTo: (t: HTMLElement, o?: { offset?: number; duration?: number }) => void };
+      __lenis?: {
+        scrollTo: (t: HTMLElement, o?: { offset?: number; duration?: number }) => void;
+      };
     }
   ).__lenis;
   if (lenis?.scrollTo) {
@@ -43,28 +45,55 @@ function scrollToId(id: string) {
 export default function ChapterRail() {
   const reduced = useReducedMotion();
   const { scrollYProgress } = useScroll();
-  // Smoother visual motion for the dot/percent without a spring under reduced motion.
-  const smoothed = useSpring(
-    scrollYProgress,
-    reduced
-      ? { stiffness: 1000, damping: 100, mass: 0 }
-      : { stiffness: 80, damping: 22, mass: 0.6 },
-  );
-
-  const dotY = useTransform(smoothed, [0, 1], ['0%', '100%']);
 
   const [activeIdx, setActiveIdx] = useState(0);
   const [pct, setPct] = useState('000');
 
-  useMotionValueEvent(smoothed, 'change', (v) => {
-    const i = Math.min(CHAPTERS.length - 1, Math.max(0, Math.floor(v * CHAPTERS.length)));
-    setActiveIdx(i);
+  // Percentage readout stays tied to overall scroll progress — it's a true 0..100%.
+  useMotionValueEvent(scrollYProgress, 'change', (v) => {
     setPct(
       Math.round(v * 100)
         .toString()
         .padStart(3, '0'),
     );
   });
+
+  // Active section: whichever section straddles the viewport mid-line.
+  useEffect(() => {
+    function recompute() {
+      const mid = window.innerHeight / 2;
+      let best = 0;
+      let bestDist = Infinity;
+      for (let i = 0; i < CHAPTERS.length; i++) {
+        const el = document.getElementById(CHAPTERS[i].id);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        if (r.top <= mid && r.bottom >= mid) {
+          best = i;
+          bestDist = -1;
+          continue;
+        }
+        if (bestDist < 0) continue;
+        const d = Math.min(Math.abs(r.top - mid), Math.abs(r.bottom - mid));
+        if (d < bestDist) {
+          bestDist = d;
+          best = i;
+        }
+      }
+      setActiveIdx(best);
+    }
+    recompute();
+    window.addEventListener('scroll', recompute, { passive: true });
+    window.addEventListener('resize', recompute);
+    return () => {
+      window.removeEventListener('scroll', recompute);
+      window.removeEventListener('resize', recompute);
+    };
+  }, []);
+
+  const dotTransition = reduced
+    ? { duration: 0 }
+    : { type: 'spring' as const, stiffness: 90, damping: 20 };
 
   return (
     <>
@@ -77,13 +106,14 @@ export default function ChapterRail() {
           {/* Vertical line */}
           <span className="absolute top-[12%] bottom-[12%] left-1/2 w-px -translate-x-1/2 bg-[color:var(--bd-lime)]/20" />
 
-          {/* Traveling dot */}
+          {/* Traveling dot — snaps to active label position */}
           <motion.span
-            className="absolute left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-[color:var(--bd-lime)]"
+            className="absolute left-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[color:var(--bd-lime)]"
             style={{
-              top: dotY,
               boxShadow: '0 0 10px 2px color-mix(in srgb, var(--bd-lime) 55%, transparent)',
             }}
+            animate={{ top: POSITIONS[activeIdx] }}
+            transition={dotTransition}
           />
 
           {/* Chapter labels evenly distributed top->bottom between 12% and 88% */}
@@ -122,10 +152,11 @@ export default function ChapterRail() {
           {/* Vertical line */}
           <span className="absolute top-[12%] bottom-[12%] left-1/2 w-px -translate-x-1/2 bg-[color:var(--bd-lime)]/20" />
 
-          {/* Mirrored traveling tick on the right line */}
+          {/* Mirrored traveling tick — also snaps to active position */}
           <motion.span
-            className="absolute left-1/2 h-px w-3 -translate-x-1/2 bg-[color:var(--bd-lime)]"
-            style={{ top: dotY }}
+            className="absolute left-1/2 h-px w-3 -translate-x-1/2 -translate-y-1/2 bg-[color:var(--bd-lime)]"
+            animate={{ top: POSITIONS[activeIdx] }}
+            transition={dotTransition}
           />
 
           {/* Readout panel — vertically centered */}

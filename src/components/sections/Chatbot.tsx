@@ -38,7 +38,7 @@ export default function Chatbot() {
 
   return (
     <section className="relative py-32">
-      <div className="mx-auto max-w-5xl px-6">
+      <div className="mx-auto max-w-5xl px-6 lg:px-32">
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
             / Ask the dawg

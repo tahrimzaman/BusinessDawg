@@ -20,7 +20,7 @@ export default function SystemsStack() {
   return (
     <section className="relative overflow-hidden py-32 md:py-48">
       <div className="bd-section-glow" />
-      <div className="relative mx-auto max-w-7xl px-6">
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-32">
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
             / The Systems Stack

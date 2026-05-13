@@ -64,7 +64,7 @@ export default function Hero() {
       />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-b from-transparent to-[color:var(--bd-ink)]" />
 
-      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-6 lg:grid-cols-12 lg:gap-0">
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-6 lg:grid-cols-12 lg:gap-0 lg:px-32">
         {/* Copy column */}
         <div
           className={
@@ -79,17 +79,17 @@ export default function Hero() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: dur * 0.5, ease: EASE }}
-            className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1 font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/70 uppercase backdrop-blur-md"
+            className="mb-8 inline-flex max-w-full items-center gap-2 rounded-full border border-white/10 bg-black/30 px-2.5 py-1 font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/70 uppercase backdrop-blur-md sm:px-3 sm:text-[11px]"
           >
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--bd-lime)]" />A
             business growth system studio · Est. 2026
           </motion.div>
 
-          <h1 className="font-display text-5xl leading-[1.06] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-6xl md:text-7xl lg:text-[5rem]">
-            <KineticText text="We build" spacing="0.4em" />
+          <h1 className="font-display text-5xl leading-[1.12] font-extrabold tracking-tight text-[color:var(--bd-bone)] uppercase italic sm:text-6xl md:text-7xl lg:text-[5rem]">
+            <KineticText text="We build" />
             <br />
-            <span className="mt-1 inline-block whitespace-nowrap text-[color:var(--bd-lime)] lg:mt-2">
-              <KineticText text="business machines." delay={0.22} spacing="0.4em" />
+            <span className="text-[color:var(--bd-lime)]">
+              <KineticText text="business machines." delay={0.22} />
             </span>
           </h1>
 

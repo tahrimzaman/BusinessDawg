@@ -5,7 +5,7 @@ import MagneticButton from '@/components/motion/MagneticButton';
 export default function Recruitment() {
   return (
     <section className="relative py-32">
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="mx-auto max-w-7xl px-6 lg:px-32">
         <div className="grid gap-5 md:grid-cols-2">
           <Reveal>
             <div className="flex h-full flex-col justify-between rounded-3xl border border-white/8 bg-[linear-gradient(135deg,#0a0a0a_0%,#141414_100%)] p-10 md:p-14">

@@ -31,7 +31,7 @@ export default function ClosingCTA() {
         }}
       />
 
-      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-6 pb-0 lg:grid-cols-12">
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-6 pb-0 lg:grid-cols-12 lg:px-32">
         {/* Copy */}
         <div className="relative z-10 lg:col-span-6">
           <Reveal>

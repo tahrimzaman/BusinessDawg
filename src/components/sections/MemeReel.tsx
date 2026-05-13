@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import MagneticButton from '@/components/motion/MagneticButton';
 import DeckPaperStack from '@/components/illustrations/DeckPaperStack';
@@ -59,7 +59,7 @@ const PANELS: Panel[] = [
     headline: 'We build the machine.',
     headlineLime: 'You run the business.',
     body: 'One studio. Five systems. Stop getting sold. Start getting shipped.',
-    image: { src: '/brand/mascot-pos-2.png', alt: 'BusinessDawg mascot — arms crossed' },
+    image: { src: '/brand/mascot-meme.png', alt: 'BusinessDawg mascot — meme pose' },
   },
 ];
 
@@ -73,28 +73,46 @@ const GRAIN_BG =
   "url(\"data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/><feColorMatrix values='0 0 0 0 0.78  0 0 0 0 1  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")";
 
 /**
+ * Below lg, reading the 500vh horizontal pin-scrub on a touch device is
+ * exhausting. Detect the viewport width client-side and short-circuit to a
+ * vertical stack — same UX as the reduced-motion fallback.
+ */
+function useIsBelowLg() {
+  const [below, setBelow] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 1023.99px)');
+    const update = () => setBelow(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+  return below;
+}
+
+function StackedReel() {
+  return (
+    <section className="relative">
+      {PANELS.map((p, i) => (
+        <div key={i} className="relative flex min-h-screen items-center justify-center px-6 py-24">
+          <PanelContent panel={p} index={i} stacked />
+        </div>
+      ))}
+    </section>
+  );
+}
+
+/**
  * Horizontal scroll-scrub meme reel. Section is 500vh tall; inner sticky
  * track translates left by -80% of 500vw (= -400vw) as scroll progresses,
- * advancing one panel per viewport of vertical scroll. Reduced motion =
- * vertical stack.
+ * advancing one panel per viewport of vertical scroll. Reduced motion OR
+ * sub-lg viewport = vertical stack.
  */
 export default function MemeReel() {
   const reduced = useReducedMotion();
+  const belowLg = useIsBelowLg();
 
-  if (reduced) {
-    return (
-      <section className="relative">
-        {PANELS.map((p, i) => (
-          <div
-            key={i}
-            className="relative flex min-h-screen items-center justify-center px-6 py-24"
-          >
-            <PanelContent panel={p} index={i} stacked />
-          </div>
-        ))}
-      </section>
-    );
-  }
+  if (reduced || belowLg) return <StackedReel />;
 
   return <HorizontalReel />;
 }
@@ -173,7 +191,7 @@ function PanelContent({
 }) {
   const idx = `0${index + 1}`;
   return (
-    <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-6 lg:grid-cols-12 lg:gap-12 lg:px-12">
+    <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-6 lg:grid-cols-12 lg:gap-12 lg:px-32">
       {/* Left — illustration / image */}
       <motion.div
         initial={{ opacity: 0, x: stacked ? 0 : -40, y: stacked ? 30 : 0 }}
