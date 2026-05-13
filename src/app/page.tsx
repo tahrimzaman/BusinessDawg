@@ -1,5 +1,5 @@
 import Hero from '@/components/sections/Hero';
-import PullQuote from '@/components/sections/PullQuote';
+import MemeReel from '@/components/sections/MemeReel';
 import SystemsStack from '@/components/sections/SystemsStack';
 import Chatbot from '@/components/sections/Chatbot';
 import Recruitment from '@/components/sections/Recruitment';
@@ -11,7 +11,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <PullQuote />
+      <MemeReel />
       <SystemsStack />
       <Chatbot />
       <Recruitment />

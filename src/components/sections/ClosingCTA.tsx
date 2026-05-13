@@ -21,7 +21,7 @@ export default function ClosingCTA() {
   const dur = (reduced ? 0.2 : TIMING.revealLate) * (reduced ? 1 : tweaks.pace);
 
   return (
-    <section className="relative isolate flex min-h-[90vh] items-end overflow-hidden pt-32 md:min-h-screen">
+    <section className="relative isolate flex min-h-[70vh] items-center overflow-hidden pt-24 md:min-h-[80vh]">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -31,7 +31,7 @@ export default function ClosingCTA() {
         }}
       />
 
-      <div className="relative mx-auto grid w-full max-w-7xl items-end gap-10 px-6 pb-12 lg:grid-cols-12">
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-6 pb-0 lg:grid-cols-12">
         {/* Copy */}
         <div className="relative z-10 lg:col-span-6">
           <Reveal>
@@ -72,7 +72,7 @@ export default function ClosingCTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-15%' }}
           transition={{ duration: dur, ease: EASE }}
-          className="relative h-[55vh] w-full lg:col-span-6 lg:h-[78vh]"
+          className="relative h-[50vh] w-full lg:col-span-6 lg:h-[65vh]"
         >
           <Image
             src="/brand/mascot-pos-3.png"

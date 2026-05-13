@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} bg-ink text-bone antialiased`}
     >
-      <body className="bg-ink text-bone min-h-screen font-sans">
+      <body className="text-bone min-h-screen font-sans">
         <LenisProvider>
           <Constellation />
           <Navbar />

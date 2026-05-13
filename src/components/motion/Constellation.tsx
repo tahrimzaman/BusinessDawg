@@ -46,6 +46,30 @@ export default function Constellation() {
       });
     }
 
+    // Fireflies — brighter, slower, more reactive
+    const fireflyCount = Math.max(12, Math.floor(20 * scale));
+    type Firefly = {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      phase: number;
+      phaseSpeed: number;
+      baseAlpha: number;
+    };
+    const fireflies: Firefly[] = [];
+    for (let i = 0; i < fireflyCount; i++) {
+      fireflies.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        phase: Math.random() * Math.PI * 2,
+        phaseSpeed: 0.015 + Math.random() * 0.015,
+        baseAlpha: 0.75 + Math.random() * 0.2,
+      });
+    }
+
     const cursor = { x: -9999, y: -9999, active: false };
     function onMove(e: PointerEvent) {
       cursor.x = e.clientX;
@@ -76,14 +100,22 @@ export default function Constellation() {
 
     const LINK_DIST = 120;
     const CURSOR_DIST = 180;
+    const FIREFLY_CURSOR_DIST = 220;
 
     function drawStatic() {
       if (!ctx) return;
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = 'rgba(200, 255, 0, 0.55)';
+      ctx.fillStyle = 'rgba(200, 255, 0, 0.75)';
       for (const n of nodes) {
         ctx.beginPath();
         ctx.arc(n.x, n.y, 1.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      // static fireflies
+      for (const f of fireflies) {
+        ctx.fillStyle = `rgba(220, 255, 60, ${f.baseAlpha.toFixed(3)})`;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 3.2, 0, Math.PI * 2);
         ctx.fill();
       }
     }
@@ -136,7 +168,7 @@ export default function Constellation() {
           const dy = a.y - b.y;
           const d2 = dx * dx + dy * dy;
           if (d2 < LINK_DIST * LINK_DIST) {
-            const alpha = (1 - Math.sqrt(d2) / LINK_DIST) * 0.35;
+            const alpha = (1 - Math.sqrt(d2) / LINK_DIST) * 0.5;
             ctx.strokeStyle = `rgba(200, 255, 0, ${alpha.toFixed(3)})`;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
@@ -147,12 +179,52 @@ export default function Constellation() {
       }
 
       // nodes
-      ctx.fillStyle = 'rgba(200, 255, 0, 0.55)';
+      ctx.fillStyle = 'rgba(200, 255, 0, 0.75)';
       for (const n of nodes) {
         ctx.beginPath();
         ctx.arc(n.x, n.y, 1.4, 0, Math.PI * 2);
         ctx.fill();
       }
+
+      // fireflies — slower drift, stronger cursor force, pulsing alpha, glow
+      ctx.shadowColor = 'rgba(220, 255, 60, 0.85)';
+      ctx.shadowBlur = 10;
+      for (const f of fireflies) {
+        f.x += f.vx;
+        f.y += f.vy;
+        if (f.x < -10) f.x = width + 10;
+        if (f.x > width + 10) f.x = -10;
+        if (f.y < -10) f.y = height + 10;
+        if (f.y > height + 10) f.y = -10;
+
+        if (cursor.active) {
+          const dx = cursor.x - f.x;
+          const dy = cursor.y - f.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < FIREFLY_CURSOR_DIST * FIREFLY_CURSOR_DIST) {
+            const d = Math.sqrt(d2) || 1;
+            const force = (1 - d / FIREFLY_CURSOR_DIST) * 0.08;
+            f.vx += (dx / d) * force;
+            f.vy += (dy / d) * force;
+          }
+        }
+        // damping + floor
+        f.vx *= 0.97;
+        f.vy *= 0.97;
+        const speed = Math.hypot(f.vx, f.vy);
+        if (speed < 0.04) {
+          f.vx += (Math.random() - 0.5) * 0.02;
+          f.vy += (Math.random() - 0.5) * 0.02;
+        }
+
+        f.phase += f.phaseSpeed;
+        const alpha = f.baseAlpha * (0.7 + 0.3 * Math.sin(f.phase));
+        ctx.fillStyle = `rgba(220, 255, 60, ${alpha.toFixed(3)})`;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 3.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.shadowBlur = 0;
 
       rafId = requestAnimationFrame(loop);
     }
@@ -180,7 +252,7 @@ export default function Constellation() {
 
   return (
     <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
-      <canvas ref={canvasRef} className="h-full w-full opacity-[0.45]" />
+      <canvas ref={canvasRef} className="h-full w-full opacity-[0.7]" />
     </div>
   );
 }

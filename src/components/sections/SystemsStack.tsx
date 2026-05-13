@@ -2,8 +2,14 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, useReducedMotion } from 'framer-motion';
-import { useState } from 'react';
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+} from 'framer-motion';
+import { useRef, useState } from 'react';
 import { SYSTEMS } from '@/lib/copy';
 import Reveal from '@/components/motion/Reveal';
 import { EASE } from '@/lib/motion/easing';
@@ -87,23 +93,56 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
       ? `Starter pack — from ${system.pricing.from}`
       : 'Custom build — book a call';
 
+  // Cursor-following spotlight
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const mxRaw = useMotionValue(50);
+  const myRaw = useMotionValue(50);
+  const mx = useSpring(mxRaw, { stiffness: 200, damping: 30, mass: 0.4 });
+  const my = useSpring(myRaw, { stiffness: 200, damping: 30, mass: 0.4 });
+  const mxPct = useMotionTemplate`${mx}%`;
+  const myPct = useMotionTemplate`${my}%`;
+
+  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    mxRaw.set(Math.max(0, Math.min(100, x)));
+    myRaw.set(Math.max(0, Math.min(100, y)));
+  }
+
   return (
     <motion.div
+      ref={cardRef}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-10%' }}
       transition={{ duration: dur, delay: index * STAGGER_SLOW, ease: EASE }}
       onPointerEnter={() => setHover(true)}
       onPointerLeave={() => setHover(false)}
+      onPointerMove={handlePointerMove}
+      style={
+        {
+          '--mx': mxPct,
+          '--my': myPct,
+        } as React.CSSProperties
+      }
       className="bd-card group relative p-8 md:p-10"
     >
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute -inset-1 -z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        className="pointer-events-none absolute -inset-1 -z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{
           background:
-            'radial-gradient(600px circle at var(--mx,50%) var(--my,50%), color-mix(in srgb, var(--bd-lime) 22%, transparent), transparent 60%)',
+            'radial-gradient(520px circle at var(--mx,50%) var(--my,50%), color-mix(in srgb, var(--bd-lime) 32%, transparent), transparent 60%)',
         }}
+      />
+
+      {/* Growing lime underline bar */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 left-0 h-[2px] w-0 bg-[color:var(--bd-lime)] transition-[width] duration-500 ease-out group-hover:w-full"
       />
 
       <Link
