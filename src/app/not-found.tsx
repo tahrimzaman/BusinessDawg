@@ -24,7 +24,6 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        data-cursor="dawg"
         className="mt-8 inline-flex h-12 items-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)]"
       >
         Home →

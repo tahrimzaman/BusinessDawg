@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Reveal from '@/components/motion/Reveal';
-import Mascot from '@/components/brand/Mascot';
+import MascotReward from '@/components/brand/MascotReward';
 
 export default function Newsletter() {
   const [email, setEmail] = useState('');
@@ -26,9 +26,10 @@ export default function Newsletter() {
   }
 
   return (
-    <section className="relative py-32">
+    <section className="relative py-24">
       <div className="mx-auto max-w-3xl px-6 text-center">
         <Reveal>
+          <div className="mx-auto mb-10 h-px w-24 bg-[color:var(--bd-lime)]/40" />
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
             / The playbook
           </p>
@@ -60,7 +61,6 @@ export default function Newsletter() {
             <button
               type="submit"
               disabled={state === 'loading' || state === 'done'}
-              data-cursor="dawg"
               className="inline-flex h-12 items-center justify-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:opacity-60"
             >
               {state === 'loading' ? 'Sending…' : state === 'done' ? 'Subscribed' : 'Subscribe'}
@@ -68,18 +68,33 @@ export default function Newsletter() {
           </form>
         </Reveal>
 
+        {state !== 'done' && (
+          <Reveal delay={0.2}>
+            <div className="mx-auto mt-12 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
+              {['EST. 2026', '0 PROMOS · 0 FLUFF', '2× / MONTH MAX'].map((label) => (
+                <div
+                  key={label}
+                  className="rounded-2xl border border-[color:var(--bd-lime)]/30 bg-transparent px-4 py-5 font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/70 uppercase"
+                >
+                  {label}
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        )}
+
         <AnimatePresence>
           {state === 'done' && (
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="mt-8 flex flex-col items-center gap-2"
+              className="mx-auto mt-10 max-w-2xl text-left"
             >
-              <Mascot pose="waving" size={72} />
-              <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
-                You’re in. The dawg approves.
-              </p>
+              <MascotReward
+                headline="You’re in."
+                sub="Playbook drops once or twice a month. No fluff."
+              />
             </motion.div>
           )}
           {state === 'error' && (

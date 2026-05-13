@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import LenisProvider from '@/components/motion/LenisProvider';
-import Cursor from '@/components/motion/Cursor';
+import Constellation from '@/components/motion/Constellation';
 import WoofListener from '@/components/motion/WoofListener';
 import Navbar from '@/components/sections/Navbar';
 import Footer from '@/components/sections/Footer';
@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="bg-ink text-bone min-h-screen font-sans">
         <LenisProvider>
-          <Cursor />
+          <Constellation />
           <Navbar />
           <main className="relative">{children}</main>
           <Footer />

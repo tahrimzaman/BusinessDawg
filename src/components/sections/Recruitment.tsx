@@ -44,7 +44,6 @@ export default function Recruitment() {
               <div className="mt-10">
                 <Link
                   href="/join"
-                  data-cursor="dawg"
                   className="inline-flex h-12 items-center rounded-full bg-[color:var(--bd-ink)] px-6 text-sm font-semibold text-[color:var(--bd-bone)] transition-colors hover:bg-[color:var(--bd-smoke)]"
                 >
                   See open roles →

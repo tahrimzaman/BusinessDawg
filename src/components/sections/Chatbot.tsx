@@ -89,7 +89,6 @@ export default function Chatbot() {
                 <button
                   key={q}
                   onClick={() => ask(q)}
-                  data-cursor="dawg"
                   className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-[color:var(--bd-bone)]/80 transition-colors hover:border-[color:var(--bd-lime)]/60 hover:text-[color:var(--bd-lime)]"
                 >
                   {q}

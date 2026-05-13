@@ -64,24 +64,6 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/*
- * Custom cursor opt-in.
- * The `bd-cursor-on` class is added to <html> by Cursor.tsx ONLY after it
- * mounts successfully (non-touch, no reduced-motion, JS healthy). If anything
- * upstream fails, the class never lands and the native cursor remains visible
- * everywhere — no blank-cursor failure mode.
- */
-html.bd-cursor-on,
-html.bd-cursor-on body,
-html.bd-cursor-on * {
-  cursor: none;
-}
-html.bd-cursor-on a,
-html.bd-cursor-on button,
-html.bd-cursor-on [role='button'] {
-  cursor: none;
-}
-
 /* Selection */
 ::selection {
   background: var(--bd-lime);

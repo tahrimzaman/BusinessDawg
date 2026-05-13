@@ -56,10 +56,10 @@ export default function Logo({ className = '', compact = false, markOnly = false
       aria-label="BusinessDawg"
     >
       <Image
-        src="/brand/logo.png"
+        src="/brand/logo-horizontal.png"
         alt="BusinessDawg"
-        width={1024}
-        height={1024}
+        width={1564}
+        height={400}
         priority
         className="h-full w-auto object-contain"
       />

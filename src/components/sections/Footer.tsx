@@ -6,10 +6,7 @@ import Logo from '@/components/brand/Logo';
 import Mascot from '@/components/brand/Mascot';
 import { SITE } from '@/lib/copy';
 
-const COL_PRODUCT = [
-  { href: '/systems', label: 'Systems' },
-  { href: '/built', label: 'Built' },
-];
+const COL_PRODUCT = [{ href: '/systems', label: 'Systems' }];
 const COL_STUDIO = [
   { href: '/about', label: 'About' },
   { href: '/join', label: 'Join' },
@@ -37,7 +34,6 @@ export default function Footer() {
               target="_blank"
               rel="noreferrer"
               className="rounded-full border border-white/10 px-3 py-1.5 hover:text-[color:var(--bd-lime)]"
-              data-cursor="dawg"
             >
               LinkedIn
             </a>
@@ -46,14 +42,12 @@ export default function Footer() {
               target="_blank"
               rel="noreferrer"
               className="rounded-full border border-white/10 px-3 py-1.5 hover:text-[color:var(--bd-lime)]"
-              data-cursor="dawg"
             >
               WhatsApp
             </a>
             <a
               href={`mailto:${SITE.social.email}`}
               className="rounded-full border border-white/10 px-3 py-1.5 hover:text-[color:var(--bd-lime)]"
-              data-cursor="dawg"
             >
               Email
             </a>
@@ -70,7 +64,6 @@ export default function Footer() {
                 <Link
                   href={l.href}
                   className="text-[color:var(--bd-bone)]/70 hover:text-[color:var(--bd-lime)]"
-                  data-cursor="dawg"
                 >
                   {l.label}
                 </Link>
@@ -89,7 +82,6 @@ export default function Footer() {
                 <Link
                   href={l.href}
                   className="text-[color:var(--bd-bone)]/70 hover:text-[color:var(--bd-lime)]"
-                  data-cursor="dawg"
                 >
                   {l.label}
                 </Link>
@@ -111,7 +103,6 @@ export default function Footer() {
               if (!awake) setAwake(true);
               else setStretched((s) => !s);
             }}
-            data-cursor="dawg"
             className="relative inline-flex"
             style={{
               transform: stretched ? 'scale(1.18)' : undefined,

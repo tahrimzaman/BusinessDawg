@@ -58,7 +58,6 @@ export default function MagneticButton({
       onPointerLeave={onLeave}
       onClick={onClick}
       className={`${base} ${styles} ${className}`}
-      data-cursor="dawg"
     >
       {children}
     </motion.span>
