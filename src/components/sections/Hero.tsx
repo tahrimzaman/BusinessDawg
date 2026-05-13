@@ -85,7 +85,7 @@ export default function Hero() {
             business growth system studio · Est. 2026
           </motion.div>
 
-          <h1 className="font-display text-3xl leading-[1.06] font-bold tracking-tight text-[color:var(--bd-bone)] italic sm:text-5xl md:text-6xl lg:text-[5rem]">
+          <h1 className="font-display text-3xl leading-[1.06] font-bold tracking-tight text-[color:var(--bd-bone)] sm:text-5xl md:text-6xl lg:text-[5rem]">
             <KineticText text="We build" />
             <br />
             <span className="text-[color:var(--bd-lime)]">

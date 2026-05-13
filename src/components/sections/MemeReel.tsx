@@ -215,6 +215,7 @@ function PanelContent({
   stacked?: boolean;
 }) {
   const idx = `0${index + 1}`;
+  const isPunch = panel.kind === 'punch';
   return (
     <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-6 lg:grid-cols-12 lg:gap-12 lg:px-16">
       {/* Left — illustration / image */}
@@ -223,9 +224,9 @@ function PanelContent({
         whileInView={{ opacity: 1, x: 0, y: 0 }}
         viewport={{ once: true, margin: '-20%' }}
         transition={{ duration: 0.8, ease: EASE }}
-        className="relative mx-auto w-full max-w-[480px] lg:col-span-5"
+        className={`relative mx-auto w-full ${isPunch ? 'max-w-[900px] lg:col-span-7' : 'max-w-[480px] lg:col-span-5'}`}
       >
-        <div className="relative aspect-square w-full">
+        <div className={`relative w-full ${isPunch ? 'aspect-[5/6]' : 'aspect-square'}`}>
           {panel.Illustration && <panel.Illustration className="h-full w-full" />}
           {panel.image && (
             <Image
@@ -249,7 +250,7 @@ function PanelContent({
       </motion.div>
 
       {/* Right — copy */}
-      <div className="lg:col-span-7">
+      <div className={isPunch ? 'lg:col-span-5' : 'lg:col-span-7'}>
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
