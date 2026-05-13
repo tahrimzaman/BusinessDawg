@@ -22,13 +22,14 @@ export default function Footer() {
   const [stretched, setStretched] = useState(false);
 
   return (
-    <footer className="relative border-t border-white/8 bg-[color:var(--bd-ink)]">
-      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-12">
+    <footer className="relative overflow-hidden border-t border-white/8 bg-[color:var(--bd-ink)]">
+      {/* soft lime glow at top edge */}
+      <div className="bd-section-glow" />
+      <div className="relative mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-12">
         <div className="md:col-span-5">
-          <Logo className="h-8 w-auto text-[color:var(--bd-bone)]" />
-          <p className="font-display mt-6 max-w-md text-2xl leading-[1.1] font-bold italic">
-            We build the machine.{' '}
-            <span className="text-[color:var(--bd-lime)]">You run the business.</span>
+          <Logo className="h-12 text-[color:var(--bd-bone)]" />
+          <p className="font-display mt-8 max-w-md text-3xl leading-[1.05] font-bold italic">
+            We build the machine. <span className="bd-aurora-text">You run the business.</span>
           </p>
           <div className="mt-8 flex flex-wrap gap-3 font-mono text-xs tracking-widest uppercase">
             <a

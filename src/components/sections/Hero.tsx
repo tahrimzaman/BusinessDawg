@@ -11,11 +11,25 @@ const HeroScene = dynamic(() => import('@/components/three/HeroScene'), { ssr: f
 export default function Hero() {
   return (
     <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-24">
+      {/* Aurora gradient backdrop — sits below the canvas */}
+      <div className="bd-aurora-bg -z-20" />
+
+      {/* Radial lime glow centered on the dawg */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-15"
+        style={{
+          background:
+            'radial-gradient(ellipse 60% 50% at 50% 70%, color-mix(in srgb, var(--bd-lime) 18%, transparent) 0%, transparent 60%)',
+        }}
+      />
+
       {/* R3F backdrop */}
-      <div className="pointer-events-none absolute inset-0 -z-10 opacity-90">
+      <div className="pointer-events-none absolute inset-0 -z-10">
         <HeroScene />
       </div>
-      {/* fade-to-ink at the bottom */}
+
+      {/* fade-to-ink at the bottom for clean section seam */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-b from-transparent to-[color:var(--bd-ink)]" />
 
       <div className="mx-auto w-full max-w-7xl px-6">
@@ -23,7 +37,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: EASE }}
-          className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-1 font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/70 uppercase"
+          className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1 font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/70 uppercase backdrop-blur-md"
         >
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--bd-lime)]" />A
           business growth system studio · Est. 2026

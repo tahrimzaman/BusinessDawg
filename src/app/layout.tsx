@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import LenisProvider from '@/components/motion/LenisProvider';
 import Cursor from '@/components/motion/Cursor';
-import IdleWalkBy from '@/components/motion/IdleWalkBy';
 import WoofListener from '@/components/motion/WoofListener';
 import Navbar from '@/components/sections/Navbar';
 import Footer from '@/components/sections/Footer';
@@ -51,7 +50,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Navbar />
           <main className="relative">{children}</main>
           <Footer />
-          <IdleWalkBy />
           <WoofListener />
         </LenisProvider>
       </body>

@@ -32,14 +32,14 @@ export default function Navbar() {
           : 'bg-transparent'
       }`}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+      <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-6">
         <Link
           href="/"
           aria-label="BusinessDawg home"
-          className="flex items-center gap-2 text-[color:var(--bd-bone)]"
+          className="group flex items-center gap-2 text-[color:var(--bd-bone)] transition-transform hover:scale-[1.02]"
           data-cursor="dawg"
         >
-          <Logo className="h-7 w-auto" />
+          <Logo className="h-8 md:h-9" />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">

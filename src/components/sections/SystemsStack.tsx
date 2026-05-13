@@ -9,8 +9,9 @@ import { EASE } from '@/lib/motion/easing';
 
 export default function SystemsStack() {
   return (
-    <section id="systems" className="relative py-32">
-      <div className="mx-auto max-w-7xl px-6">
+    <section id="systems" className="relative overflow-hidden py-32">
+      <div className="bd-section-glow" />
+      <div className="relative mx-auto max-w-7xl px-6">
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
             / The Systems Stack
@@ -20,9 +21,7 @@ export default function SystemsStack() {
           <h2 className="font-display mt-3 max-w-3xl text-4xl leading-[1.05] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-5xl md:text-6xl">
             Five systems. One studio.
             <br />
-            <span className="text-[color:var(--bd-lime)]">
-              Stack them however your business needs.
-            </span>
+            <span className="bd-aurora-text">Stack them however your business needs.</span>
           </h2>
         </Reveal>
 
@@ -52,7 +51,7 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
       onPointerEnter={() => setHover(true)}
       onPointerLeave={() => setHover(false)}
       data-cursor="dawg"
-      className="group relative overflow-hidden rounded-3xl border border-white/8 bg-[color:var(--bd-smoke)] p-8 md:p-10"
+      className="bd-card group relative p-8 md:p-10"
     >
       <motion.div
         aria-hidden

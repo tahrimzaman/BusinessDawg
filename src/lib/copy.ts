@@ -107,12 +107,12 @@ export const SYSTEMS: System[] = [
 export const FOUNDER = {
   name: 'Tahrim Zaman',
   short:
-    'I’m Tahrim. I run an 8-crore-a-month distribution territory, founded a D2C grocery startup that hit 500 families in six weeks, and pitched in Boston at Hult Prize Global.',
+    'I’m Tahrim. I run two distribution businesses and built Shadai Ghar — a D2C grocery startup.',
   hook: 'BusinessDawg is what happens when an operator gets tired of agencies that have never actually shipped anything.',
   credibility: [
-    { label: '৳8.5 cr / month', sub: 'Distribution territory I run, day to day.' },
-    { label: '500 families / 6 weeks', sub: 'Shadai Ghar — zero to traction.' },
-    { label: 'Top 20 of 5,000+', sub: 'Marico Over The Wall. Plus Hult Prize Global, Boston.' },
+    { label: '2× Distribution', sub: 'Territories I operate, day to day.' },
+    { label: '500 families / 6 wks', sub: 'Shadai Ghar — D2C grocery I built.' },
+    { label: 'Top 20 of 5,000+', sub: 'Hult Prize Global, Boston.' },
   ],
 };
 
@@ -154,7 +154,7 @@ export const WORK_CONCEPTS = [
 export const PULL_QUOTES = [
   'We build the machine. You run the business.',
   'Most agencies want to sell you a logo. We want to sell you the machine.',
-  '7am retailer briefings teach you more than a Harvard case study.',
   'Built in public. Shipped on purpose.',
   'Branding that doesn’t apologize.',
+  'Operators don’t need decks. They need infrastructure.',
 ];

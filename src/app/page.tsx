@@ -1,6 +1,5 @@
 import Hero from '@/components/sections/Hero';
 import SystemsStack from '@/components/sections/SystemsStack';
-import Founder from '@/components/sections/Founder';
 import BuiltTeaser from '@/components/sections/BuiltTeaser';
 import WorkTeaser from '@/components/sections/WorkTeaser';
 import Chatbot from '@/components/sections/Chatbot';
@@ -12,7 +11,6 @@ export default function HomePage() {
     <>
       <Hero />
       <SystemsStack />
-      <Founder />
       <BuiltTeaser />
       <WorkTeaser />
       <Chatbot />

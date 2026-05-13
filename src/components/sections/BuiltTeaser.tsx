@@ -5,8 +5,9 @@ import { BUILT } from '@/lib/copy';
 export default function BuiltTeaser() {
   const shadai = BUILT[0];
   return (
-    <section className="relative py-32">
-      <div className="mx-auto max-w-7xl px-6">
+    <section className="relative overflow-hidden py-32">
+      <div className="bd-section-glow" />
+      <div className="relative mx-auto max-w-7xl px-6">
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
             / What I’ve built
@@ -14,7 +15,7 @@ export default function BuiltTeaser() {
         </Reveal>
         <Reveal delay={0.05}>
           <h2 className="font-display mt-3 max-w-3xl text-4xl leading-[1.05] font-extrabold tracking-tight italic sm:text-5xl">
-            Another company I run.
+            <span className="bd-aurora-text">Another company I run.</span>
           </h2>
         </Reveal>
 
@@ -22,7 +23,7 @@ export default function BuiltTeaser() {
           <Link
             href={`/built/${shadai.slug}`}
             data-cursor="dawg"
-            className="group relative mt-12 block overflow-hidden rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-10 md:p-14"
+            className="bd-card group relative mt-12 block p-10 md:p-14"
           >
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,#c8ff0014,transparent_60%)]" />
 
