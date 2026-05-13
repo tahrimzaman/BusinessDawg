@@ -72,7 +72,7 @@ export default function Hero() {
               ? 'lg:col-span-12 lg:text-center'
               : layout === 'overlap'
                 ? 'relative z-10 lg:col-span-7'
-                : 'relative z-10 lg:col-span-8 lg:pr-12'
+                : 'relative z-10 lg:col-span-8'
           }
         >
           <motion.div
@@ -85,7 +85,7 @@ export default function Hero() {
             business growth system studio · Est. 2026
           </motion.div>
 
-          <h1 className="font-display text-5xl leading-[0.98] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-6xl md:text-7xl lg:text-[5.5rem]">
+          <h1 className="font-display text-5xl leading-[0.98] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-6xl md:text-7xl lg:text-[5rem]">
             <KineticText text="We build" />
             <br />
             <span className="whitespace-nowrap text-[color:var(--bd-lime)]">

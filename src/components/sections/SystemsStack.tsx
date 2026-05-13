@@ -132,7 +132,7 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
     >
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute -inset-1 -z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute -inset-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{
           background:
             'radial-gradient(520px circle at var(--mx,50%) var(--my,50%), color-mix(in srgb, var(--bd-lime) 32%, transparent), transparent 60%)',
