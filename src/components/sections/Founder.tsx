@@ -28,6 +28,16 @@ export default function Founder() {
                 filter: 'blur(40px)',
               }}
             />
+            {/* White halo wrapping the portrait */}
+            <div
+              aria-hidden
+              className="absolute inset-[-6%] -z-10"
+              style={{
+                background:
+                  'radial-gradient(ellipse 70% 60% at 50% 45%, rgba(250,250,250,0.18) 0%, rgba(250,250,250,0.06) 35%, transparent 65%)',
+                filter: 'blur(32px)',
+              }}
+            />
 
             {/* Decorative SVG line layer */}
             <svg
@@ -194,23 +204,17 @@ export default function Founder() {
                 href={SITE.social.linkedin}
                 target="_blank"
                 rel="noreferrer"
-                data-cursor="dawg"
                 className="hover:text-[color:var(--bd-lime)]"
               >
                 LinkedIn ↗
               </a>
-              <a
-                href={`mailto:${SITE.social.email}`}
-                data-cursor="dawg"
-                className="hover:text-[color:var(--bd-lime)]"
-              >
+              <a href={`mailto:${SITE.social.email}`} className="hover:text-[color:var(--bd-lime)]">
                 Email ↗
               </a>
               <a
                 href={`https://wa.me/${SITE.whatsapp}`}
                 target="_blank"
                 rel="noreferrer"
-                data-cursor="dawg"
                 className="hover:text-[color:var(--bd-lime)]"
               >
                 WhatsApp ↗

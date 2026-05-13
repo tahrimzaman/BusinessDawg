@@ -85,7 +85,7 @@ export default function Hero() {
             business growth system studio · Est. 2026
           </motion.div>
 
-          <h1 className="font-display max-w-[14ch] text-5xl leading-[0.95] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-6xl md:text-7xl lg:text-[7rem]">
+          <h1 className="font-display max-w-[10ch] text-5xl leading-[0.95] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-6xl md:text-7xl lg:text-[7rem]">
             <KineticText text="We build" />
             <br />
             <span className="text-[color:var(--bd-lime)]">
@@ -130,8 +130,8 @@ export default function Hero() {
             layout === 'stacked'
               ? 'relative lg:col-span-12'
               : layout === 'overlap'
-                ? 'pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[60%] lg:block'
-                : 'relative lg:col-span-6 lg:-ml-12'
+                ? 'pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[52%] lg:block'
+                : 'relative lg:col-span-6'
           }
         >
           <motion.div
@@ -144,7 +144,7 @@ export default function Hero() {
               x: translateX,
               transformPerspective: 1400,
             }}
-            className={`relative mx-auto h-[60vh] w-full max-w-[600px] ${mascotHeight}`}
+            className={`relative mx-auto h-[60vh] w-full max-w-[600px] lg:mr-0 lg:ml-auto ${mascotHeight}`}
           >
             <motion.div
               animate={reduced ? undefined : { y: [0, -8, 0] }}

@@ -108,7 +108,6 @@ export default function Join() {
           <button
             type="submit"
             disabled={state === 'sending' || state === 'done'}
-            data-cursor="dawg"
             className="inline-flex h-12 w-fit items-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:opacity-60"
           >
             {state === 'sending'

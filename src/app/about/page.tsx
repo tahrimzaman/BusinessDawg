@@ -1,6 +1,7 @@
 import Reveal from '@/components/motion/Reveal';
 import Founder from '@/components/sections/Founder';
-import { PULL_QUOTES } from '@/lib/copy';
+import ShadaiShowcase from '@/components/sections/ShadaiShowcase';
+import MagneticButton from '@/components/motion/MagneticButton';
 
 export const metadata = { title: 'About' };
 
@@ -51,7 +52,10 @@ export default function About() {
       {/* Section 2 — Brains behind BusinessDawg (founder block) */}
       <Founder />
 
-      {/* Section 3 — Values */}
+      {/* Section 3 — Flagship build (Shadai) */}
+      <ShadaiShowcase />
+
+      {/* Section 4 — Values */}
       <div className="mx-auto max-w-4xl px-6">
         <Reveal>
           <h2 className="mt-24 font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
@@ -66,22 +70,25 @@ export default function About() {
             ))}
           </div>
         </Reveal>
+      </div>
 
-        <Reveal>
-          <div className="mt-24 border-t border-white/8 pt-12 pb-24">
-            <h2 className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
-              / Pull quotes
-            </h2>
-            <ul className="mt-6 space-y-3">
-              {PULL_QUOTES.map((q) => (
-                <li
-                  key={q}
-                  className="font-display text-2xl text-[color:var(--bd-bone)]/85 italic sm:text-3xl"
-                >
-                  “{q}”
-                </li>
-              ))}
-            </ul>
+      {/* Section 5 — Motto */}
+      <div className="mx-auto mt-32 max-w-6xl px-6 pb-32 text-center">
+        <Reveal pace="late">
+          <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
+            / The motto
+          </p>
+        </Reveal>
+        <Reveal delay={0.1} pace="late">
+          <p className="font-display mt-6 text-[clamp(2rem,5vw,5rem)] leading-[1.05] font-extrabold tracking-tight italic">
+            We build the <span className="text-[color:var(--bd-lime)]">machine.</span>
+            <br />
+            You run the business.
+          </p>
+        </Reveal>
+        <Reveal delay={0.2}>
+          <div className="mt-12 inline-flex">
+            <MagneticButton href="/contact">Book a Call →</MagneticButton>
           </div>
         </Reveal>
       </div>

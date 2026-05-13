@@ -22,7 +22,6 @@ export default function SystemsIndex() {
           <Reveal key={s.slug} delay={i * 0.04}>
             <Link
               href={`/systems/${s.slug}`}
-              data-cursor="dawg"
               className="group flex items-start justify-between gap-8 rounded-3xl border border-white/8 bg-[color:var(--bd-smoke)] p-8 transition-colors hover:border-[color:var(--bd-lime)]/40 md:p-10"
             >
               <div>

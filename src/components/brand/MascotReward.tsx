@@ -58,7 +58,6 @@ export default function MascotReward({
             {onDismiss ? (
               <button
                 onClick={onDismiss}
-                data-cursor="dawg"
                 className="mt-8 inline-flex h-11 items-center rounded-full bg-[color:var(--bd-lime)] px-5 text-sm font-semibold text-[color:var(--bd-ink)] transition-transform hover:scale-[1.02]"
               >
                 Got it →

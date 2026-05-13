@@ -58,7 +58,6 @@ export default function ClosingCTA() {
                 href={`https://wa.me/${SITE.whatsapp}`}
                 target="_blank"
                 rel="noreferrer"
-                data-cursor="dawg"
                 className="inline-flex h-12 items-center rounded-full border border-white/15 px-6 text-sm font-semibold text-[color:var(--bd-bone)] transition-colors hover:border-[color:var(--bd-lime)] hover:text-[color:var(--bd-lime)]"
               >
                 WhatsApp ↗

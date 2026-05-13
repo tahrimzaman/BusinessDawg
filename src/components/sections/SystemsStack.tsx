@@ -33,15 +33,34 @@ export default function SystemsStack() {
         <div className="mt-16 grid gap-10 lg:grid-cols-12 lg:gap-12">
           {/* Sticky mascot rail (Pos 2) */}
           <div className="relative lg:col-span-4">
-            <div className="lg:sticky lg:top-24 lg:h-[70vh]">
-              <div className="relative h-[40vh] w-full lg:h-full">
+            <div className="lg:sticky lg:top-24 lg:flex lg:h-[80vh] lg:flex-col">
+              <div className="relative h-[40vh] w-full lg:h-full lg:flex-1">
+                {/* Floor glow */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-32"
+                  style={{
+                    background:
+                      'radial-gradient(ellipse 60% 100% at 50% 100%, color-mix(in srgb, var(--bd-lime) 22%, transparent) 0%, transparent 70%)',
+                    filter: 'blur(8px)',
+                  }}
+                />
                 <Image
                   src="/brand/mascot-pos-2.png"
                   alt="BusinessDawg mascot — arms crossed"
                   fill
                   sizes="(min-width: 1024px) 30vw, 80vw"
-                  className="object-contain object-bottom"
+                  className="relative object-contain object-bottom"
                 />
+              </div>
+              {/* Caption rail */}
+              <div className="mt-6 hidden lg:block">
+                <p className="font-mono text-[11px] tracking-widest text-[color:var(--bd-lime)] uppercase">
+                  / Pos 02 // The middle
+                </p>
+                <p className="font-display mt-2 text-2xl leading-tight font-bold tracking-tight text-[color:var(--bd-bone)] italic">
+                  Built different.
+                </p>
               </div>
             </div>
           </div>
@@ -76,7 +95,6 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
       transition={{ duration: dur, delay: index * STAGGER_SLOW, ease: EASE }}
       onPointerEnter={() => setHover(true)}
       onPointerLeave={() => setHover(false)}
-      data-cursor="dawg"
       className="bd-card group relative p-8 md:p-10"
     >
       <motion.div

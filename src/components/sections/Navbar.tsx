@@ -7,7 +7,6 @@ import MagneticButton from '@/components/motion/MagneticButton';
 
 const LINKS = [
   { href: '/systems', label: 'Systems' },
-  { href: '/built', label: 'Built' },
   { href: '/about', label: 'About' },
   { href: '/join', label: 'Join' },
 ];
@@ -36,7 +35,6 @@ export default function Navbar() {
           href="/"
           aria-label="BusinessDawg home"
           className="group flex items-center gap-2 text-[color:var(--bd-bone)] transition-transform hover:scale-[1.02]"
-          data-cursor="dawg"
         >
           <Logo className="h-9 md:h-11" />
         </Link>
@@ -46,7 +44,6 @@ export default function Navbar() {
             <Link
               key={l.href}
               href={l.href}
-              data-cursor="dawg"
               className="text-sm font-medium text-[color:var(--bd-bone)]/70 transition-colors hover:text-[color:var(--bd-lime)]"
             >
               {l.label}

@@ -117,7 +117,6 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
           </p>
           <Link
             href={`/systems/${next.slug}`}
-            data-cursor="dawg"
             className="mt-2 inline-flex items-center gap-2 text-3xl font-bold italic hover:text-[color:var(--bd-lime)]"
           >
             {next.name} →
