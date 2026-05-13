@@ -7,16 +7,18 @@ export default function KineticText({
   text,
   className = '',
   delay = 0,
+  spacing = '0.22em',
 }: {
   text: string;
   className?: string;
   delay?: number;
+  spacing?: string;
 }) {
   const words = text.split(' ');
   return (
     <span className={className} aria-label={text}>
       {words.map((w, i) => (
-        <span key={i} className="kinetic-word" style={{ marginRight: '0.22em' }} aria-hidden>
+        <span key={i} className="kinetic-word" style={{ marginRight: spacing }} aria-hidden>
           <motion.span
             initial={{ y: '110%', rotate: 6 }}
             animate={{ y: '0%', rotate: 0 }}

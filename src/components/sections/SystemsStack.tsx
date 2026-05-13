@@ -18,7 +18,7 @@ import { useTweaks } from '@/lib/dev/tweaks';
 
 export default function SystemsStack() {
   return (
-    <section id="systems" className="relative overflow-hidden py-32 md:py-48">
+    <section className="relative overflow-hidden py-32 md:py-48">
       <div className="bd-section-glow" />
       <div className="relative mx-auto max-w-7xl px-6">
         <Reveal>

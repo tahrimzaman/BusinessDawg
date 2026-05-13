@@ -13,6 +13,9 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
     });
+    // Expose the instance so peripheral components (ChapterRail, etc.)
+    // can call smooth scrollTo without prop-drilling.
+    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
 
     let rafId: number;
     function raf(time: number) {
@@ -24,6 +27,7 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
     return () => {
       cancelAnimationFrame(rafId);
       lenis.destroy();
+      (window as unknown as { __lenis?: Lenis }).__lenis = undefined;
     };
   }, []);
 

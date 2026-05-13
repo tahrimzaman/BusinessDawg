@@ -85,11 +85,11 @@ export default function Hero() {
             business growth system studio · Est. 2026
           </motion.div>
 
-          <h1 className="font-display text-5xl leading-[0.98] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-6xl md:text-7xl lg:text-[5rem]">
-            <KineticText text="We build" />
+          <h1 className="font-display text-5xl leading-[1.06] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-6xl md:text-7xl lg:text-[5rem]">
+            <KineticText text="We build" spacing="0.4em" />
             <br />
-            <span className="whitespace-nowrap text-[color:var(--bd-lime)]">
-              <KineticText text="business machines." delay={0.22} />
+            <span className="mt-1 inline-block whitespace-nowrap text-[color:var(--bd-lime)] lg:mt-2">
+              <KineticText text="business machines." delay={0.22} spacing="0.4em" />
             </span>
           </h1>
 
