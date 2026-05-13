@@ -1,16 +1,14 @@
 'use client';
 
-import { motion, useMotionValueEvent, useReducedMotion, useScroll } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 /**
- * ChapterRail — fixed left + right vertical rails that show scroll progress
- * across the page, with clickable chapter labels that smooth-scroll to each
- * anchored section. Desktop-only (hidden < lg).
+ * ChapterRail — floating glass pill on the left edge that shows page-section
+ * progress and lets the user jump to any section. Desktop-only (hidden < lg).
  *
- * Active section is detected from real element positions (which section
- * straddles the viewport mid-line), not from proportional scroll fraction —
- * MemeReel is 500vh, so equal-sixth math would be wildly wrong.
+ * Active section detected from real element rects (whichever section straddles
+ * the viewport mid-line) so MemeReel's 500vh doesn't break the indicator.
  */
 const CHAPTERS = [
   { id: 'hero', label: 'BUILD' },
@@ -20,10 +18,6 @@ const CHAPTERS = [
   { id: 'join', label: 'JOIN' },
   { id: 'ship', label: 'SHIP' },
 ] as const;
-
-// Six labels distributed inside `inset-y-[12%]` via justify-between.
-// Centers sit at 12% + (76% / 5) × i.
-const POSITIONS = ['12%', '27.2%', '42.4%', '57.6%', '72.8%', '88%'] as const;
 
 function scrollToId(id: string) {
   const el = document.getElementById(id);
@@ -44,21 +38,8 @@ function scrollToId(id: string) {
 
 export default function ChapterRail() {
   const reduced = useReducedMotion();
-  const { scrollYProgress } = useScroll();
-
   const [activeIdx, setActiveIdx] = useState(0);
-  const [pct, setPct] = useState('000');
 
-  // Percentage readout stays tied to overall scroll progress — it's a true 0..100%.
-  useMotionValueEvent(scrollYProgress, 'change', (v) => {
-    setPct(
-      Math.round(v * 100)
-        .toString()
-        .padStart(3, '0'),
-    );
-  });
-
-  // Active section: whichever section straddles the viewport mid-line.
   useEffect(() => {
     function recompute() {
       const mid = window.innerHeight / 2;
@@ -91,87 +72,52 @@ export default function ChapterRail() {
     };
   }, []);
 
-  const dotTransition = reduced
+  const indicatorTransition = reduced
     ? { duration: 0 }
     : { type: 'spring' as const, stiffness: 90, damping: 20 };
 
-  return (
-    <>
-      {/* Left rail — chapter labels + traveling dot (clickable nav) */}
-      <nav
-        aria-label="Section navigation"
-        className="pointer-events-none fixed top-0 bottom-0 left-4 z-30 hidden w-16 lg:flex"
-      >
-        <div className="relative mx-auto h-full w-full">
-          {/* Vertical line */}
-          <span className="absolute top-[12%] bottom-[12%] left-1/2 w-px -translate-x-1/2 bg-[color:var(--bd-lime)]/20" />
+  // Indicator y-position: snap to active row. Rows are evenly distributed by
+  // `gap-4` in a flex column, so we tween between (activeIdx / (n-1)) * 100%.
+  const indicatorTop = `${(activeIdx / (CHAPTERS.length - 1)) * 100}%`;
 
-          {/* Traveling dot — snaps to active label position */}
+  return (
+    <nav
+      aria-label="Section navigation"
+      className="pointer-events-none fixed top-1/2 left-4 z-30 hidden -translate-y-1/2 lg:block"
+    >
+      <div className="glass pointer-events-auto rounded-3xl border border-[color:var(--bd-lime)]/15 px-3 py-4 shadow-[0_6px_30px_rgba(0,0,0,0.45)]">
+        <ul className="relative flex flex-col gap-4">
+          {/* Lime indicator bar — snaps to active row */}
           <motion.span
-            className="absolute left-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[color:var(--bd-lime)]"
+            aria-hidden
+            className="absolute left-0 h-5 w-[2px] -translate-y-1/2 rounded-full bg-[color:var(--bd-lime)]"
             style={{
-              boxShadow: '0 0 10px 2px color-mix(in srgb, var(--bd-lime) 55%, transparent)',
+              boxShadow: '0 0 10px 1px color-mix(in srgb, var(--bd-lime) 55%, transparent)',
             }}
-            animate={{ top: POSITIONS[activeIdx] }}
-            transition={dotTransition}
+            animate={{ top: indicatorTop }}
+            transition={indicatorTransition}
           />
 
-          {/* Chapter labels evenly distributed top->bottom between 12% and 88% */}
-          <div className="absolute inset-y-[12%] right-0 left-0 flex flex-col justify-between">
-            {CHAPTERS.map((c, i) => {
-              const active = i === activeIdx;
-              return (
+          {CHAPTERS.map((c, i) => {
+            const active = i === activeIdx;
+            return (
+              <li key={c.id}>
                 <button
-                  key={c.id}
                   type="button"
                   onClick={() => scrollToId(c.id)}
-                  className="group pointer-events-auto flex items-center justify-center gap-2 font-mono text-[10px] tracking-[0.3em] uppercase"
+                  className={`flex items-center gap-3 pl-3 font-mono text-[10px] tracking-[0.3em] uppercase transition-colors duration-300 ${active ? 'text-[color:var(--bd-lime)]' : 'text-[color:var(--bd-bone)]/40 hover:text-[color:var(--bd-bone)]/80'}`}
                   aria-label={`Jump to ${c.label}`}
                 >
                   <span
-                    className={`h-px transition-all duration-300 ${active ? 'w-4 bg-[color:var(--bd-lime)]' : 'w-2 bg-[color:var(--bd-lime)]/30'} group-hover:w-4 group-hover:bg-[color:var(--bd-lime)]`}
+                    className={`inline-block h-1.5 w-1.5 rounded-full transition-colors duration-300 ${active ? 'bg-[color:var(--bd-lime)]' : 'bg-[color:var(--bd-bone)]/30'}`}
                   />
-                  <span
-                    className={`transition-colors duration-300 ${active ? 'text-[color:var(--bd-lime)]' : 'text-[color:var(--bd-lime)]/40'} group-hover:text-[color:var(--bd-lime)]`}
-                  >
-                    {c.label}
-                  </span>
+                  <span>{c.label}</span>
                 </button>
-              );
-            })}
-          </div>
-        </div>
-      </nav>
-
-      {/* Right rail — readout (section number / percent / current label) */}
-      <aside
-        aria-hidden
-        className="pointer-events-none fixed top-0 right-4 bottom-0 z-30 hidden w-24 lg:flex"
-      >
-        <div className="relative mx-auto h-full w-full">
-          {/* Vertical line */}
-          <span className="absolute top-[12%] bottom-[12%] left-1/2 w-px -translate-x-1/2 bg-[color:var(--bd-lime)]/20" />
-
-          {/* Mirrored traveling tick — also snaps to active position */}
-          <motion.span
-            className="absolute left-1/2 h-px w-3 -translate-x-1/2 -translate-y-1/2 bg-[color:var(--bd-lime)]"
-            animate={{ top: POSITIONS[activeIdx] }}
-            transition={dotTransition}
-          />
-
-          {/* Readout panel — vertically centered */}
-          <div className="absolute top-1/2 right-2 -translate-y-1/2 text-right font-mono uppercase">
-            <p className="text-[10px] tracking-[0.3em] text-[color:var(--bd-lime)]/60">
-              {(activeIdx + 1).toString().padStart(2, '0')} /{' '}
-              {CHAPTERS.length.toString().padStart(2, '0')}
-            </p>
-            <p className="mt-1 text-[10px] tracking-[0.3em] text-[color:var(--bd-lime)]">{pct}%</p>
-            <p className="mt-1 text-[10px] tracking-[0.3em] text-[color:var(--bd-lime)]/40">
-              / {CHAPTERS[activeIdx].label}
-            </p>
-          </div>
-        </div>
-      </aside>
-    </>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </nav>
   );
 }

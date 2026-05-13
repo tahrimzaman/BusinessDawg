@@ -103,6 +103,31 @@ function StackedReel() {
 }
 
 /**
+ * Mobile carousel — paginated horizontal swipe via CSS scroll-snap. One
+ * panel per page; data-lenis-prevent stops Lenis from swallowing the
+ * horizontal touch gestures.
+ */
+function MobileCarouselReel() {
+  return (
+    <section className="relative">
+      <div
+        className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain"
+        data-lenis-prevent
+      >
+        {PANELS.map((p, i) => (
+          <div
+            key={i}
+            className="flex min-h-screen w-screen shrink-0 snap-center snap-always items-center px-6 py-20"
+          >
+            <PanelContent panel={p} index={i} stacked />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/**
  * Horizontal scroll-scrub meme reel. Section is 500vh tall; inner sticky
  * track translates left by -80% of 500vw (= -400vw) as scroll progresses,
  * advancing one panel per viewport of vertical scroll. Reduced motion OR
@@ -112,8 +137,8 @@ export default function MemeReel() {
   const reduced = useReducedMotion();
   const belowLg = useIsBelowLg();
 
-  if (reduced || belowLg) return <StackedReel />;
-
+  if (reduced) return <StackedReel />;
+  if (belowLg) return <MobileCarouselReel />;
   return <HorizontalReel />;
 }
 
@@ -190,6 +215,7 @@ function PanelContent({
   stacked?: boolean;
 }) {
   const idx = `0${index + 1}`;
+  const isPunch = panel.kind === 'punch';
   return (
     <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-6 lg:grid-cols-12 lg:gap-12 lg:px-32">
       {/* Left — illustration / image */}
@@ -198,9 +224,9 @@ function PanelContent({
         whileInView={{ opacity: 1, x: 0, y: 0 }}
         viewport={{ once: true, margin: '-20%' }}
         transition={{ duration: 0.8, ease: EASE }}
-        className="relative mx-auto w-full max-w-[480px] lg:col-span-5"
+        className={`relative mx-auto w-full ${isPunch ? 'max-w-[960px] lg:col-span-7' : 'max-w-[480px] lg:col-span-5'}`}
       >
-        <div className="relative aspect-square w-full">
+        <div className={`relative w-full ${isPunch ? 'aspect-[5/6]' : 'aspect-square'}`}>
           {panel.Illustration && <panel.Illustration className="h-full w-full" />}
           {panel.image && (
             <Image
@@ -224,7 +250,7 @@ function PanelContent({
       </motion.div>
 
       {/* Right — copy */}
-      <div className="lg:col-span-7">
+      <div className={isPunch ? 'lg:col-span-5' : 'lg:col-span-7'}>
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -240,7 +266,7 @@ function PanelContent({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-20%' }}
           transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
-          className="font-display mt-4 text-5xl leading-[1.02] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic md:text-6xl lg:text-7xl"
+          className="font-display mt-4 text-3xl leading-[1.02] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-4xl md:text-5xl lg:text-6xl"
         >
           {panel.headline}
           <br />
@@ -252,7 +278,7 @@ function PanelContent({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-20%' }}
           transition={{ duration: 0.7, delay: 0.4, ease: EASE }}
-          className="mt-6 max-w-xl text-xl text-[color:var(--bd-bone)]/70"
+          className="mt-6 max-w-xl text-base text-[color:var(--bd-bone)]/70 sm:text-lg md:text-xl"
         >
           {panel.body}
         </motion.p>

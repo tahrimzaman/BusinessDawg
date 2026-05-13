@@ -18,16 +18,16 @@ import { useTweaks } from '@/lib/dev/tweaks';
 
 export default function SystemsStack() {
   return (
-    <section className="relative overflow-hidden py-32 md:py-48">
+    <section className="relative overflow-hidden py-20 md:py-32 lg:py-48">
       <div className="bd-section-glow" />
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-32">
+      <div className="relative mx-auto max-w-7xl px-6 lg:pl-28">
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
             / The Systems Stack
           </p>
         </Reveal>
         <Reveal delay={0.05} pace="late">
-          <h2 className="font-display mt-3 max-w-3xl text-4xl leading-[1.05] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-5xl md:text-6xl">
+          <h2 className="font-display mt-3 max-w-3xl text-3xl leading-[1.05] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-4xl md:text-5xl lg:text-6xl">
             Five systems. One studio.
             <br />
             <span className="text-[color:var(--bd-lime)]">
@@ -39,8 +39,8 @@ export default function SystemsStack() {
         <div className="mt-16 grid gap-10 lg:grid-cols-12 lg:gap-12">
           {/* Sticky mascot rail (Pos 2) */}
           <div className="relative lg:col-span-4">
-            <div className="lg:sticky lg:top-24 lg:flex lg:h-[80vh] lg:flex-col">
-              <div className="relative h-[40vh] w-full lg:h-full lg:flex-1">
+            <div className="sticky top-16 z-10 flex h-[30vh] flex-col lg:top-24 lg:h-[80vh]">
+              <div className="relative h-full w-full flex-1">
                 {/* Floor glow */}
                 <div
                   aria-hidden

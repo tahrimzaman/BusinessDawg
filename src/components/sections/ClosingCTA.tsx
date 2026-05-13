@@ -31,7 +31,7 @@ export default function ClosingCTA() {
         }}
       />
 
-      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-6 pb-0 lg:grid-cols-12 lg:px-32">
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-6 pb-0 lg:grid-cols-12 lg:pl-28">
         {/* Copy */}
         <div className="relative z-10 lg:col-span-6">
           <Reveal>
@@ -40,7 +40,7 @@ export default function ClosingCTA() {
             </p>
           </Reveal>
           <Reveal delay={0.05} pace="late">
-            <h2 className="font-display mt-4 text-5xl leading-[0.95] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl lg:text-[7rem]">
+            <h2 className="font-display mt-4 text-4xl leading-[0.95] font-extrabold tracking-tight italic sm:text-5xl md:text-6xl lg:text-[7rem]">
               Build the
               <br />
               <span className="text-[color:var(--bd-lime)]">machine.</span>

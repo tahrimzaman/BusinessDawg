@@ -26,7 +26,7 @@ export default function Newsletter() {
   }
 
   return (
-    <section className="relative py-24">
+    <section className="relative py-16 md:py-24">
       <div className="mx-auto max-w-3xl px-6 text-center lg:px-32">
         <Reveal>
           <div className="mx-auto mb-10 h-px w-24 bg-[color:var(--bd-lime)]/40" />
