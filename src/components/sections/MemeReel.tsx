@@ -233,7 +233,8 @@ function PanelContent({
               alt={panel.image.alt}
               fill
               sizes="(min-width: 1024px) 35vw, 80vw"
-              className="object-contain object-bottom"
+              className={`object-contain object-bottom ${panel.kind === 'punch' ? 'scale-[2]' : ''}`}
+              style={panel.kind === 'punch' ? { transformOrigin: 'bottom center' } : undefined}
             />
           )}
           {/* half-tone grain overlay */}
