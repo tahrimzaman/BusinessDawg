@@ -1,0 +1,7 @@
+node_modules
+.next
+.vercel
+public
+pnpm-lock.yaml
+sanity/dist
+*.md

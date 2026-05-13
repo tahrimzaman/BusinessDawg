@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+# Ensure pnpm is on PATH when git invokes the hook (no shell rc loaded).
+export PNPM_HOME="${PNPM_HOME:-$HOME/Library/pnpm}"
+export PATH="$PNPM_HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH"
+command -v pnpm >/dev/null || exit 0
+pnpm exec lint-staged

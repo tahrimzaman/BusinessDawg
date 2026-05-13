@@ -1,0 +1,98 @@
+'use client';
+
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Reveal from '@/components/motion/Reveal';
+import Mascot from '@/components/brand/Mascot';
+
+export default function Newsletter() {
+  const [email, setEmail] = useState('');
+  const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email || state === 'loading') return;
+    setState('loading');
+    try {
+      const r = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      setState(r.ok ? 'done' : 'error');
+    } catch {
+      setState('error');
+    }
+  }
+
+  return (
+    <section className="relative py-32">
+      <div className="mx-auto max-w-3xl px-6 text-center">
+        <Reveal>
+          <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
+            / The playbook
+          </p>
+        </Reveal>
+        <Reveal delay={0.05}>
+          <h2 className="font-display mt-3 text-4xl leading-[1.05] font-extrabold tracking-tight italic sm:text-5xl">
+            Get the playbook in your inbox.
+          </h2>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <p className="mt-4 text-[color:var(--bd-bone)]/60">
+            No fluff. The systems we’re building, what’s working, what isn’t. Once or twice a month.
+          </p>
+        </Reveal>
+
+        <Reveal delay={0.15}>
+          <form
+            onSubmit={onSubmit}
+            className="mx-auto mt-10 flex max-w-md flex-col items-stretch gap-3 sm:flex-row"
+          >
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@domain.com"
+              className="h-12 flex-1 rounded-full border border-white/10 bg-[color:var(--bd-smoke)] px-5 text-sm text-[color:var(--bd-bone)] placeholder:text-[color:var(--bd-bone)]/40 focus:border-[color:var(--bd-lime)] focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={state === 'loading' || state === 'done'}
+              data-cursor="dawg"
+              className="inline-flex h-12 items-center justify-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:opacity-60"
+            >
+              {state === 'loading' ? 'Sending…' : state === 'done' ? 'Subscribed' : 'Subscribe'}
+            </button>
+          </form>
+        </Reveal>
+
+        <AnimatePresence>
+          {state === 'done' && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="mt-8 flex flex-col items-center gap-2"
+            >
+              <Mascot pose="waving" size={72} />
+              <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
+                You’re in. The dawg approves.
+              </p>
+            </motion.div>
+          )}
+          {state === 'error' && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mt-6 text-sm text-[color:var(--bd-signal)]"
+            >
+              Something went sideways. Try again in a sec.
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+    </section>
+  );
+}

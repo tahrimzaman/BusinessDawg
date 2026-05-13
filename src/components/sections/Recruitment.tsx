@@ -1,0 +1,59 @@
+import Link from 'next/link';
+import Reveal from '@/components/motion/Reveal';
+import MagneticButton from '@/components/motion/MagneticButton';
+
+export default function Recruitment() {
+  return (
+    <section className="relative py-32">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="grid gap-5 md:grid-cols-2">
+          <Reveal>
+            <div className="flex h-full flex-col justify-between rounded-3xl border border-white/8 bg-[linear-gradient(135deg,#0a0a0a_0%,#141414_100%)] p-10 md:p-14">
+              <div>
+                <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
+                  For founders
+                </p>
+                <h3 className="font-display mt-4 text-4xl leading-[1.05] font-extrabold italic">
+                  Have a business to build?
+                </h3>
+                <p className="mt-4 max-w-md text-[color:var(--bd-bone)]/70">
+                  15 minutes. No decks. Tell us what’s leaking and we’ll tell you what to do about
+                  it.
+                </p>
+              </div>
+              <div className="mt-10">
+                <MagneticButton href="/contact">Book a Call →</MagneticButton>
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.08}>
+            <div className="flex h-full flex-col justify-between rounded-3xl border border-[color:var(--bd-lime)]/40 bg-[color:var(--bd-lime)] p-10 text-[color:var(--bd-ink)] md:p-14">
+              <div>
+                <p className="font-mono text-xs tracking-widest text-[color:var(--bd-ink)]/70 uppercase">
+                  For talent
+                </p>
+                <h3 className="font-display mt-4 text-4xl leading-[1.05] font-extrabold italic">
+                  Want to join the movement?
+                </h3>
+                <p className="mt-4 max-w-md text-[color:var(--bd-ink)]/80">
+                  We hire weirdos with taste. Designers, engineers, growth ops, AI nerds. If that’s
+                  you, the door’s open.
+                </p>
+              </div>
+              <div className="mt-10">
+                <Link
+                  href="/join"
+                  data-cursor="dawg"
+                  className="inline-flex h-12 items-center rounded-full bg-[color:var(--bd-ink)] px-6 text-sm font-semibold text-[color:var(--bd-bone)] transition-colors hover:bg-[color:var(--bd-smoke)]"
+                >
+                  See open roles →
+                </Link>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}

@@ -1,0 +1,132 @@
+@import 'tailwindcss';
+
+/*
+ * BusinessDawg — locked palette (CLAUDE.md §1.3 / 2)
+ * Black base, white text, lime accent. Dark mode dominant.
+ */
+:root {
+  --bd-ink: #0a0a0a;
+  --bd-bone: #fafafa;
+  --bd-lime: #c8ff00;
+  --bd-lime-soft: #c8ff0033;
+  --bd-smoke: #141414;
+  --bd-grey-900: #1a1a1a;
+  --bd-grey-700: #3a3a3a;
+  --bd-grey-500: #7a7a7a;
+  --bd-grey-300: #c4c4c4;
+  --bd-signal: #ff4d4d;
+
+  --bd-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --bd-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --bd-radius: 14px;
+  --bd-radius-lg: 28px;
+}
+
+@theme inline {
+  --color-ink: var(--bd-ink);
+  --color-bone: var(--bd-bone);
+  --color-lime: var(--bd-lime);
+  --color-lime-soft: var(--bd-lime-soft);
+  --color-smoke: var(--bd-smoke);
+  --color-signal: var(--bd-signal);
+  --color-grey-900: var(--bd-grey-900);
+  --color-grey-700: var(--bd-grey-700);
+  --color-grey-500: var(--bd-grey-500);
+  --color-grey-300: var(--bd-grey-300);
+
+  --color-background: var(--bd-ink);
+  --color-foreground: var(--bd-bone);
+
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-display: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --ease-bd: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html,
+body {
+  background: var(--bd-ink);
+  color: var(--bd-bone);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Hide native cursor on elements wearing the custom-cursor opt-in. */
+[data-cursor='dawg'],
+[data-cursor='dawg'] * {
+  cursor: none;
+}
+
+/* Selection */
+::selection {
+  background: var(--bd-lime);
+  color: var(--bd-ink);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bd-ink);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bd-grey-700);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bd-lime);
+}
+
+/* Kinetic type helpers */
+.kinetic-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.kinetic-word > span {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* Glass surface */
+.glass {
+  background: color-mix(in srgb, var(--bd-ink) 70%, transparent);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid color-mix(in srgb, var(--bd-bone) 8%, transparent);
+}
+
+/* Reduced motion: kill kinetic transforms, keep crossfades */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.15s !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Lenis smooth scroll guard */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
