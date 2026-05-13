@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Reveal from '@/components/motion/Reveal';
 import Mascot from '@/components/brand/Mascot';
 import { FOUNDER, SITE } from '@/lib/copy';
@@ -11,8 +12,15 @@ export default function Founder() {
             / Brains behind BusinessDawg
           </p>
           <div className="relative mt-6 aspect-[4/5] overflow-hidden rounded-3xl border border-white/8 bg-[color:var(--bd-smoke)]">
-            {/* Founder photo placeholder — drop /assets/inbox/Founder Photo.png into /public/founder.jpg to swap */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,#c8ff0033,transparent_60%),linear-gradient(135deg,#141414,#0a0a0a)]" />
+            <Image
+              src="/founder.png"
+              alt="Tahrim Zaman"
+              fill
+              sizes="(min-width: 768px) 40vw, 100vw"
+              className="object-cover"
+              priority
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="absolute top-4 right-4 rounded-full border border-white/10 bg-black/60 px-3 py-1 font-mono text-[10px] tracking-widest text-white/70 uppercase">
               Tahrim Zaman · Founder
             </div>
