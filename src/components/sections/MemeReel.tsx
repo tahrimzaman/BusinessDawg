@@ -219,9 +219,9 @@ function PanelContent({
     <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-6 lg:grid-cols-12 lg:gap-12 lg:px-16">
       {/* Left — illustration / image */}
       <motion.div
-        initial={{ opacity: 0, x: stacked ? 0 : -40, y: stacked ? 30 : 0 }}
-        whileInView={{ opacity: 1, x: 0, y: 0 }}
-        viewport={{ once: true, margin: '-20%' }}
+        initial={stacked ? false : { opacity: 0, x: -40, y: 0 }}
+        whileInView={stacked ? undefined : { opacity: 1, x: 0, y: 0 }}
+        viewport={stacked ? undefined : { once: true, margin: '-20%' }}
         transition={{ duration: 0.8, ease: EASE }}
         className="relative mx-auto w-full max-w-[480px] lg:col-span-5"
       >
@@ -252,9 +252,9 @@ function PanelContent({
       {/* Right — copy */}
       <div className="lg:col-span-7">
         <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-20%' }}
+          initial={stacked ? false : { opacity: 0, y: 12 }}
+          whileInView={stacked ? undefined : { opacity: 1, y: 0 }}
+          viewport={stacked ? undefined : { once: true, margin: '-20%' }}
           transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
           className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase"
         >
@@ -262,9 +262,9 @@ function PanelContent({
         </motion.p>
 
         <motion.h2
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-20%' }}
+          initial={stacked ? false : { opacity: 0, y: 16 }}
+          whileInView={stacked ? undefined : { opacity: 1, y: 0 }}
+          viewport={stacked ? undefined : { once: true, margin: '-20%' }}
           transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
           className="font-display mt-4 text-3xl leading-[1.02] font-bold tracking-tight text-[color:var(--bd-bone)] italic sm:text-4xl md:text-5xl lg:text-6xl"
         >
@@ -274,9 +274,9 @@ function PanelContent({
         </motion.h2>
 
         <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-20%' }}
+          initial={stacked ? false : { opacity: 0, y: 16 }}
+          whileInView={stacked ? undefined : { opacity: 1, y: 0 }}
+          viewport={stacked ? undefined : { once: true, margin: '-20%' }}
           transition={{ duration: 0.7, delay: 0.4, ease: EASE }}
           className="mt-6 max-w-xl text-base text-[color:var(--bd-bone)]/70 sm:text-lg md:text-xl"
         >
@@ -285,9 +285,9 @@ function PanelContent({
 
         {panel.kind === 'punch' && (
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-20%' }}
+            initial={stacked ? false : { opacity: 0, y: 16 }}
+            whileInView={stacked ? undefined : { opacity: 1, y: 0 }}
+            viewport={stacked ? undefined : { once: true, margin: '-20%' }}
             transition={{ duration: 0.7, delay: 0.6, ease: EASE }}
             className="mt-10 flex flex-wrap items-center gap-4"
           >
@@ -299,9 +299,9 @@ function PanelContent({
         )}
 
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: '-20%' }}
+          initial={stacked ? false : { opacity: 0 }}
+          whileInView={stacked ? undefined : { opacity: 1 }}
+          viewport={stacked ? undefined : { once: true, margin: '-20%' }}
           transition={{ duration: 0.6, delay: 0.7 }}
           className="mt-12 flex items-center gap-3"
         >
