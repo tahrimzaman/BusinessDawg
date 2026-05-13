@@ -59,7 +59,7 @@ const PANELS: Panel[] = [
     headline: 'We build the machine.',
     headlineLime: 'You run the business.',
     body: 'One studio. Five systems. Stop getting sold. Start getting shipped.',
-    image: { src: '/brand/mascot-meme.png?v=2', alt: 'BusinessDawg mascot — meme pose' },
+    image: { src: '/brand/mascot-meme.png', alt: 'BusinessDawg mascot — meme pose' },
   },
 ];
 
