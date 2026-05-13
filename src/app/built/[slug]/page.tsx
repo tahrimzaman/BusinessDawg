@@ -28,7 +28,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
   const b = BUILT.find((x) => x.slug === slug);
-  return { title: b?.name ?? 'Founder venture' };
+  return { title: b?.name ?? 'Case study' };
 }
 
 export default async function BuiltPage({ params }: { params: Promise<Params> }) {
@@ -55,7 +55,7 @@ export default async function BuiltPage({ params }: { params: Promise<Params> })
       <Reveal delay={0.12}>
         <dl className="mt-12 grid gap-6 sm:grid-cols-3">
           {[
-            { k: 'Role', v: 'Founder + Operator' },
+            { k: 'Role', v: 'Studio — design + build' },
             { k: 'Timeline', v: '6 weeks to traction' },
             { k: 'Live', v: 'TBD' },
           ].map((row) => (
@@ -73,21 +73,22 @@ export default async function BuiltPage({ params }: { params: Promise<Params> })
         <div className="mt-20 space-y-12 text-lg leading-relaxed text-[color:var(--bd-bone)]/80">
           <section>
             <h2 className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
-              / The business
+              / The brief
             </h2>
             <p className="mt-4">
-              Shadai Ghar is a direct-to-consumer grocery operation in Faridpur. 500 families in six
-              weeks. 23–27% gross margin. Targeting 10,000 households and ~₹2 crore EBT/month at
-              maturity.
+              Shadai Ghar is a direct-to-consumer grocery operation in Faridpur. BusinessDawg was
+              brought in to design, build, and ship the entire product — storefront, ops backend,
+              and growth engine — fast enough to validate the unit economics.
             </p>
           </section>
           <section>
             <h2 className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
-              / The stack
+              / What we shipped
             </h2>
             <p className="mt-4">
-              Next.js storefront, Postgres + Prisma, payments, image pipeline, transactional email,
-              AI shopping recommendations, full admin workflows. Built from scratch.
+              A Next.js storefront, Postgres + Prisma data layer, payments, image pipeline,
+              transactional email, AI shopping recommendations, and full admin workflows. Built from
+              scratch in six weeks.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               {venture.stack.map((t) => (

@@ -8,8 +8,7 @@ import { SITE } from '@/lib/copy';
 
 const COL_PRODUCT = [
   { href: '/systems', label: 'Systems' },
-  { href: '/work', label: 'Client work' },
-  { href: '/built', label: 'Founder ventures' },
+  { href: '/built', label: 'Built' },
 ];
 const COL_STUDIO = [
   { href: '/about', label: 'About' },
@@ -27,9 +26,10 @@ export default function Footer() {
       <div className="bd-section-glow" />
       <div className="relative mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-12">
         <div className="md:col-span-5">
-          <Logo className="h-12 text-[color:var(--bd-bone)]" />
+          <Logo className="h-14 md:h-16" />
           <p className="font-display mt-8 max-w-md text-3xl leading-[1.05] font-bold italic">
-            We build the machine. <span className="bd-aurora-text">You run the business.</span>
+            We build the machine.{' '}
+            <span className="text-[color:var(--bd-lime)]">You run the business.</span>
           </p>
           <div className="mt-8 flex flex-wrap gap-3 font-mono text-xs tracking-widest uppercase">
             <a

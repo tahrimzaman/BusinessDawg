@@ -10,12 +10,12 @@ export default function BuiltTeaser() {
       <div className="relative mx-auto max-w-7xl px-6">
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
-            / What I’ve built
+            / Case study
           </p>
         </Reveal>
         <Reveal delay={0.05}>
           <h2 className="font-display mt-3 max-w-3xl text-4xl leading-[1.05] font-extrabold tracking-tight italic sm:text-5xl">
-            <span className="bd-aurora-text">Another company I run.</span>
+            A working machine, <span className="text-[color:var(--bd-lime)]">shipped by us.</span>
           </h2>
         </Reveal>
 
@@ -67,7 +67,7 @@ export default function BuiltTeaser() {
                 Case study
               </span>
               <span className="text-sm font-semibold text-[color:var(--bd-bone)] transition-colors group-hover:text-[color:var(--bd-lime)]">
-                See what I’ve built →
+                Read the case study →
               </span>
             </div>
           </Link>

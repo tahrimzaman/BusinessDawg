@@ -21,7 +21,9 @@ export default function SystemsStack() {
           <h2 className="font-display mt-3 max-w-3xl text-4xl leading-[1.05] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-5xl md:text-6xl">
             Five systems. One studio.
             <br />
-            <span className="bd-aurora-text">Stack them however your business needs.</span>
+            <span className="text-[color:var(--bd-lime)]">
+              Stack them however your business needs.
+            </span>
           </h2>
         </Reveal>
 

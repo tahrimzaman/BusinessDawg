@@ -7,7 +7,6 @@ import MagneticButton from '@/components/motion/MagneticButton';
 
 const LINKS = [
   { href: '/systems', label: 'Systems' },
-  { href: '/work', label: 'Work' },
   { href: '/built', label: 'Built' },
   { href: '/about', label: 'About' },
   { href: '/join', label: 'Join' },
@@ -39,7 +38,7 @@ export default function Navbar() {
           className="group flex items-center gap-2 text-[color:var(--bd-bone)] transition-transform hover:scale-[1.02]"
           data-cursor="dawg"
         >
-          <Logo className="h-8 md:h-9" />
+          <Logo className="h-9 md:h-11" />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">

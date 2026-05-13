@@ -164,7 +164,8 @@ export default function Founder() {
           </Reveal>
           <Reveal delay={0.06}>
             <h2 className="font-display mt-4 max-w-3xl text-4xl leading-[1.05] font-extrabold tracking-tight italic sm:text-5xl">
-              I’m Tahrim. <span className="bd-aurora-text">I build business machines.</span>
+              I’m Tahrim.{' '}
+              <span className="text-[color:var(--bd-lime)]">I build business machines.</span>
             </h2>
           </Reveal>
           <Reveal delay={0.12}>

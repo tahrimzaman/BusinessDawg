@@ -106,13 +106,15 @@ export const SYSTEMS: System[] = [
 
 export const FOUNDER = {
   name: 'Tahrim Zaman',
-  short:
-    'I’m Tahrim. I run two distribution businesses and built Shadai Ghar — a D2C grocery startup.',
+  short: 'I’m Tahrim. I run two distribution businesses and now I run BusinessDawg.',
   hook: 'BusinessDawg is what happens when an operator gets tired of agencies that have never actually shipped anything.',
   credibility: [
     { label: '2× Distribution', sub: 'Territories I operate, day to day.' },
-    { label: '500 families / 6 wks', sub: 'Shadai Ghar — D2C grocery I built.' },
     { label: 'Top 20 of 5,000+', sub: 'Hult Prize Global, Boston.' },
+    {
+      label: 'Hult MSc Scholar',
+      sub: 'Khulna Uni BBA → Hult MSc (Sept 2027), full scholarship.',
+    },
   ],
 };
 
@@ -120,34 +122,11 @@ export const BUILT = [
   {
     slug: 'shadai',
     name: 'Shadai Ghar',
-    label: 'Another company I run',
-    tagline: 'D2C grocery. Faridpur. Working machine, real revenue.',
+    label: 'A BusinessDawg build',
+    tagline:
+      'D2C grocery for Faridpur households. Designed, built, and shipped end-to-end by BusinessDawg.',
     metrics: ['500 families in 6 weeks', '23–27% gross margin', 'Targeting 10,000 households'],
     stack: ['Next.js', 'Postgres', 'Prisma', 'Payments', 'AI recs'],
-  },
-];
-
-export const WORK_CONCEPTS = [
-  {
-    slug: 'kettle-and-press',
-    title: 'Kettle & Press',
-    role: 'Brand + storefront',
-    blurb: 'Specialty coffee D2C. Identity, packaging, Shopify rebuild.',
-    tag: 'Concept',
-  },
-  {
-    slug: 'fold-finance',
-    title: 'Fold Finance',
-    role: 'Product + growth',
-    blurb: 'Personal finance app. Onboarding, growth loops, weekly digest engine.',
-    tag: 'Concept',
-  },
-  {
-    slug: 'parallel-ops',
-    title: 'Parallel Ops',
-    role: 'AI automation',
-    blurb: 'Internal ops co-pilot for a 40-person SaaS. Agents on every workflow.',
-    tag: 'Concept',
   },
 ];
 

@@ -29,7 +29,7 @@ export default function About() {
         </Reveal>
         <Reveal delay={0.05}>
           <h1 className="font-display mt-3 text-5xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
-            We build <span className="bd-aurora-text">business machines.</span>
+            We build <span className="text-[color:var(--bd-lime)]">business machines.</span>
           </h1>
         </Reveal>
 

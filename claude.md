@@ -134,19 +134,19 @@ Performance budget: LCP < 2.5s on mid-tier mobile. Motion must not destroy Light
 
 Detailed in `PLAN.md`. High level:
 
-- `/` — Home (hero, systems, founder, founder ventures, portfolio, recruitment teaser, chatbot, CTAs)
+- `/` — Home (hero, systems, built case study, recruitment teaser, chatbot, CTAs)
 - `/systems/[slug]` — Per-system deep page (5 total)
-- `/work` — Client portfolio index (concept placeholders in v1)
-- `/work/[slug]` — Client case study
-- `/built` — Founder ventures index (Shadai + future)
-- `/built/[slug]` — Founder venture case study (`/built/shadai` is the flagship)
+- `/built` — Built-by-BusinessDawg case studies (Shadai is the flagship)
+- `/built/[slug]` — Case study detail (`/built/shadai` is the flagship)
 - `/about` — Founder + brand story
 - `/join` — Talent/intern recruitment
 - `/contact` — Booking + WhatsApp + email
 - `/404` — Custom with mascot
 - `/studio` — Sanity Studio (CMS admin)
 
-**Important separation:** Shadai Ghar is Tahrim's own company. It lives under `/built` (founder ventures), never under `/work` (client engagements). The site shows Shadai as a separate venture Tahrim runs — it does not describe a commercial relationship between BusinessDawg and Shadai. Keep the framing simple: "another company I run," not "BusinessDawg built it."
+There is no client portfolio yet — `/work` is intentionally not in the sitemap until real client work exists.
+
+**Shadai Ghar framing (updated 2026-05-13):** Shadai is presented as a BusinessDawg case study — "A BusinessDawg build." It lives under `/built` as the studio's flagship shipped work. Do **not** present Shadai as Tahrim's personal venture on this site; do not use first-person ownership language for it ("I run Shadai", "another company I run", "I built Shadai", "Shadai — a D2C grocery I built"). The founder narrative on `/about` stands alone — distribution-operator background + why BusinessDawg exists. Shadai does not appear in Tahrim's bio or credibility stats.
 
 ---
 
@@ -184,4 +184,4 @@ Tracked in `PLAN.md` Section 14. Includes: founder photo, founder bio, social ha
 
 ---
 
-*Last updated: 2026-05-13 — rewritten from the original ChatGPT brain dump after a clarification round with Tahrim.*
+*Last updated: 2026-05-13 — Shadai reframed as a BusinessDawg case study (no founder ownership). Portfolio (`/work`) removed until real client work exists. Hero moved from R3F primitives to real mascot PNG. Gradients reduced to black/white/lime only.*
