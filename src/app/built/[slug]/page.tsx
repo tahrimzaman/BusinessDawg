@@ -1,7 +1,23 @@
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import Reveal from '@/components/motion/Reveal';
 import MagneticButton from '@/components/motion/MagneticButton';
 import { BUILT } from '@/lib/copy';
+
+const GALLERIES: Record<string, { src: string; alt: string; caption: string }[]> = {
+  shadai: [
+    {
+      src: '/shadai-home.png',
+      alt: 'Shadai Ghar homepage',
+      caption: 'Storefront — Faridpur D2C grocery',
+    },
+    {
+      src: '/shadai-ai.png',
+      alt: 'Shadai Ghar AI shopping recommendations',
+      caption: 'AI shopping recommendations',
+    },
+  ],
+};
 
 type Params = { slug: string };
 
@@ -99,6 +115,37 @@ export default async function BuiltPage({ params }: { params: Promise<Params> })
           </section>
         </div>
       </Reveal>
+
+      {GALLERIES[slug]?.length ? (
+        <Reveal>
+          <div className="mt-20">
+            <h2 className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
+              / Inside the machine
+            </h2>
+            <div className="mt-6 grid gap-5 md:grid-cols-2">
+              {GALLERIES[slug].map((shot) => (
+                <figure
+                  key={shot.src}
+                  className="overflow-hidden rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)]"
+                >
+                  <div className="relative aspect-[4/3]">
+                    <Image
+                      src={shot.src}
+                      alt={shot.alt}
+                      fill
+                      sizes="(min-width: 768px) 45vw, 100vw"
+                      className="object-cover"
+                    />
+                  </div>
+                  <figcaption className="border-t border-white/8 px-5 py-3 font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/60 uppercase">
+                    {shot.caption}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      ) : null}
 
       <Reveal>
         <div className="mt-20 flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-8">
