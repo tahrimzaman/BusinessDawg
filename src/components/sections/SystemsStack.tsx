@@ -1,15 +1,18 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useState } from 'react';
 import { SYSTEMS } from '@/lib/copy';
 import Reveal from '@/components/motion/Reveal';
 import { EASE } from '@/lib/motion/easing';
+import { TIMING, STAGGER_SLOW } from '@/lib/motion/timing';
+import { useTweaks } from '@/lib/dev/tweaks';
 
 export default function SystemsStack() {
   return (
-    <section id="systems" className="relative overflow-hidden py-32">
+    <section id="systems" className="relative overflow-hidden py-32 md:py-48">
       <div className="bd-section-glow" />
       <div className="relative mx-auto max-w-7xl px-6">
         <Reveal>
@@ -17,7 +20,7 @@ export default function SystemsStack() {
             / The Systems Stack
           </p>
         </Reveal>
-        <Reveal delay={0.05}>
+        <Reveal delay={0.05} pace="late">
           <h2 className="font-display mt-3 max-w-3xl text-4xl leading-[1.05] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-5xl md:text-6xl">
             Five systems. One studio.
             <br />
@@ -27,10 +30,28 @@ export default function SystemsStack() {
           </h2>
         </Reveal>
 
-        <div className="mt-16 grid gap-5">
-          {SYSTEMS.map((s, i) => (
-            <SystemCard key={s.slug} system={s} index={i} />
-          ))}
+        <div className="mt-16 grid gap-10 lg:grid-cols-12 lg:gap-12">
+          {/* Sticky mascot rail (Pos 2) */}
+          <div className="relative lg:col-span-4">
+            <div className="lg:sticky lg:top-24 lg:h-[70vh]">
+              <div className="relative h-[40vh] w-full lg:h-full">
+                <Image
+                  src="/brand/mascot-pos-2.png"
+                  alt="BusinessDawg mascot — arms crossed"
+                  fill
+                  sizes="(min-width: 1024px) 30vw, 80vw"
+                  className="object-contain object-bottom"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Cards */}
+          <div className="grid gap-5 lg:col-span-8">
+            {SYSTEMS.map((s, i) => (
+              <SystemCard key={s.slug} system={s} index={i} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -38,7 +59,10 @@ export default function SystemsStack() {
 }
 
 function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index: number }) {
+  const reduced = useReducedMotion();
+  const tweaks = useTweaks();
   const [hover, setHover] = useState(false);
+  const dur = (reduced ? 0.2 : TIMING.reveal) * (reduced ? 1 : tweaks.pace);
   const price =
     system.pricing.kind === 'starter'
       ? `Starter pack — from ${system.pricing.from}`
@@ -49,7 +73,7 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-10%' }}
-      transition={{ duration: 0.6, delay: index * 0.06, ease: EASE }}
+      transition={{ duration: dur, delay: index * STAGGER_SLOW, ease: EASE }}
       onPointerEnter={() => setHover(true)}
       onPointerLeave={() => setHover(false)}
       data-cursor="dawg"
@@ -86,7 +110,7 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
           <motion.div
             initial={false}
             animate={{ height: hover ? 'auto' : 0, opacity: hover ? 1 : 0 }}
-            transition={{ duration: 0.35, ease: EASE }}
+            transition={{ duration: 0.5, ease: EASE }}
             className="overflow-hidden"
           >
             <ul className="mt-5 space-y-1.5 text-sm text-[color:var(--bd-bone)]/80">

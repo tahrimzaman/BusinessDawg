@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Reveal from '@/components/motion/Reveal';
-import Mascot from '@/components/brand/Mascot';
+import MascotReward from '@/components/brand/MascotReward';
 
 export default function Newsletter() {
   const [email, setEmail] = useState('');
@@ -74,12 +74,12 @@ export default function Newsletter() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="mt-8 flex flex-col items-center gap-2"
+              className="mx-auto mt-10 max-w-2xl text-left"
             >
-              <Mascot pose="waving" size={72} />
-              <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
-                You’re in. The dawg approves.
-              </p>
+              <MascotReward
+                headline="You’re in."
+                sub="Playbook drops once or twice a month. No fluff."
+              />
             </motion.div>
           )}
           {state === 'error' && (

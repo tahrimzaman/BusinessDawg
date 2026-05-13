@@ -1,6 +1,7 @@
 import Reveal from '@/components/motion/Reveal';
 import MagneticButton from '@/components/motion/MagneticButton';
 import Mascot from '@/components/brand/Mascot';
+import CalEmbed from '@/components/booking/CalEmbed';
 import { SITE } from '@/lib/copy';
 
 export const metadata = { title: 'Contact' };
@@ -28,15 +29,7 @@ export default function Contact() {
 
       <div className="mt-16 grid gap-8 md:grid-cols-12">
         <Reveal className="md:col-span-8">
-          <div className="overflow-hidden rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)]">
-            <iframe
-              src={calSrc}
-              title="Book a call"
-              className="h-[640px] w-full"
-              loading="lazy"
-              allow="payment; camera; microphone; clipboard-read; clipboard-write"
-            />
-          </div>
+          <CalEmbed src={calSrc} />
         </Reveal>
 
         <Reveal delay={0.06} className="md:col-span-4">

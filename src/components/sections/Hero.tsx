@@ -1,29 +1,35 @@
 'use client';
 
 import Image from 'next/image';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion';
 import { useEffect } from 'react';
 import KineticText from '@/components/motion/KineticText';
 import MagneticButton from '@/components/motion/MagneticButton';
 import { EASE } from '@/lib/motion/easing';
+import { TIMING } from '@/lib/motion/timing';
+import { useTweaks } from '@/lib/dev/tweaks';
 
 /**
- * Hero — minimal lime/black/white. Real mascot PNG (no R3F primitives).
- * Idle bob + cursor-driven tilt. Reduces to a static image under
- * prefers-reduced-motion (handled globally in globals.css).
+ * Hero — Pos 1 mascot, slow cinematic entrance.
+ * Mascot lives in cols 6–12 (right) with a 1-col overlap that lets
+ * headline edges visually cross the mascot's bounding box without
+ * crossing the figure itself. Layout responds to TweakPanel.
  */
 export default function Hero() {
-  // Cursor parallax — normalized -0.5..0.5 from viewport center.
+  const reduced = useReducedMotion();
+  const tweaks = useTweaks();
+  const dur = (reduced ? 0.2 : TIMING.hero) * (reduced ? 1 : tweaks.pace);
+
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const sx = useSpring(mx, { stiffness: 80, damping: 18 });
-  const sy = useSpring(my, { stiffness: 80, damping: 18 });
-
-  const tiltY = useTransform(sx, [-0.5, 0.5], [-6, 6]);
-  const tiltX = useTransform(sy, [-0.5, 0.5], [3, -3]);
-  const translateX = useTransform(sx, [-0.5, 0.5], [-10, 10]);
+  const sx = useSpring(mx, { stiffness: 50, damping: 24 });
+  const sy = useSpring(my, { stiffness: 50, damping: 24 });
+  const tiltY = useTransform(sx, [-0.5, 0.5], [-3, 3]);
+  const tiltX = useTransform(sy, [-0.5, 0.5], [2, -2]);
+  const translateX = useTransform(sx, [-0.5, 0.5], [-6, 6]);
 
   useEffect(() => {
+    if (reduced) return;
     const handle = (e: PointerEvent) => {
       const cx = window.innerWidth / 2;
       const cy = window.innerHeight / 2;
@@ -32,30 +38,47 @@ export default function Hero() {
     };
     window.addEventListener('pointermove', handle, { passive: true });
     return () => window.removeEventListener('pointermove', handle);
-  }, [mx, my]);
+  }, [mx, my, reduced]);
+
+  // Mascot scale → vh height
+  const mascotHeight =
+    tweaks.mascotScale === 'giant'
+      ? 'lg:h-[110vh]'
+      : tweaks.mascotScale === 'editorial'
+        ? 'lg:h-[70vh]'
+        : 'lg:h-[92vh]';
+
+  // Hero composition layout switch
+  const layout = tweaks.heroComp;
 
   return (
     <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-24">
-      {/* Lime radial glow behind the mascot — only accent */}
+      {/* Lime radial glow */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(ellipse 55% 50% at 75% 60%, color-mix(in srgb, var(--bd-lime) 16%, transparent) 0%, transparent 60%)',
+            'radial-gradient(ellipse 55% 50% at 72% 58%, color-mix(in srgb, var(--bd-lime) 14%, transparent) 0%, transparent 60%)',
         }}
       />
-
-      {/* Bottom fade-to-ink seam */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-b from-transparent to-[color:var(--bd-ink)]" />
 
-      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-6 md:grid-cols-12">
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-6 lg:grid-cols-12 lg:gap-0">
         {/* Copy column */}
-        <div className="md:col-span-7">
+        <div
+          className={
+            layout === 'stacked'
+              ? 'lg:col-span-12 lg:text-center'
+              : layout === 'overlap'
+                ? 'relative z-10 lg:col-span-7'
+                : 'relative z-10 lg:col-span-6'
+          }
+        >
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: EASE }}
+            transition={{ duration: dur * 0.5, ease: EASE }}
             className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1 font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/70 uppercase backdrop-blur-md"
           >
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--bd-lime)]" />A
@@ -66,14 +89,14 @@ export default function Hero() {
             <KineticText text="We build" />
             <br />
             <span className="text-[color:var(--bd-lime)]">
-              <KineticText text="business machines." delay={0.18} />
+              <KineticText text="business machines." delay={0.22} />
             </span>
           </h1>
 
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.6, ease: EASE }}
+            transition={{ delay: reduced ? 0 : 1.1, duration: dur * 0.7, ease: EASE }}
             className="mt-8 max-w-xl text-lg text-[color:var(--bd-bone)]/70 sm:text-xl"
           >
             Branding, AI, web, and growth systems for founders who actually ship.
@@ -82,7 +105,7 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.6, ease: EASE }}
+            transition={{ delay: reduced ? 0 : 1.35, duration: dur * 0.7, ease: EASE }}
             className="mt-10 flex flex-wrap items-center gap-4"
           >
             <MagneticButton href="/contact">Book a Call →</MagneticButton>
@@ -91,11 +114,10 @@ export default function Hero() {
             </MagneticButton>
           </motion.div>
 
-          {/* scroll cue */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.4 }}
+            transition={{ delay: reduced ? 0 : 1.9, duration: 0.6 }}
             className="mt-16 hidden font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/40 uppercase sm:block"
           >
             scroll ↓
@@ -103,30 +125,38 @@ export default function Hero() {
         </div>
 
         {/* Mascot column */}
-        <div className="relative md:col-span-5">
+        <div
+          className={
+            layout === 'stacked'
+              ? 'relative lg:col-span-12'
+              : layout === 'overlap'
+                ? 'pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[60%] lg:block'
+                : 'relative lg:col-span-6 lg:-ml-12'
+          }
+        >
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.7, ease: EASE }}
+            transition={{ delay: reduced ? 0 : 0.3, duration: dur, ease: EASE }}
             style={{
               rotateX: tiltX,
               rotateY: tiltY,
               x: translateX,
-              transformPerspective: 1200,
+              transformPerspective: 1400,
             }}
-            className="relative mx-auto aspect-[4/5] w-full max-w-[420px] md:max-w-[520px]"
+            className={`relative mx-auto h-[60vh] w-full max-w-[600px] ${mascotHeight}`}
           >
             <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              animate={reduced ? undefined : { y: [0, -8, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
               className="relative h-full w-full"
             >
               <Image
-                src="/brand/mascot-hero.png"
+                src="/brand/mascot-pos-1.png"
                 alt="BusinessDawg mascot"
                 fill
-                sizes="(min-width: 768px) 40vw, 80vw"
-                className="object-contain"
+                sizes="(min-width: 1024px) 50vw, 80vw"
+                className="object-contain object-bottom"
                 priority
               />
             </motion.div>
