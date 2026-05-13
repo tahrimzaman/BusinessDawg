@@ -20,14 +20,14 @@ export default function SystemsStack() {
   return (
     <section className="relative overflow-hidden py-20 md:py-32 lg:py-48">
       <div className="bd-section-glow" />
-      <div className="relative mx-auto max-w-7xl px-6 lg:pl-28">
+      <div className="relative mx-auto max-w-7xl px-6">
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
             / The Systems Stack
           </p>
         </Reveal>
         <Reveal delay={0.05} pace="late">
-          <h2 className="font-display mt-3 max-w-3xl text-3xl leading-[1.05] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-4xl md:text-5xl lg:text-6xl">
+          <h2 className="font-display mt-3 max-w-3xl text-3xl leading-[1.05] font-bold tracking-tight text-[color:var(--bd-bone)] italic sm:text-4xl md:text-5xl lg:text-6xl">
             Five systems. One studio.
             <br />
             <span className="text-[color:var(--bd-lime)]">

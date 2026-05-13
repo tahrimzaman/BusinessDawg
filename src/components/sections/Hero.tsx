@@ -46,7 +46,7 @@ export default function Hero() {
       ? 'lg:h-[110vh]'
       : tweaks.mascotScale === 'editorial'
         ? 'lg:h-[70vh]'
-        : 'lg:h-[92vh]';
+        : 'lg:h-[105vh]';
 
   // Hero composition layout switch
   const layout = tweaks.heroComp;
@@ -64,7 +64,7 @@ export default function Hero() {
       />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-b from-transparent to-[color:var(--bd-ink)]" />
 
-      <div className="relative mx-auto grid w-full max-w-7xl grid-cols-12 items-center gap-3 px-6 sm:gap-4 lg:gap-0 lg:pl-28">
+      <div className="relative mx-auto grid w-full max-w-7xl grid-cols-12 items-center gap-3 px-6 sm:gap-4 lg:gap-0">
         {/* Copy column */}
         <div
           className={
@@ -72,7 +72,7 @@ export default function Hero() {
               ? 'col-span-12 lg:text-center'
               : layout === 'overlap'
                 ? 'relative z-10 col-span-7'
-                : 'relative z-10 col-span-7 lg:col-span-8'
+                : 'relative z-10 col-span-7 lg:col-span-7'
           }
         >
           <motion.div
@@ -85,7 +85,7 @@ export default function Hero() {
             business growth system studio · Est. 2026
           </motion.div>
 
-          <h1 className="font-display text-3xl leading-[1.06] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-5xl md:text-6xl lg:text-[5rem]">
+          <h1 className="font-display text-3xl leading-[1.06] font-bold tracking-tight text-[color:var(--bd-bone)] italic sm:text-5xl md:text-6xl lg:text-[5rem]">
             <KineticText text="We build" />
             <br />
             <span className="text-[color:var(--bd-lime)]">
@@ -131,7 +131,7 @@ export default function Hero() {
               ? 'relative lg:col-span-12'
               : layout === 'overlap'
                 ? 'pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[52%] lg:block'
-                : 'relative col-span-5 lg:col-span-4'
+                : 'relative col-span-5 lg:col-span-5'
           }
         >
           <motion.div

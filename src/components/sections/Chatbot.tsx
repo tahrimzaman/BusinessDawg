@@ -2,6 +2,7 @@
 
 /** Static chatbot UI. Backend wiring is GATED until Tahrim picks a provider (CLAUDE.md §3 Gate #1). */
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Mascot from '@/components/brand/Mascot';
@@ -38,65 +39,79 @@ export default function Chatbot() {
 
   return (
     <section className="relative py-20 md:py-32">
-      <div className="mx-auto max-w-5xl px-6 lg:px-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-16">
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
             / Ask the dawg
           </p>
         </Reveal>
         <Reveal delay={0.05}>
-          <h2 className="font-display mt-3 max-w-3xl text-4xl leading-[1.05] font-extrabold tracking-tight italic sm:text-5xl">
+          <h2 className="font-display mt-3 max-w-3xl text-4xl leading-[1.05] font-bold tracking-tight italic sm:text-5xl">
             Talk to the BusinessDawg.
           </h2>
         </Reveal>
 
-        <Reveal delay={0.1}>
-          <div className="glass mt-10 overflow-hidden rounded-3xl">
-            <div className="flex items-center gap-3 border-b border-white/8 px-6 py-4">
-              <Mascot pose="idle" size={36} />
-              <div>
-                <p className="text-sm font-semibold">BusinessDawg</p>
-                <p className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/40 uppercase">
-                  Static preview · live wiring gated
-                </p>
+        <div className="mt-10 grid items-stretch gap-10 lg:grid-cols-12 lg:gap-12">
+          <Reveal delay={0.1} className="lg:col-span-7">
+            <div className="glass h-full overflow-hidden rounded-3xl">
+              <div className="flex items-center gap-3 border-b border-white/8 px-6 py-4">
+                <Mascot pose="idle" size={36} />
+                <div>
+                  <p className="text-sm font-semibold">BusinessDawg</p>
+                  <p className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/40 uppercase">
+                    Static preview · live wiring gated
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3 px-6 py-6">
+                {messages.map((m, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, ease: EASE }}
+                    className={`flex ${m.from === 'you' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
+                        m.from === 'you'
+                          ? 'bg-[color:var(--bd-lime)] text-[color:var(--bd-ink)]'
+                          : 'bg-white/5 text-[color:var(--bd-bone)]'
+                      }`}
+                    >
+                      {m.text}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-2 border-t border-white/8 px-6 py-4">
+                {SUGGESTED.map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => ask(q)}
+                    className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-[color:var(--bd-bone)]/80 transition-colors hover:border-[color:var(--bd-lime)]/60 hover:text-[color:var(--bd-lime)]"
+                  >
+                    {q}
+                  </button>
+                ))}
               </div>
             </div>
+          </Reveal>
 
-            <div className="space-y-3 px-6 py-6">
-              {messages.map((m, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, ease: EASE }}
-                  className={`flex ${m.from === 'you' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
-                      m.from === 'you'
-                        ? 'bg-[color:var(--bd-lime)] text-[color:var(--bd-ink)]'
-                        : 'bg-white/5 text-[color:var(--bd-bone)]'
-                    }`}
-                  >
-                    {m.text}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="flex flex-wrap gap-2 border-t border-white/8 px-6 py-4">
-              {SUGGESTED.map((q) => (
-                <button
-                  key={q}
-                  onClick={() => ask(q)}
-                  className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-[color:var(--bd-bone)]/80 transition-colors hover:border-[color:var(--bd-lime)]/60 hover:text-[color:var(--bd-lime)]"
-                >
-                  {q}
-                </button>
-              ))}
+          <div className="relative h-[420px] w-full lg:col-span-5 lg:h-auto">
+            <div className="relative h-full min-h-[420px] w-full">
+              <Image
+                src="/brand/mascot-talk.png"
+                alt="BusinessDawg mascot — talking"
+                fill
+                sizes="(min-width: 1024px) 40vw, 80vw"
+                className="object-contain object-bottom"
+              />
             </div>
           </div>
-        </Reveal>
+        </div>
       </div>
     </section>
   );

@@ -4,8 +4,9 @@ import MagneticButton from '@/components/motion/MagneticButton';
 
 export default function Recruitment() {
   return (
-    <section className="relative py-20 md:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-32">
+    <section className="relative overflow-hidden py-20 md:py-32">
+      <div className="bd-section-glow" />
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-16">
         <div className="grid gap-5 md:grid-cols-2">
           <Reveal>
             <div className="flex h-full flex-col justify-between rounded-3xl border border-white/8 bg-[linear-gradient(135deg,#0a0a0a_0%,#141414_100%)] p-10 md:p-14">
@@ -13,7 +14,7 @@ export default function Recruitment() {
                 <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
                   For founders
                 </p>
-                <h3 className="font-display mt-4 text-4xl leading-[1.05] font-extrabold italic">
+                <h3 className="font-display mt-4 text-4xl leading-[1.05] font-bold italic">
                   Have a business to build?
                 </h3>
                 <p className="mt-4 max-w-md text-[color:var(--bd-bone)]/70">
@@ -33,7 +34,7 @@ export default function Recruitment() {
                 <p className="font-mono text-xs tracking-widest text-[color:var(--bd-ink)]/70 uppercase">
                   For talent
                 </p>
-                <h3 className="font-display mt-4 text-4xl leading-[1.05] font-extrabold italic">
+                <h3 className="font-display mt-4 text-4xl leading-[1.05] font-bold italic">
                   Want to join the movement?
                 </h3>
                 <p className="mt-4 max-w-md text-[color:var(--bd-ink)]/80">

@@ -26,8 +26,9 @@ export default function Newsletter() {
   }
 
   return (
-    <section className="relative py-16 md:py-24">
-      <div className="mx-auto max-w-3xl px-6 text-center lg:px-32">
+    <section className="relative overflow-hidden py-16 md:py-24">
+      <div className="bd-section-glow" />
+      <div className="relative mx-auto max-w-3xl px-6 text-center lg:px-16">
         <Reveal>
           <div className="mx-auto mb-10 h-px w-24 bg-[color:var(--bd-lime)]/40" />
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
@@ -35,7 +36,7 @@ export default function Newsletter() {
           </p>
         </Reveal>
         <Reveal delay={0.05}>
-          <h2 className="font-display mt-3 text-4xl leading-[1.05] font-extrabold tracking-tight italic sm:text-5xl">
+          <h2 className="font-display mt-3 text-4xl leading-[1.05] font-bold tracking-tight italic sm:text-5xl">
             Get the playbook in your inbox.
           </h2>
         </Reveal>
