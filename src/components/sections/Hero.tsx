@@ -72,7 +72,7 @@ export default function Hero() {
               ? 'lg:col-span-12 lg:text-center'
               : layout === 'overlap'
                 ? 'relative z-10 lg:col-span-7'
-                : 'relative z-10 lg:col-span-7 lg:pr-12'
+                : 'relative z-10 lg:col-span-8 lg:pr-12'
           }
         >
           <motion.div
@@ -85,10 +85,10 @@ export default function Hero() {
             business growth system studio · Est. 2026
           </motion.div>
 
-          <h1 className="font-display max-w-[12ch] text-5xl leading-[0.95] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-6xl md:text-7xl lg:text-[7rem]">
+          <h1 className="font-display text-5xl leading-[0.98] font-extrabold tracking-tight text-[color:var(--bd-bone)] italic sm:text-6xl md:text-7xl lg:text-[5.5rem]">
             <KineticText text="We build" />
             <br />
-            <span className="text-[color:var(--bd-lime)]">
+            <span className="whitespace-nowrap text-[color:var(--bd-lime)]">
               <KineticText text="business machines." delay={0.22} />
             </span>
           </h1>
@@ -131,7 +131,7 @@ export default function Hero() {
               ? 'relative lg:col-span-12'
               : layout === 'overlap'
                 ? 'pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[52%] lg:block'
-                : 'relative lg:col-span-5'
+                : 'relative lg:col-span-4'
           }
         >
           <motion.div

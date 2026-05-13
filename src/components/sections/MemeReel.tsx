@@ -123,7 +123,7 @@ function HorizontalReel() {
           }}
         />
 
-        <motion.div style={{ x }} className="flex h-full">
+        <motion.div style={{ x }} className="flex h-full w-[500vw]">
           {PANELS.map((p, i) => (
             <div key={i} className="flex h-full w-screen shrink-0 items-center">
               <PanelContent panel={p} index={i} />
