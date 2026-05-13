@@ -233,7 +233,7 @@ function PanelContent({
               alt={panel.image.alt}
               fill
               sizes="(min-width: 1024px) 35vw, 80vw"
-              className={`object-contain object-bottom ${panel.kind === 'punch' ? 'scale-[2]' : ''}`}
+              className={`object-contain object-bottom ${panel.kind === 'punch' ? 'scale-[1.3]' : ''}`}
               style={panel.kind === 'punch' ? { transformOrigin: 'bottom center' } : undefined}
             />
           )}
