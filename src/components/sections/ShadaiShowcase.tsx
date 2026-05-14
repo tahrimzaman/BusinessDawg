@@ -46,19 +46,19 @@ export default function ShadaiShowcase() {
         <Reveal delay={0.12}>
           <dl className="mt-12 grid gap-6 sm:grid-cols-3">
             <div className="border-t border-white/8 pt-4">
-              <dt className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+              <dt className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
                 Role
               </dt>
               <dd className="mt-2 text-lg font-semibold">Studio — design + build</dd>
             </div>
             <div className="border-t border-white/8 pt-4">
-              <dt className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+              <dt className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
                 Timeline
               </dt>
               <dd className="mt-2 text-lg font-semibold">6 weeks to traction</dd>
             </div>
             <div className="border-t border-white/8 pt-4">
-              <dt className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+              <dt className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
                 Live
               </dt>
               <dd className="mt-2 text-lg font-semibold">

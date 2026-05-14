@@ -189,7 +189,7 @@ function ProgressIndicator({
   const width = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
   return (
     <div className="pointer-events-none absolute right-0 bottom-8 left-0 mx-auto flex max-w-7xl items-center gap-4 px-6">
-      <span className="font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+      <span className="font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
         / The roast
       </span>
       <div className="relative h-px flex-1 bg-white/10">
@@ -292,7 +292,7 @@ function PanelContent({
             className="mt-10 flex flex-wrap items-center gap-4"
           >
             <MagneticButton href="/contact">Book a Call →</MagneticButton>
-            <span className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+            <span className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
               30 min · straight talk
             </span>
           </motion.div>
@@ -306,7 +306,7 @@ function PanelContent({
           className="mt-12 flex items-center gap-3"
         >
           <span aria-hidden className="inline-block h-px w-12 bg-[color:var(--bd-lime)]" />
-          <span className="font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/40 uppercase">
+          <span className="font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
             {idx} / 0{TOTAL}
           </span>
         </motion.div>

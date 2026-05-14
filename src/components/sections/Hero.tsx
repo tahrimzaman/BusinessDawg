@@ -134,7 +134,7 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: reduced ? 0 : 1.9, duration: 0.6 }}
-            className="mt-16 hidden font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/40 uppercase sm:block"
+            className="mt-16 hidden font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase sm:block"
           >
             scroll ↓
           </motion.div>

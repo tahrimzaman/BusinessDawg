@@ -14,6 +14,7 @@
  */
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Mascot from '@/components/brand/Mascot';
@@ -226,6 +227,17 @@ export default function Chatbot() {
               Have questions? Ask the dawg.
             </h2>
           </Reveal>
+          <Reveal delay={0.08}>
+            <p className="mt-4 max-w-3xl text-base text-[color:var(--bd-bone)]/65">
+              Or{' '}
+              <Link
+                href="/faq"
+                className="text-[color:var(--bd-lime)] underline-offset-4 hover:underline"
+              >
+                skim the FAQ →
+              </Link>
+            </p>
+          </Reveal>
 
           <div className="mt-10 grid items-stretch gap-10 lg:grid-cols-12 lg:gap-12">
             <Reveal delay={0.1} className="lg:col-span-7">
@@ -234,13 +246,13 @@ export default function Chatbot() {
                   <Mascot pose="idle" size={36} />
                   <div className="flex-1">
                     <p className="text-sm font-semibold">Dawg</p>
-                    <p className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/40 uppercase">
+                    <p className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
                       Live · Gemini 2.5 Flash Lite
                     </p>
                   </div>
                   <span className="inline-flex items-center gap-1.5">
                     <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--bd-lime)] shadow-[0_0_8px_var(--bd-lime)]" />
-                    <span className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/40 uppercase">
+                    <span className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
                       Online
                     </span>
                   </span>
@@ -401,7 +413,7 @@ function CinematicOverlay({
           </div>
           <div className="flex-1">
             <p className="text-sm font-semibold">Dawg</p>
-            <p className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+            <p className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
               {isStreaming ? 'Thinking…' : 'Live · ready when you are'}
             </p>
           </div>
@@ -413,7 +425,7 @@ function CinematicOverlay({
                   : 'bg-[color:var(--bd-lime)] shadow-[0_0_8px_var(--bd-lime)]'
               }`}
             />
-            <span className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+            <span className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
               {isStreaming ? 'Streaming' : 'Online'}
             </span>
           </span>
@@ -474,7 +486,7 @@ function CinematicOverlay({
               onKeyDown={onInputKey}
               rows={1}
               placeholder="Ask the dawg anything…"
-              className="flex-1 resize-none bg-transparent px-2 py-2 text-sm text-[color:var(--bd-bone)] placeholder:text-[color:var(--bd-bone)]/40 focus:outline-none"
+              className="flex-1 resize-none bg-transparent px-2 py-2 text-sm text-[color:var(--bd-bone)] placeholder:text-[color:var(--bd-bone)]/65 focus:outline-none"
               maxLength={1500}
               disabled={isStreaming}
             />
@@ -487,7 +499,7 @@ function CinematicOverlay({
               Send
             </button>
           </div>
-          <p className="mt-2 px-1 font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/40 uppercase">
+          <p className="mt-2 px-1 font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
             Enter to send · Shift+Enter for newline · Esc closes
           </p>
         </div>

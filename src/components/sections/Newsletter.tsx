@@ -61,7 +61,7 @@ export default function Newsletter() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@domain.com"
-              className="h-12 flex-1 rounded-full border border-white/10 bg-[color:var(--bd-smoke)] px-5 text-sm text-[color:var(--bd-bone)] placeholder:text-[color:var(--bd-bone)]/40 focus:border-[color:var(--bd-lime)] focus:outline-none"
+              className="h-12 flex-1 rounded-full border border-white/10 bg-[color:var(--bd-smoke)] px-5 text-sm text-[color:var(--bd-bone)] placeholder:text-[color:var(--bd-bone)]/65 focus:border-[color:var(--bd-lime)] focus:outline-none"
             />
             <button
               type="submit"

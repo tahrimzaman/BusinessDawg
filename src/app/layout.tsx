@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import LenisProvider from '@/components/motion/LenisProvider';
@@ -46,6 +46,11 @@ export const metadata: Metadata = {
     ],
     apple: '/brand/logo-mark.png',
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#0A0A0A',
+  colorScheme: 'dark',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

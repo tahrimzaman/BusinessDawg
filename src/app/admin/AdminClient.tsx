@@ -142,7 +142,7 @@ function ApplicationsTable({ rows }: { rows: Application[] }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
-        <thead className="border-b border-white/8 bg-black/20 text-left font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+        <thead className="border-b border-white/8 bg-black/20 text-left font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
           <tr>
             <th className="px-4 py-3">Date</th>
             <th className="px-4 py-3">Name</th>
@@ -195,7 +195,7 @@ function SubscribersTable({ rows }: { rows: Subscriber[] }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
-        <thead className="border-b border-white/8 bg-black/20 text-left font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+        <thead className="border-b border-white/8 bg-black/20 text-left font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
           <tr>
             <th className="px-4 py-3">Date</th>
             <th className="px-4 py-3">Email</th>
@@ -226,7 +226,7 @@ function SubscribersTable({ rows }: { rows: Subscriber[] }) {
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <div className="px-6 py-16 text-center text-sm text-[color:var(--bd-bone)]/50">{children}</div>
+    <div className="px-6 py-16 text-center text-sm text-[color:var(--bd-bone)]/65">{children}</div>
   );
 }
 

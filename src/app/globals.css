@@ -141,6 +141,44 @@ body {
   }
 }
 
+@keyframes bd-punch {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes bd-breathe {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bd-breathe-glow {
+    animation: bd-breathe 3.2s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bd-punchline {
+    display: inline-block;
+    transform-origin: left center;
+    animation: bd-punch 0.55s ease-out 1.4s 1 both;
+  }
+}
+
 .bd-card {
   position: relative;
   background: var(--bd-smoke);

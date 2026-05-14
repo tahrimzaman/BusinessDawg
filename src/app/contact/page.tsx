@@ -1,10 +1,24 @@
 import Reveal from '@/components/motion/Reveal';
 import MagneticButton from '@/components/motion/MagneticButton';
-import Mascot from '@/components/brand/Mascot';
+import DawgAvatar from '@/components/brand/DawgAvatar';
 import CalEmbed from '@/components/booking/CalEmbed';
 import { SITE } from '@/lib/copy';
 
-export const metadata = { title: 'Contact' };
+const description =
+  'Book a 15-minute call with BusinessDawg. No decks — tell us what’s leaking and we’ll tell you what to do about it. WhatsApp, email, and Cal.com booking all open.';
+
+export const metadata = {
+  title: 'Contact',
+  description,
+  alternates: { canonical: '/contact' },
+  openGraph: {
+    title: 'Contact — BusinessDawg',
+    description,
+    url: 'https://businessdawg.com/contact',
+    type: 'website' as const,
+  },
+  twitter: { card: 'summary_large_image' as const, title: 'Contact — BusinessDawg', description },
+};
 
 export default function Contact() {
   const calSrc = `https://cal.com/${SITE.cal}?embed=true&theme=dark`;
@@ -34,7 +48,7 @@ export default function Contact() {
 
         <Reveal delay={0.06} className="md:col-span-4">
           <div className="rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-6">
-            <Mascot pose="waving" size={96} />
+            <DawgAvatar size={96} />
             <p className="font-display mt-4 text-2xl font-bold italic">Or message us.</p>
             <div className="mt-6 flex flex-col gap-3">
               <MagneticButton href={`https://wa.me/${SITE.whatsapp}`}>WhatsApp →</MagneticButton>
@@ -42,7 +56,7 @@ export default function Contact() {
                 Email →
               </MagneticButton>
             </div>
-            <p className="mt-6 font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/40 uppercase">
+            <p className="mt-6 font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
               Office hours · GMT+6 · most days 10–18
             </p>
           </div>

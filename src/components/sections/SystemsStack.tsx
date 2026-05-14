@@ -12,15 +12,77 @@ import {
 import { useRef, useState } from 'react';
 import { SYSTEMS } from '@/lib/copy';
 import Reveal from '@/components/motion/Reveal';
+import KineticText from '@/components/motion/KineticText';
+import PrincipleBuildIcon from '@/components/illustrations/PrincipleBuildIcon';
+import PrincipleAgentIcon from '@/components/illustrations/PrincipleAgentIcon';
+import PrincipleOperatorIcon from '@/components/illustrations/PrincipleOperatorIcon';
 import { EASE } from '@/lib/motion/easing';
 import { TIMING, STAGGER_SLOW } from '@/lib/motion/timing';
 import { useTweaks } from '@/lib/dev/tweaks';
+
+const PRINCIPLES = [
+  {
+    n: '01',
+    title: 'We don’t consult. We build.',
+    body: 'No 80-page strategy decks. No "we recommend you consider". We get hired to ship — brand identities, AI workflows, websites, growth funnels — and we hand them off as running systems, not slideware.',
+    Icon: PrincipleBuildIcon,
+  },
+  {
+    n: '02',
+    title: 'AI is the new factory floor.',
+    body: 'The studios that win this decade are the ones that wire AI into how a business actually operates. We build internal agents, content engines, and automations so your team stops doing what software should already be doing.',
+    Icon: PrincipleAgentIcon,
+  },
+  {
+    n: '03',
+    title: 'Operators first.',
+    body: 'BusinessDawg was started by an operator who got tired of agencies that have never run a real business. Every system we build is shaped by the question: what would the founder actually use on a Monday morning?',
+    Icon: PrincipleOperatorIcon,
+  },
+];
 
 export default function SystemsStack() {
   return (
     <section className="relative overflow-hidden py-20 md:py-32 lg:py-48">
       <div className="bd-section-glow" />
       <div className="relative mx-auto max-w-7xl px-6">
+        <Reveal>
+          <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
+            / The Studio
+          </p>
+        </Reveal>
+        <Reveal delay={0.05} pace="late">
+          <h2 className="font-display mt-3 max-w-4xl text-3xl leading-[1.05] font-bold tracking-tight text-[color:var(--bd-bone)] sm:text-4xl md:text-5xl lg:text-6xl">
+            <KineticText text="A studio for the AI era." className="block" />
+            <KineticText
+              text="Built for founders who actually ship."
+              className="bd-punchline block text-[color:var(--bd-lime)]"
+              delay={0.55}
+            />
+          </h2>
+        </Reveal>
+        <Reveal delay={1.0}>
+          <p className="font-display mt-6 text-xl leading-tight font-bold tracking-tight text-[color:var(--bd-bone)]/80 italic sm:text-2xl">
+            Built by operators.{' '}
+            <span className="text-[color:var(--bd-lime)]">Wired for shippers.</span>
+          </p>
+        </Reveal>
+
+        <div className="mt-14 grid gap-6 md:mt-16 md:grid-cols-3 md:gap-7">
+          {PRINCIPLES.map((p, i) => (
+            <Reveal key={p.n} delay={1.1 + i * 0.08}>
+              <PrincipleFlipCard principle={p} />
+            </Reveal>
+          ))}
+        </div>
+
+        {/* Beat shift: "this is the studio" → "here's the menu". One section,
+            two acts. */}
+        <div
+          aria-hidden
+          className="my-20 h-px w-full border-t border-dashed border-[color:var(--bd-lime)]/30 md:my-28"
+        />
+
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
             / The Systems Stack
@@ -86,6 +148,63 @@ export default function SystemsStack() {
         </div>
       </div>
     </section>
+  );
+}
+
+function PrincipleFlipCard({ principle }: { principle: (typeof PRINCIPLES)[number] }) {
+  const { Icon } = principle;
+  return (
+    <div
+      tabIndex={0}
+      aria-label={`${principle.title} — ${principle.body}`}
+      className="group block w-full [perspective:1200px] focus-visible:outline-none"
+    >
+      <div className="relative aspect-[4/5] w-full transition-transform duration-700 ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] group-focus-visible:[transform:rotateY(180deg)]">
+        {/* FRONT */}
+        <div className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-3xl border border-white/8 bg-[color:var(--bd-smoke)] p-7 transition-[border-color,box-shadow] duration-300 [backface-visibility:hidden] group-hover:border-[color:var(--bd-lime)]/60 group-hover:shadow-[0_0_36px_rgba(200,255,0,0.18)] group-focus-visible:border-[color:var(--bd-lime)]/60 group-focus-visible:shadow-[0_0_36px_rgba(200,255,0,0.18)] md:p-8">
+          {/* Header row — eyebrow LEFT, title RIGHT */}
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
+              / {principle.n}
+            </p>
+            <p className="font-display truncate text-right text-sm font-bold tracking-tight text-[color:var(--bd-bone)] italic md:text-base">
+              {principle.title}
+            </p>
+          </div>
+
+          {/* Graphic with lime glow halo */}
+          <div className="relative flex flex-1 items-center justify-center py-4">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background:
+                  'radial-gradient(ellipse 70% 60% at 50% 50%, color-mix(in srgb, var(--bd-lime) 22%, transparent) 0%, transparent 70%)',
+                filter: 'blur(8px)',
+              }}
+            />
+            <Icon className="relative h-auto w-[70%] max-w-[180px]" />
+          </div>
+
+          <p className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
+            hover to read →
+          </p>
+        </div>
+
+        {/* BACK */}
+        <div className="absolute inset-0 flex [transform:rotateY(180deg)] flex-col justify-between overflow-hidden rounded-3xl border border-[color:var(--bd-lime)]/60 bg-[color:var(--bd-ink)] p-7 shadow-[0_0_24px_rgba(200,255,0,0.18)] [backface-visibility:hidden] md:p-8">
+          <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
+            / {principle.n}
+          </p>
+          <p className="text-base leading-relaxed text-[color:var(--bd-bone)]/90 md:text-lg">
+            {principle.body}
+          </p>
+          <p className="font-display text-lg font-bold tracking-tight text-[color:var(--bd-bone)] italic">
+            {principle.title}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -198,7 +317,7 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
         className="relative grid items-start gap-6 md:grid-cols-12"
       >
         <div className="md:col-span-1">
-          <span className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/40 uppercase">
+          <span className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
             0{index + 1}
           </span>
         </div>
@@ -230,7 +349,7 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
         </div>
 
         <div className="md:col-span-4 md:text-right">
-          <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+          <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
             Scoped on a call
           </p>
           <p className="mt-4 text-sm font-semibold text-[color:var(--bd-bone)] transition-colors group-hover:text-[color:var(--bd-lime)]">

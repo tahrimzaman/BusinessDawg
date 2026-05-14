@@ -65,9 +65,17 @@ export default function MagneticButton({
     </motion.span>
   );
 
+  const focusRing =
+    'rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--bd-lime)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--bd-ink)]';
+
   if (href) {
     return (
-      <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">
+      <a
+        href={href}
+        target={href.startsWith('http') ? '_blank' : undefined}
+        rel="noreferrer"
+        className={focusRing}
+      >
         {Inner}
       </a>
     );

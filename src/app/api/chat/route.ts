@@ -29,6 +29,11 @@ const BodySchema = z.object({
   messages: z.array(MessageSchema).min(1).max(30),
 });
 
+// Server-side caps on top of per-message validation. Keep total payload small
+// to protect Gemini free-tier daily budget.
+const MAX_TOTAL_CHARS = 6000;
+const MAX_HISTORY_TURNS = 10;
+
 function buildSystemPrompt(): string {
   const systemsBlock = SYSTEMS.map(
     (s) => `- ${s.name} (${s.shortName}): ${s.tagline} — ${s.description}`,
@@ -99,7 +104,19 @@ export async function POST(req: Request) {
   }
 
   // Strip any client-supplied system messages — we own the prompt.
-  const history = parsed.data.messages.filter((m) => m.role !== 'system');
+  const allHistory = parsed.data.messages.filter((m) => m.role !== 'system');
+
+  // Trim to the most recent N turns, then enforce a total-chars budget across
+  // the trimmed window. Rejecting the request outright on overage is friendlier
+  // than silent truncation — the client can show a clear error.
+  const history = allHistory.slice(-MAX_HISTORY_TURNS);
+  const totalChars = history.reduce((acc, m) => acc + m.content.length, 0);
+  if (totalChars > MAX_TOTAL_CHARS) {
+    return NextResponse.json(
+      { error: 'message too long', limit: MAX_TOTAL_CHARS },
+      { status: 413 },
+    );
+  }
   const messages = [{ role: 'system' as const, content: buildSystemPrompt() }, ...history];
 
   const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;

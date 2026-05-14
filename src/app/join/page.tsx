@@ -59,7 +59,7 @@ export default function Join() {
             >
               <div>
                 <p className="font-display text-2xl font-bold italic">{r.title}</p>
-                <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+                <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
                   {r.tag}
                 </p>
               </div>

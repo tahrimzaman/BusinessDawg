@@ -63,7 +63,7 @@ export default function Footer() {
         </div>
 
         <div className="md:col-span-3">
-          <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/40 uppercase">
+          <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
             Product
           </p>
           <ul className="mt-4 space-y-2 text-sm">
@@ -81,7 +81,7 @@ export default function Footer() {
         </div>
 
         <div className="md:col-span-3">
-          <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/40 uppercase">
+          <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
             Studio
           </p>
           <ul className="mt-4 space-y-2 text-sm">
@@ -102,7 +102,7 @@ export default function Footer() {
       {/* Easter egg: sleeping mascot. Click to wake, click again to stretch. */}
       <div className="border-t border-white/5 px-6 py-8">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <p className="font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/40 uppercase">
+          <p className="font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
             © {new Date().getFullYear()} BusinessDawg · Built by humans. Shipped on purpose.
           </p>
           <button

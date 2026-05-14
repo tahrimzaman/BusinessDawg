@@ -138,6 +138,47 @@ export const BUILT = [
   },
 ];
 
+// FAQ used on the homepage AND emitted as FAQPage JSON-LD for AI engines.
+// Answers follow the chatbot guardrails — no prices, no contracts, real voice.
+export const FAQ: { q: string; a: string }[] = [
+  {
+    q: 'What does BusinessDawg actually build?',
+    a: 'Five productized systems: Business Growth, AI Automation, Branding, Web & Product, and Marketing Infrastructure. You can pick one, stack a few, or commission a fully custom build. Every engagement ends with you owning a running machine, not a deck.',
+  },
+  {
+    q: 'Who is BusinessDawg for?',
+    a: 'Founders, operators, and startups who want to ship — not commission another strategy report. Most of our clients are Gen Z–led teams or operator-founders running real revenue who need infrastructure to scale.',
+  },
+  {
+    q: 'Where are you based?',
+    a: 'The studio runs out of Faridpur and Dhaka, Bangladesh. Founder Tahrim Zaman is heading to Hult International Business School in Boston for a dual master’s in Business Analytics & AI and International Marketing. Clients are global — we work async.',
+  },
+  {
+    q: 'How fast can you ship a v1?',
+    a: 'Most v1s land in 2–6 weeks depending on scope. A landing page or brand identity can be live in 10 days. An AI workflow or full product takes longer. We scope honestly on the call.',
+  },
+  {
+    q: 'Do you build internal AI workflows or customer-facing AI?',
+    a: 'Both. We wire internal tools and agents that replace the boring stuff your team shouldn’t be doing, and we ship customer-facing AI features inside web products. Whichever moves your business faster.',
+  },
+  {
+    q: 'How much does it cost?',
+    a: 'Every engagement is custom and scoped on a 15-minute intro call. We don’t publish prices because the cheapest engagement and the biggest one share zero ingredients — quoting either would lie about the other. Book the call.',
+  },
+  {
+    q: 'Do you work with pre-revenue startups?',
+    a: 'Yes, if you’re serious. We don’t take projects from people who want to test the waters with a logo. We take projects from people who want to ship something real this quarter.',
+  },
+  {
+    q: 'Can I hire BusinessDawg for one system only?',
+    a: 'Yes. The Systems Stack is designed so you can take exactly what you need. Branding-only, AI-only, web-only — all valid starting points. We’ll tell you on the call if we think you need more.',
+  },
+  {
+    q: 'What’s the difference between BusinessDawg and a traditional agency?',
+    a: 'Agencies sell you a deliverable. We sell you a running system. After we hand off, the brand, the workflow, the site — they keep operating without us. That’s the machine in “we build the machine, you run the business.”',
+  },
+];
+
 export const PULL_QUOTES = [
   'We build the machine. You run the business.',
   'Most agencies want to sell you a logo. We want to sell you the machine.',
