@@ -146,7 +146,12 @@ Detailed in `PLAN.md`. High level:
 
 There is no client portfolio yet — `/work` is intentionally not in the sitemap until real client work exists.
 
-**Shadai Ghar framing (updated 2026-05-13):** Shadai is presented as a BusinessDawg case study — "A BusinessDawg build." It lives under `/built` as the studio's flagship shipped work. Do **not** present Shadai as Tahrim's personal venture on this site; do not use first-person ownership language for it ("I run Shadai", "another company I run", "I built Shadai", "Shadai — a D2C grocery I built"). The founder narrative on `/about` stands alone — distribution-operator background + why BusinessDawg exists. Shadai does not appear in Tahrim's bio or credibility stats.
+**Shadai Ghar framing (hybrid — updated 2026-05-14):** Shadai is presented as **a BusinessDawg build that Tahrim operates**. BusinessDawg owns the *building* of Shadai (design, code, ship); Tahrim owns the *operating* of it (running the D2C, managing the P&L). Both can appear on the site.
+
+Allowed first-person language: "I operate Shadai Ghar", "I run Shadai", "the BusinessDawg build I operate", "Shadai is the studio's flagship — and the company I run on top of it."
+NOT allowed: first-person *builder* language for Shadai — "I built Shadai", "I designed Shadai", "Shadai is a site I built." That credit belongs to the studio, not the operator.
+
+Practically: Shadai *can* appear in Tahrim's founder bio and credibility stats (e.g., "500 families in 6 weeks — Shadai Ghar"), framed as something he operates, not something he personally built. Shadai still lives as a BusinessDawg case study on `/about` (via ShadaiShowcase) and the showcase copy continues to credit the studio as builder.
 
 ---
 
@@ -184,4 +189,4 @@ Tracked in `PLAN.md` Section 14. Includes: founder photo, founder bio, social ha
 
 ---
 
-*Last updated: 2026-05-13 — Shadai reframed as a BusinessDawg case study (no founder ownership). Portfolio (`/work`) removed until real client work exists. Hero moved from R3F primitives to real mascot PNG. Gradients reduced to black/white/lime only.*
+*Last updated: 2026-05-14 — Shadai framing reverted to hybrid: BusinessDawg builds it, Tahrim operates it (first-person operator language allowed; first-person builder language is not). Backend Phase 1+2 in progress: Neon Postgres + Prisma + Resend lead capture, custom /admin viewer, PostHog analytics, hybrid founder bio, all pricing hidden behind "Book a Call", Instagram added to socials, custom email yo@businessdawg.com, 404 mini-game easter egg.*

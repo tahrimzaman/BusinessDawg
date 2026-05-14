@@ -45,18 +45,37 @@ export default function ShadaiShowcase() {
 
         <Reveal delay={0.12}>
           <dl className="mt-12 grid gap-6 sm:grid-cols-3">
-            {[
-              { k: 'Role', v: 'Studio — design + build' },
-              { k: 'Timeline', v: '6 weeks to traction' },
-              { k: 'Live', v: 'TBD' },
-            ].map((row) => (
-              <div key={row.k} className="border-t border-white/8 pt-4">
-                <dt className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
-                  {row.k}
-                </dt>
-                <dd className="mt-2 text-lg font-semibold">{row.v}</dd>
-              </div>
-            ))}
+            <div className="border-t border-white/8 pt-4">
+              <dt className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+                Role
+              </dt>
+              <dd className="mt-2 text-lg font-semibold">Studio — design + build</dd>
+            </div>
+            <div className="border-t border-white/8 pt-4">
+              <dt className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+                Timeline
+              </dt>
+              <dd className="mt-2 text-lg font-semibold">6 weeks to traction</dd>
+            </div>
+            <div className="border-t border-white/8 pt-4">
+              <dt className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
+                Live
+              </dt>
+              <dd className="mt-2 text-lg font-semibold">
+                {venture.liveUrl ? (
+                  <a
+                    href={venture.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-[color:var(--bd-lime)]"
+                  >
+                    shadaighar.com ↗
+                  </a>
+                ) : (
+                  'Private beta'
+                )}
+              </dd>
+            </div>
           </dl>
         </Reveal>
 

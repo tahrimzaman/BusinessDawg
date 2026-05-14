@@ -13,7 +13,8 @@ export const SITE = {
   cal: process.env.NEXT_PUBLIC_CAL_USERNAME || 'tahrim',
   social: {
     linkedin: 'https://linkedin.com/in/tahrimzaman',
-    email: 'tahrimzaman4@gmail.com',
+    instagram: 'https://instagram.com/tahrimzaman',
+    email: 'yo@businessdawg.com',
   },
 };
 
@@ -24,7 +25,7 @@ export type System = {
   tagline: string;
   description: string;
   deliverables: string[];
-  pricing: { kind: 'starter'; from: string } | { kind: 'custom' };
+  pricing: { kind: 'custom' };
   accent: string;
   glyph: string;
 };
@@ -74,7 +75,7 @@ export const SYSTEMS: System[] = [
       'Design language (type, color, motion)',
       'Content + template system',
     ],
-    pricing: { kind: 'starter', from: '$2,500' },
+    pricing: { kind: 'custom' },
     accent: '#c8ff00',
     glyph: '◐',
   },
@@ -86,7 +87,7 @@ export const SYSTEMS: System[] = [
     description:
       'Sites, MVPs, e-commerce, internal apps. We ship in Next.js with motion, performance, and CMS-backed copy so you can edit without us.',
     deliverables: ['Landing page or full site', 'CMS + content workflow', 'Web product or MVP'],
-    pricing: { kind: 'starter', from: '$3,500' },
+    pricing: { kind: 'custom' },
     accent: '#c8ff00',
     glyph: '◼',
   },
@@ -106,15 +107,21 @@ export const SYSTEMS: System[] = [
 
 export const FOUNDER = {
   name: 'Tahrim Zaman',
-  short: 'I’m Tahrim. I run two distribution businesses and now I run BusinessDawg.',
+  // Short — homepage card
+  short:
+    'I’m Tahrim. I run an 8.5-crore-a-month distribution territory in Faridpur, operate Shadai Ghar — BusinessDawg’s flagship build — and pitched in Boston at Hult Prize Global.',
   hook: 'BusinessDawg is what happens when an operator gets tired of agencies that have never actually shipped anything.',
+  // Medium — /about Founder section, ~140 words across paragraphs
+  bio: [
+    'I’m Tahrim. I’m 22. I run the Faridpur distribution territory for Akij Food & Beverage and Grameenphone — about 8.5 crore taka a month, 24 people on the ground, 7am retailer briefings, depots, routes, cash flow, the whole machine.',
+    'I also operate Shadai Ghar — a direct-to-consumer grocery in Faridpur that BusinessDawg designed and built end-to-end. 500 families in six weeks, 23–27% gross margins. It’s the studio’s flagship build and my proof that the systems we sell actually run on real revenue.',
+    'Before all that, I flew to Boston with Team Fortune 501 to represent Bangladesh at Hult Prize Global. Made Top 20 of 5,000+ at Marico’s Over The Wall.',
+    'I started BusinessDawg because most agencies want to sell you a logo. I want to sell you the machine.',
+  ],
   credibility: [
-    { label: '2× Distribution', sub: 'Territories I operate, day to day.' },
-    { label: 'Top 20 of 5,000+', sub: 'Hult Prize Global, Boston.' },
-    {
-      label: 'Hult MSc Scholar',
-      sub: 'Khulna Uni BBA → Hult MSc (Sept 2027), full scholarship.',
-    },
+    { label: '8.5 cr / month', sub: 'Distribution territory I run, day to day.' },
+    { label: '500 families', sub: 'Shadai Ghar from zero to traction in 6 weeks.' },
+    { label: 'Top 20 of 5,000+', sub: 'Marico Over The Wall · Hult Prize Global, Boston.' },
   ],
 };
 
@@ -127,6 +134,7 @@ export const BUILT = [
       'D2C grocery for Faridpur households. Designed, built, and shipped end-to-end by BusinessDawg.',
     metrics: ['500 families in 6 weeks', '23–27% gross margin', 'Targeting 10,000 households'],
     stack: ['Next.js', 'Postgres', 'Prisma', 'Payments', 'AI recs'],
+    liveUrl: 'https://www.shadaighar.com',
   },
 ];
 

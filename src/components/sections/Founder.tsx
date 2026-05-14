@@ -178,12 +178,15 @@ export default function Founder() {
               <span className="text-[color:var(--bd-lime)]">I build business machines.</span>
             </h2>
           </Reveal>
-          <Reveal delay={0.12}>
-            <p className="mt-6 max-w-2xl text-lg text-[color:var(--bd-bone)]/80">{FOUNDER.short}</p>
-          </Reveal>
-          <Reveal delay={0.18}>
-            <p className="mt-4 max-w-2xl text-lg text-[color:var(--bd-bone)]/60">{FOUNDER.hook}</p>
-          </Reveal>
+          <div className="mt-6 max-w-2xl space-y-5 text-lg leading-relaxed text-[color:var(--bd-bone)]/80">
+            {FOUNDER.bio.map((para, i) => (
+              <Reveal key={i} delay={0.12 + i * 0.06}>
+                <p className={i === FOUNDER.bio.length - 1 ? 'text-[color:var(--bd-bone)]/70' : ''}>
+                  {para}
+                </p>
+              </Reveal>
+            ))}
+          </div>
 
           <Reveal delay={0.24}>
             <dl className="mt-12 grid gap-4 sm:grid-cols-3">
@@ -207,6 +210,14 @@ export default function Founder() {
                 className="hover:text-[color:var(--bd-lime)]"
               >
                 LinkedIn ↗
+              </a>
+              <a
+                href={SITE.social.instagram}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-[color:var(--bd-lime)]"
+              >
+                Instagram ↗
               </a>
               <a href={`mailto:${SITE.social.email}`} className="hover:text-[color:var(--bd-lime)]">
                 Email ↗

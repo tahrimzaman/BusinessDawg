@@ -4,20 +4,23 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Reveal from '@/components/motion/Reveal';
 import MascotReward from '@/components/brand/MascotReward';
+import Honeypot from '@/components/security/Honeypot';
 
 export default function Newsletter() {
   const [email, setEmail] = useState('');
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
 
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!email || state === 'loading') return;
     setState('loading');
+    const fd = new FormData(e.currentTarget);
+    const payload = Object.fromEntries(fd.entries());
     try {
       const r = await fetch('/api/newsletter', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ ...payload, email }),
       });
       setState(r.ok ? 'done' : 'error');
     } catch {
@@ -49,8 +52,9 @@ export default function Newsletter() {
         <Reveal delay={0.15}>
           <form
             onSubmit={onSubmit}
-            className="mx-auto mt-10 flex max-w-md flex-col items-stretch gap-3 sm:flex-row"
+            className="relative mx-auto mt-10 flex max-w-md flex-col items-stretch gap-3 sm:flex-row"
           >
+            <Honeypot />
             <input
               type="email"
               required

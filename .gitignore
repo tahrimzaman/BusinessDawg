@@ -47,3 +47,12 @@ next-env.d.ts
 # sanity
 /sanity/dist
 .sanity
+
+# prisma — local dev SQLite database (prod uses Neon Postgres)
+/prisma/dev.db
+/prisma/prisma
+/prisma/*.db
+/prisma/*.db-journal
+
+# claude code scratch / agent worktrees
+/.claude/worktrees/

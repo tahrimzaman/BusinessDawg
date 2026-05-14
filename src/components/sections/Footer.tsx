@@ -38,6 +38,14 @@ export default function Footer() {
               LinkedIn
             </a>
             <a
+              href={SITE.social.instagram}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-white/10 px-3 py-1.5 hover:text-[color:var(--bd-lime)]"
+            >
+              Instagram
+            </a>
+            <a
               href={`https://wa.me/${SITE.whatsapp}`}
               target="_blank"
               rel="noreferrer"

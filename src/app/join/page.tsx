@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Reveal from '@/components/motion/Reveal';
+import Honeypot from '@/components/security/Honeypot';
 
 const ROLES = [
   { title: 'Brand designer', tag: 'Remote · contract → hire' },
@@ -73,9 +74,10 @@ export default function Join() {
       <Reveal>
         <form
           onSubmit={onSubmit}
-          className="mt-20 grid gap-4 rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-8"
+          className="relative mt-20 grid gap-4 rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-8"
         >
           <h2 className="font-display text-2xl font-bold italic">Apply / pitch us</h2>
+          <Honeypot />
           <input
             name="name"
             required

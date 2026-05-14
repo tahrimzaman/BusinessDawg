@@ -12,6 +12,7 @@
     "prepare": "husky || true"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
     "@react-three/drei": "^10.7.0",
     "@react-three/fiber": "^9.0.0",
     "@sanity/client": "^6.22.1",
@@ -21,11 +22,15 @@
     "lenis": "^1.1.13",
     "next": "16.2.6",
     "next-sanity": "^9.8.18",
+    "posthog-js": "^1.373.4",
+    "posthog-node": "^5.34.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "resend": "^6.12.3",
     "sanity": "^3.60.0",
     "styled-components": "^6.1.13",
-    "three": "^0.169.0"
+    "three": "^0.169.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -33,12 +38,14 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.169.0",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
+    "prisma": "^6.19.3",
     "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5"

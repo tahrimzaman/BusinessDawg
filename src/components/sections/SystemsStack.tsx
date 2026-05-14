@@ -88,10 +88,6 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
   const tweaks = useTweaks();
   const [hover, setHover] = useState(false);
   const dur = (reduced ? 0.2 : TIMING.reveal) * (reduced ? 1 : tweaks.pace);
-  const price =
-    system.pricing.kind === 'starter'
-      ? `Starter pack — from ${system.pricing.from}`
-      : 'Custom build — book a call';
 
   // Cursor-following spotlight
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -183,7 +179,7 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
 
         <div className="md:col-span-4 md:text-right">
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/50 uppercase">
-            {price}
+            Scoped on a call
           </p>
           <p className="mt-4 text-sm font-semibold text-[color:var(--bd-bone)] transition-colors group-hover:text-[color:var(--bd-lime)]">
             Explore →

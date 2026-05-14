@@ -6,6 +6,8 @@ import Constellation from '@/components/motion/Constellation';
 import WoofListener from '@/components/motion/WoofListener';
 import Navbar from '@/components/sections/Navbar';
 import Footer from '@/components/sections/Footer';
+import PostHogProvider from '@/components/analytics/PostHogProvider';
+import JsonLd from '@/components/seo/JsonLd';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -53,13 +55,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${geistSans.variable} ${geistMono.variable} bg-ink text-bone antialiased`}
     >
       <body className="text-bone min-h-screen font-sans">
-        <LenisProvider>
-          <Constellation />
-          <Navbar />
-          <main className="relative">{children}</main>
-          <Footer />
-          <WoofListener />
-        </LenisProvider>
+        <PostHogProvider>
+          <LenisProvider>
+            <Constellation />
+            <Navbar />
+            <main className="relative">{children}</main>
+            <Footer />
+            <WoofListener />
+          </LenisProvider>
+        </PostHogProvider>
+        <JsonLd />
       </body>
     </html>
   );

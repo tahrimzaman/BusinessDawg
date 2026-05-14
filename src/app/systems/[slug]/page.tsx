@@ -24,11 +24,6 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
   const idx = SYSTEMS.findIndex((s) => s.slug === slug);
   const next = SYSTEMS[(idx + 1) % SYSTEMS.length];
 
-  const price =
-    system.pricing.kind === 'starter'
-      ? `Starter pack — from ${system.pricing.from}`
-      : 'Custom build — book a call';
-
   return (
     <div className="mx-auto max-w-6xl px-6 pt-40 pb-24">
       <Reveal>
@@ -102,7 +97,7 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
         <div className="mt-20 flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-[color:var(--bd-lime)]/30 bg-[color:var(--bd-lime)]/5 p-8">
           <div>
             <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
-              {price}
+              Scoped on a call
             </p>
             <p className="font-display mt-2 text-2xl font-bold italic">Ready to build it?</p>
           </div>

@@ -1,0 +1,45 @@
+// BusinessDawg lead capture schema.
+//
+// LOCAL DEV: provider = "sqlite", DATABASE_URL = "file:./dev.db"
+// PRODUCTION: provider = "postgresql", DATABASE_URL = Neon connection string
+//
+// To switch for prod deploy, change `provider` below to "postgresql" and
+// regenerate migrations against Neon. The model definitions are portable
+// (no provider-specific column types).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Newsletter signups + any other "give us your email" forms.
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String   @default("newsletter")
+  ipHash    String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// Intern / talent applications from /join.
+model Application {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  role      String?
+  portfolio String?
+  note      String?
+  ipHash    String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([email])
+}
