@@ -1,47 +1,10 @@
 import Link from 'next/link';
 import Reveal from '@/components/motion/Reveal';
-import { SYSTEMS, type System } from '@/lib/copy';
-import { sanityFetch } from '@/lib/sanity/client';
-import { systemsQuery } from '@/lib/sanity/queries';
+import { SYSTEMS } from '@/lib/copy';
 
 export const metadata = { title: 'Systems' };
 
-// Sanity row shape — partial, since CMS docs may be incomplete.
-type SanitySystem = {
-  _id: string;
-  name?: string;
-  slug?: string;
-  tagline?: string;
-  description?: string;
-  deliverables?: string[];
-  order?: number;
-};
-
-// Reshape a Sanity doc into our System type, filling missing fields from the
-// matching hardcoded entry where possible. If we don't have a matching fallback
-// and the doc is too thin, we drop it.
-function shapeSystem(doc: SanitySystem): System | null {
-  const slug = doc.slug;
-  if (!slug || !doc.name) return null;
-  const base = SYSTEMS.find((s) => s.slug === slug);
-  return {
-    slug,
-    name: doc.name,
-    shortName: base?.shortName ?? doc.name,
-    tagline: doc.tagline ?? base?.tagline ?? '',
-    description: doc.description ?? base?.description ?? '',
-    deliverables: doc.deliverables?.length ? doc.deliverables : (base?.deliverables ?? []),
-    pricing: { kind: 'custom' },
-    accent: base?.accent ?? '#c8ff00',
-    glyph: base?.glyph ?? '◆',
-  };
-}
-
-export default async function SystemsIndex() {
-  const cmsDocs = await sanityFetch<SanitySystem[]>(systemsQuery, {}, []);
-  const fromCms = cmsDocs.map(shapeSystem).filter((x): x is System => x !== null);
-  const systems: System[] = fromCms.length ? fromCms : SYSTEMS;
-
+export default function SystemsIndex() {
   return (
     <div className="mx-auto max-w-7xl px-6 pt-40 pb-24">
       <Reveal>
@@ -55,7 +18,7 @@ export default async function SystemsIndex() {
         </h1>
       </Reveal>
       <div className="mt-16 grid gap-5">
-        {systems.map((s, i) => (
+        {SYSTEMS.map((s, i) => (
           <Reveal key={s.slug} delay={i * 0.04}>
             <Link
               href={`/systems/${s.slug}`}
