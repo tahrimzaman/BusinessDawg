@@ -1,7 +1,10 @@
 import { redirect } from 'next/navigation';
 import { isAuthed } from '@/lib/admin/auth';
 import { prisma } from '@/lib/db/prisma';
+import { getBookingRule } from '@/lib/booking/rules';
+import { getGoogleEnv } from '@/lib/booking/google';
 import AdminClient from './AdminClient';
+import type { GoogleConnectionState } from './AdminGoogleConnection';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Admin' };
@@ -9,10 +12,62 @@ export const metadata = { title: 'Admin' };
 export default async function AdminPage() {
   if (!(await isAuthed())) redirect('/admin/login');
 
-  const [subscribers, applications] = await Promise.all([
-    prisma.subscriber.findMany({ orderBy: { createdAt: 'desc' }, take: 500 }),
-    prisma.application.findMany({ orderBy: { createdAt: 'desc' }, take: 500 }),
-  ]);
+  const [subscribers, applications, bookings, customers, windows, exceptions, rule, googleToken] =
+    await Promise.all([
+      prisma.subscriber.findMany({ orderBy: { createdAt: 'desc' }, take: 500 }),
+      prisma.application.findMany({ orderBy: { createdAt: 'desc' }, take: 500 }),
+      prisma.booking.findMany({
+        orderBy: { startUtc: 'desc' },
+        take: 500,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          intent: true,
+          status: true,
+          startUtc: true,
+          visitorTz: true,
+          needsMeetLink: true,
+        },
+      }),
+      prisma.customer.findMany({
+        orderBy: [{ stage: 'asc' }, { desiredDeadline: 'asc' }, { updatedAt: 'desc' }],
+        take: 500,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          company: true,
+          stage: true,
+          desiredDeadline: true,
+          promotedAt: true,
+          updatedAt: true,
+        },
+      }),
+      prisma.availabilityWindow.findMany({ orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }] }),
+      prisma.availabilityException.findMany({ orderBy: { date: 'asc' } }),
+      getBookingRule(),
+      prisma.googleToken.findUnique({ where: { id: 'singleton' } }),
+    ]);
+
+  const env = getGoogleEnv();
+  let google: GoogleConnectionState;
+  if (!env) {
+    google = { status: 'not_configured', ownerEmail: null, lastRefreshAt: null, ageDays: null };
+  } else if (!googleToken) {
+    google = { status: 'disconnected', ownerEmail: null, lastRefreshAt: null, ageDays: null };
+  } else {
+    // Server component — Date.now() is request-scoped, not React-render-impure.
+    // eslint-disable-next-line react-hooks/purity
+    const ageMs = Date.now() - googleToken.lastRefreshAt.getTime();
+    const ageDays = Math.floor(ageMs / 86_400_000);
+    google = {
+      status: 'connected',
+      ownerEmail: googleToken.ownerEmail,
+      lastRefreshAt: googleToken.lastRefreshAt.toISOString(),
+      ageDays,
+    };
+  }
 
   return (
     <AdminClient
@@ -31,6 +86,49 @@ export default async function AdminPage() {
         note: a.note,
         createdAt: a.createdAt.toISOString(),
       }))}
+      bookings={bookings.map((b) => ({
+        id: b.id,
+        name: b.name,
+        email: b.email,
+        intent: b.intent,
+        status: b.status,
+        startUtc: b.startUtc.toISOString(),
+        visitorTz: b.visitorTz,
+        needsMeetLink: b.needsMeetLink,
+      }))}
+      customers={customers.map((c) => ({
+        id: c.id,
+        name: c.name,
+        email: c.email,
+        company: c.company,
+        stage: c.stage,
+        desiredDeadline: c.desiredDeadline ? c.desiredDeadline.toISOString() : null,
+        promotedAt: c.promotedAt.toISOString(),
+        updatedAt: c.updatedAt.toISOString(),
+      }))}
+      availabilityWindows={windows.map((w) => ({
+        dayOfWeek: w.dayOfWeek,
+        startTime: w.startTime,
+        endTime: w.endTime,
+        active: w.active,
+      }))}
+      availabilityExceptions={exceptions.map((e) => ({
+        date: e.date.toISOString().slice(0, 10),
+        blocked: e.blocked,
+        startTime: e.startTime,
+        endTime: e.endTime,
+        reason: e.reason,
+      }))}
+      bookingRule={{
+        durationMin: rule.durationMin,
+        minNoticeMin: rule.minNoticeMin,
+        maxHorizonDays: rule.maxHorizonDays,
+        bufferMin: rule.bufferMin,
+        maxPerDay: rule.maxPerDay,
+        ownerTz: rule.ownerTz,
+        meetingTitle: rule.meetingTitle,
+      }}
+      google={google}
     />
   );
 }

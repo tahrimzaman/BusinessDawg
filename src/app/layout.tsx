@@ -60,6 +60,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${geistSans.variable} ${geistMono.variable} bg-ink text-bone antialiased`}
     >
       <body className="text-bone min-h-screen font-sans">
+        {/* First-touch capture: remember the landing pathname so booking
+            attribution survives same-tab navigation. Runs before hydration. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(!sessionStorage.getItem('bd:first-touch'))sessionStorage.setItem('bd:first-touch',location.pathname);}catch(e){}",
+          }}
+        />
         <PostHogProvider>
           <LenisProvider>
             <Constellation />

@@ -40,3 +40,155 @@ model Application {
   @@index([createdAt])
   @@index([email])
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Booking system — Phase 2+ (self-hosted Cal.com replacement)
+// ─────────────────────────────────────────────────────────────────────────
+
+enum BookingStatus {
+  CONFIRMED
+  RESCHEDULED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+model Booking {
+  id             String         @id @default(cuid())
+  name           String
+  email          String
+  company        String?
+  role           String?
+  phone          String?
+  intent         String
+  source         String?
+  startUtc       DateTime
+  endUtc         DateTime
+  visitorTz      String
+  status         BookingStatus  @default(CONFIRMED)
+  gcalEventId    String?        @unique
+  meetUrl        String?
+  needsMeetLink  Boolean        @default(false)
+  reminder24Sent DateTime?
+  tokenVersion   Int            @default(0)
+  // Pre-call context — populated on booking creation, surfaced in admin.
+  utmSource      String?
+  utmMedium      String?
+  utmCampaign    String?
+  utmTerm        String?
+  utmContent     String?
+  referrer       String?
+  landingPage    String?
+  approxLocation String?
+  ipHash         String?
+  userAgent      String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  events         BookingEvent[]
+  customer       Customer?
+
+  @@index([startUtc])
+  @@index([status])
+  @@index([email])
+}
+
+// Promoted booking → ongoing service engagement. Owned by Tahrim's CRM
+// pipeline. Hard-deleting a customer leaves the source booking intact;
+// hard-deleting a booking sets bookingId to null (Customer survives).
+enum CustomerStage {
+  PROSPECT
+  ACTIVE
+  DELIVERED
+  CHURNED
+}
+
+model Customer {
+  id                 String        @id @default(cuid())
+  bookingId          String?       @unique
+  booking            Booking?      @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  // Denormalized from booking so the list view is fast and surviving rows
+  // still display sensibly if the booking is hard-deleted.
+  name               String
+  email              String
+  company            String?
+  phone              String?
+  // Customer-specific fields Tahrim fills in post-call.
+  serviceDescription String        @default("") @db.Text
+  desiredDeadline    DateTime?
+  pricingNotes       String?       @db.Text
+  internalNotes      String?       @db.Text
+  stage              CustomerStage @default(PROSPECT)
+  promotedAt         DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@index([stage])
+  @@index([email])
+  @@index([desiredDeadline])
+}
+
+model BookingEvent {
+  id        String   @id @default(cuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  type      String
+  payload   Json?
+  createdAt DateTime @default(now())
+
+  @@index([bookingId])
+}
+
+model SlotHold {
+  id        String   @id @default(cuid())
+  startUtc  DateTime
+  endUtc    DateTime
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([startUtc])
+  @@index([expiresAt])
+}
+
+model AvailabilityWindow {
+  id        String  @id @default(cuid())
+  dayOfWeek Int     // 0 = Sunday, 6 = Saturday
+  startTime String  // "HH:mm" in owner tz
+  endTime   String
+  active    Boolean @default(true)
+
+  @@index([dayOfWeek])
+}
+
+model AvailabilityException {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date
+  blocked   Boolean  @default(true)
+  startTime String?
+  endTime   String?
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@index([date])
+}
+
+model BookingRule {
+  id             String   @id @default("singleton")
+  durationMin    Int      @default(15)
+  minNoticeMin   Int      @default(240)
+  maxHorizonDays Int      @default(21)
+  bufferMin      Int      @default(15)
+  maxPerDay      Int      @default(4)
+  ownerTz        String   @default("Asia/Dhaka")
+  meetingTitle   String   @default("BusinessDawg discovery — 15 min")
+  updatedAt      DateTime @updatedAt
+}
+
+model GoogleToken {
+  id            String    @id @default("singleton")
+  refreshToken  String
+  accessToken   String?
+  expiresAt     DateTime?
+  scope         String
+  ownerEmail    String?
+  lastRefreshAt DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+}

@@ -19,6 +19,7 @@
     "@sanity/image-url": "^1.0.2",
     "@sanity/vision": "^3.60.0",
     "framer-motion": "^11.11.10",
+    "googleapis": "^171.4.0",
     "lenis": "^1.1.13",
     "next": "16.2.6",
     "next-sanity": "^9.8.18",

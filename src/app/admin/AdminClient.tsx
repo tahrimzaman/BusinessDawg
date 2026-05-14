@@ -2,6 +2,10 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import AdminAvailabilityPanel from './AdminAvailabilityPanel';
+import AdminBookingsTable from './AdminBookingsTable';
+import AdminCustomersTable from './AdminCustomersTable';
+import AdminGoogleConnection, { type GoogleConnectionState } from './AdminGoogleConnection';
 
 type Subscriber = { id: string; email: string; source: string; createdAt: string };
 type Application = {
@@ -14,15 +18,76 @@ type Application = {
   createdAt: string;
 };
 
+type AvailabilityWindow = {
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  active: boolean;
+};
+type AvailabilityException = {
+  date: string;
+  blocked: boolean;
+  startTime: string | null;
+  endTime: string | null;
+  reason: string | null;
+};
+type BookingRule = {
+  durationMin: number;
+  minNoticeMin: number;
+  maxHorizonDays: number;
+  bufferMin: number;
+  maxPerDay: number;
+  ownerTz: string;
+  meetingTitle: string;
+};
+
+type BookingStatus = 'CONFIRMED' | 'RESCHEDULED' | 'CANCELLED' | 'COMPLETED' | 'NO_SHOW';
+type BookingRow = {
+  id: string;
+  name: string;
+  email: string;
+  intent: string;
+  status: BookingStatus;
+  startUtc: string;
+  visitorTz: string;
+  needsMeetLink: boolean;
+};
+
+type CustomerStage = 'PROSPECT' | 'ACTIVE' | 'DELIVERED' | 'CHURNED';
+type CustomerRow = {
+  id: string;
+  name: string;
+  email: string;
+  company: string | null;
+  stage: CustomerStage;
+  desiredDeadline: string | null;
+  promotedAt: string;
+  updatedAt: string;
+};
+
+type Tab = 'applications' | 'subscribers' | 'bookings' | 'customers' | 'availability';
+
 export default function AdminClient({
   subscribers,
   applications,
+  bookings,
+  customers,
+  availabilityWindows,
+  availabilityExceptions,
+  bookingRule,
+  google,
 }: {
   subscribers: Subscriber[];
   applications: Application[];
+  bookings: BookingRow[];
+  customers: CustomerRow[];
+  availabilityWindows: AvailabilityWindow[];
+  availabilityExceptions: AvailabilityException[];
+  bookingRule: BookingRule;
+  google: GoogleConnectionState;
 }) {
   const router = useRouter();
-  const [tab, setTab] = useState<'applications' | 'subscribers'>('applications');
+  const [tab, setTab] = useState<Tab>('applications');
   const [query, setQuery] = useState('');
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -60,6 +125,7 @@ export default function AdminClient({
 
   return (
     <div className="mx-auto mt-24 max-w-6xl px-6 pb-24">
+      <AdminGoogleConnection initial={google} />
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
@@ -67,8 +133,10 @@ export default function AdminClient({
           </p>
           <h1 className="font-display mt-2 text-4xl font-extrabold tracking-tight italic">Leads</h1>
           <p className="mt-2 text-sm text-[color:var(--bd-bone)]/60">
-            {applications.length} application{applications.length === 1 ? '' : 's'} ·{' '}
-            {subscribers.length} subscriber{subscribers.length === 1 ? '' : 's'}
+            {bookings.length} booking{bookings.length === 1 ? '' : 's'} · {customers.length}{' '}
+            customer{customers.length === 1 ? '' : 's'} · {applications.length} application
+            {applications.length === 1 ? '' : 's'} · {subscribers.length} subscriber
+            {subscribers.length === 1 ? '' : 's'}
           </p>
         </div>
         <button
@@ -81,33 +149,64 @@ export default function AdminClient({
       </div>
 
       <div className="mt-8 flex flex-wrap items-center gap-3">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <TabButton active={tab === 'bookings'} onClick={() => setTab('bookings')}>
+            Bookings · {bookings.length}
+          </TabButton>
+          <TabButton active={tab === 'customers'} onClick={() => setTab('customers')}>
+            Customers · {customers.length}
+          </TabButton>
           <TabButton active={tab === 'applications'} onClick={() => setTab('applications')}>
             Applications · {applications.length}
           </TabButton>
           <TabButton active={tab === 'subscribers'} onClick={() => setTab('subscribers')}>
             Subscribers · {subscribers.length}
           </TabButton>
+          <TabButton active={tab === 'availability'} onClick={() => setTab('availability')}>
+            Availability
+          </TabButton>
         </div>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search…"
-          className="ml-auto h-10 w-full max-w-xs rounded-full border border-white/10 bg-[color:var(--bd-smoke)] px-4 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
-        />
-        <a
-          href={`/api/admin/export?type=${tab}`}
-          className="inline-flex h-10 items-center rounded-full bg-[color:var(--bd-lime)] px-4 text-sm font-semibold text-[color:var(--bd-ink)] hover:bg-[color:var(--bd-bone)]"
-        >
-          Export CSV
-        </a>
+        {(tab === 'applications' || tab === 'subscribers') && (
+          <>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search…"
+              className="ml-auto h-10 w-full max-w-xs rounded-full border border-white/10 bg-[color:var(--bd-smoke)] px-4 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
+            />
+            <a
+              href={`/api/admin/export?type=${tab}`}
+              className="inline-flex h-10 items-center rounded-full bg-[color:var(--bd-lime)] px-4 text-sm font-semibold text-[color:var(--bd-ink)] hover:bg-[color:var(--bd-bone)]"
+            >
+              Export CSV
+            </a>
+          </>
+        )}
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)]">
-        {tab === 'applications' ? (
-          <ApplicationsTable rows={filteredApps} />
-        ) : (
-          <SubscribersTable rows={filteredSubs} />
+      <div className="mt-6">
+        {tab === 'bookings' && (
+          <AdminBookingsTable bookings={bookings} ownerTz={bookingRule.ownerTz} />
+        )}
+        {tab === 'customers' && (
+          <AdminCustomersTable customers={customers} ownerTz={bookingRule.ownerTz} />
+        )}
+        {tab === 'applications' && (
+          <div className="overflow-hidden rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)]">
+            <ApplicationsTable rows={filteredApps} />
+          </div>
+        )}
+        {tab === 'subscribers' && (
+          <div className="overflow-hidden rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)]">
+            <SubscribersTable rows={filteredSubs} />
+          </div>
+        )}
+        {tab === 'availability' && (
+          <AdminAvailabilityPanel
+            initialWindows={availabilityWindows}
+            initialExceptions={availabilityExceptions}
+            initialRule={bookingRule}
+          />
         )}
       </div>
     </div>

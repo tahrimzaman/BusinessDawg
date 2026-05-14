@@ -1,11 +1,21 @@
+/**
+ * /contact — book a 15-min call. Self-hosted booking flow as of Phase 6;
+ * the old Cal.com iframe has been retired in favor of /api/booking +
+ * /admin/availability. The flow fetches live slots server-side so the
+ * page renders fully populated on first paint and degrades to a "no
+ * slots" message if availability isn't configured yet.
+ */
+
+import { headers } from 'next/headers';
 import Reveal from '@/components/motion/Reveal';
 import MagneticButton from '@/components/motion/MagneticButton';
 import DawgAvatar from '@/components/brand/DawgAvatar';
-import CalEmbed from '@/components/booking/CalEmbed';
+import BookingFlow from '@/components/booking/BookingFlow';
+import type { Slot } from '@/components/booking/SlotList';
 import { SITE } from '@/lib/copy';
 
 const description =
-  'Book a 15-minute call with BusinessDawg. No decks — tell us what’s leaking and we’ll tell you what to do about it. WhatsApp, email, and Cal.com booking all open.';
+  'Book a 15-minute call with BusinessDawg. No decks — tell us what’s leaking and we’ll tell you what to do about it. WhatsApp, email, and instant calendar booking all open.';
 
 export const metadata = {
   title: 'Contact',
@@ -20,8 +30,26 @@ export const metadata = {
   twitter: { card: 'summary_large_image' as const, title: 'Contact — BusinessDawg', description },
 };
 
-export default function Contact() {
-  const calSrc = `https://cal.com/${SITE.cal}?embed=true&theme=dark`;
+export const dynamic = 'force-dynamic';
+
+async function fetchSlots(): Promise<{ slots: Slot[]; ownerTz: string }> {
+  const h = await headers();
+  const host = h.get('host') ?? 'localhost:3000';
+  const proto = h.get('x-forwarded-proto') ?? 'http';
+  try {
+    const res = await fetch(`${proto}://${host}/api/booking/availability`, {
+      cache: 'no-store',
+    });
+    if (!res.ok) return { slots: [], ownerTz: 'Asia/Dhaka' };
+    const json = (await res.json()) as { slots: Slot[]; ownerTz: string };
+    return { slots: json.slots ?? [], ownerTz: json.ownerTz ?? 'Asia/Dhaka' };
+  } catch {
+    return { slots: [], ownerTz: 'Asia/Dhaka' };
+  }
+}
+
+export default async function Contact() {
+  const { slots, ownerTz } = await fetchSlots();
 
   return (
     <div className="mx-auto max-w-6xl px-6 pt-40 pb-24">
@@ -43,7 +71,13 @@ export default function Contact() {
 
       <div className="mt-16 grid gap-8 md:grid-cols-12">
         <Reveal className="md:col-span-8">
-          <CalEmbed src={calSrc} />
+          {slots.length === 0 ? (
+            <div className="rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-8 text-center text-sm text-[color:var(--bd-bone)]/70">
+              No slots available right now. Hit WhatsApp or email and we’ll find a time.
+            </div>
+          ) : (
+            <BookingFlow slots={slots} ownerTz={ownerTz} />
+          )}
         </Reveal>
 
         <Reveal delay={0.06} className="md:col-span-4">
