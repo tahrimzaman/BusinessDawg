@@ -1,7 +1,6 @@
 import Hero from '@/components/sections/Hero';
 import MemeReel from '@/components/sections/MemeReel';
 import SystemsStack from '@/components/sections/SystemsStack';
-import FounderShort from '@/components/sections/FounderShort';
 import Chatbot from '@/components/sections/Chatbot';
 import Recruitment from '@/components/sections/Recruitment';
 import Newsletter from '@/components/sections/Newsletter';
@@ -24,9 +23,6 @@ export default function HomePage() {
       </div>
       <div id="systems">
         <SystemsStack />
-      </div>
-      <div id="founder">
-        <FounderShort />
       </div>
       <div id="chatbot">
         <Chatbot />

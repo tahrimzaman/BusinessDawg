@@ -132,6 +132,15 @@ body {
   filter: blur(60px);
 }
 
+@keyframes bd-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 .bd-card {
   position: relative;
   background: var(--bd-smoke);

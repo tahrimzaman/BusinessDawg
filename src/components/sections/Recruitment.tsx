@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Reveal from '@/components/motion/Reveal';
 import MagneticButton from '@/components/motion/MagneticButton';
 
@@ -35,7 +34,7 @@ export default function Recruitment() {
                   For talent
                 </p>
                 <h3 className="font-display mt-4 text-4xl leading-[1.05] font-bold italic">
-                  Want to join the movement?
+                  Want to join us?
                 </h3>
                 <p className="mt-4 max-w-md text-[color:var(--bd-ink)]/80">
                   We hire weirdos with taste. Designers, engineers, growth ops, AI nerds. If that’s
@@ -43,12 +42,9 @@ export default function Recruitment() {
                 </p>
               </div>
               <div className="mt-10">
-                <Link
-                  href="/join"
-                  className="inline-flex h-12 items-center rounded-full bg-[color:var(--bd-ink)] px-6 text-sm font-semibold text-[color:var(--bd-bone)] transition-colors hover:bg-[color:var(--bd-smoke)]"
-                >
+                <MagneticButton href="/join" variant="inverse">
                   See open roles →
-                </Link>
+                </MagneticButton>
               </div>
             </div>
           </Reveal>

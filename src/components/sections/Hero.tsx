@@ -52,7 +52,7 @@ export default function Hero() {
   const layout = tweaks.heroComp;
 
   return (
-    <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-24">
+    <section className="relative isolate flex min-h-[100svh] items-start overflow-hidden pt-28 sm:pt-32">
       {/* Lime radial glow */}
       <div
         aria-hidden
@@ -79,10 +79,26 @@ export default function Hero() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: dur * 0.5, ease: EASE }}
-            className="mb-8 inline-flex max-w-full items-center gap-2 rounded-full border border-white/10 bg-black/30 px-2.5 py-1 font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/70 uppercase backdrop-blur-md sm:px-3 sm:text-[11px]"
+            className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-white/10 bg-black/30 px-2.5 py-1 font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/70 uppercase backdrop-blur-md sm:px-3 sm:text-[11px]"
           >
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--bd-lime)]" />A
             business growth system studio · Est. 2026
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: reduced ? 0 : 0.1, duration: dur * 0.5, ease: EASE }}
+            className="mb-6 sm:mb-8"
+          >
+            <Image
+              src="/brand/logo-vertical.png"
+              alt="BusinessDawg"
+              width={990}
+              height={715}
+              priority
+              className="h-auto w-32 sm:w-40 md:w-44 lg:w-48"
+            />
           </motion.div>
 
           <h1 className="font-display text-3xl leading-[1.06] font-bold tracking-tight text-[color:var(--bd-bone)] sm:text-5xl md:text-6xl lg:text-[5rem]">

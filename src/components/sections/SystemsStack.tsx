@@ -69,6 +69,12 @@ export default function SystemsStack() {
                 </p>
               </div>
             </div>
+
+            {/* Totally-customized flip card — sits below the sticky rail in
+                normal flow so the mascot keeps its full sticky height. */}
+            <div className="mt-12 hidden lg:block">
+              <CustomBuildCard />
+            </div>
           </div>
 
           {/* Cards */}
@@ -80,6 +86,52 @@ export default function SystemsStack() {
         </div>
       </div>
     </section>
+  );
+}
+
+function CustomBuildCard() {
+  return (
+    <Link
+      href="/contact"
+      aria-label="Totally customized service — tell us what you need"
+      className="group block w-full max-w-[260px] [perspective:1200px]"
+    >
+      <div className="relative aspect-square w-full transition-transform duration-700 ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] group-focus-visible:[transform:rotateY(180deg)]">
+        {/* FRONT */}
+        <div className="absolute inset-0 flex flex-col items-center justify-between overflow-hidden rounded-[28px] border border-[rgba(200,255,0,0.6)] bg-[color:var(--bd-ink)] p-5 shadow-[0_0_24px_rgba(200,255,0,0.18)] transition-[border-color,box-shadow] duration-300 [backface-visibility:hidden] group-hover:border-[color:var(--bd-lime)] group-hover:shadow-[0_0_36px_rgba(200,255,0,0.32)]">
+          <p className="self-start font-mono text-[10px] tracking-widest text-[color:var(--bd-lime)] uppercase">
+            / Bonus
+          </p>
+          <div className="relative aspect-square w-[78%]">
+            <Image
+              src="/brand/icon.jpg"
+              alt=""
+              fill
+              sizes="220px"
+              className="object-contain"
+              aria-hidden
+            />
+          </div>
+          <p className="font-display text-center text-lg leading-tight font-bold tracking-tight text-[color:var(--bd-bone)] italic">
+            Totally Customized?
+          </p>
+        </div>
+
+        {/* BACK */}
+        <div className="absolute inset-0 flex [transform:rotateY(180deg)] flex-col items-start justify-between overflow-hidden rounded-[28px] border border-[rgba(200,255,0,0.6)] bg-[color:var(--bd-ink)] p-5 shadow-[0_0_24px_rgba(200,255,0,0.18)] transition-[border-color,box-shadow] duration-300 [backface-visibility:hidden] group-hover:border-[color:var(--bd-lime)] group-hover:shadow-[0_0_36px_rgba(200,255,0,0.32)]">
+          <p className="font-mono text-[10px] tracking-widest text-[color:var(--bd-lime)] uppercase">
+            / Off-stack
+          </p>
+          <p className="text-sm leading-snug text-[color:var(--bd-bone)]/85">
+            Don&apos;t see your stack? We build fully custom systems too. Pick none of the five —
+            we&apos;ll still ship.
+          </p>
+          <span className="font-mono text-xs font-semibold tracking-widest text-[color:var(--bd-lime)] uppercase">
+            Tell us what you need →
+          </span>
+        </div>
+      </div>
+    </Link>
   );
 }
 

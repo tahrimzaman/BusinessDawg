@@ -8,7 +8,7 @@ type Props = {
   className?: string;
   href?: string;
   onClick?: () => void;
-  variant?: 'primary' | 'ghost';
+  variant?: 'primary' | 'ghost' | 'inverse';
 };
 
 const SPRING = { stiffness: 250, damping: 18, mass: 0.6 };
@@ -46,7 +46,9 @@ export default function MagneticButton({
   const styles =
     variant === 'primary'
       ? 'bg-[color:var(--bd-lime)] text-[color:var(--bd-ink)] hover:bg-[color:var(--bd-bone)]'
-      : 'border border-[color:var(--bd-bone)]/20 text-[color:var(--bd-bone)] hover:border-[color:var(--bd-lime)]/80 hover:text-[color:var(--bd-lime)]';
+      : variant === 'inverse'
+        ? 'bg-[color:var(--bd-ink)] text-[color:var(--bd-bone)] hover:bg-[color:var(--bd-smoke)]'
+        : 'border border-[color:var(--bd-bone)]/20 text-[color:var(--bd-bone)] hover:border-[color:var(--bd-lime)]/80 hover:text-[color:var(--bd-lime)]';
 
   const Inner = (
     <motion.span

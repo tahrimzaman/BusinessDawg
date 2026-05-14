@@ -223,7 +223,7 @@ export default function Chatbot() {
           </Reveal>
           <Reveal delay={0.05}>
             <h2 className="font-display mt-3 max-w-3xl text-4xl leading-[1.05] font-bold tracking-tight italic sm:text-5xl">
-              Talk to the BusinessDawg.
+              Have questions? Ask the dawg.
             </h2>
           </Reveal>
 
