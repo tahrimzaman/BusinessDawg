@@ -88,12 +88,17 @@ export default function Chatbot() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, isStreaming, open]);
 
-  // Focus the input on overlay open. Restore focus to the trigger on close.
+  // Focus the input on overlay open. Restore focus to the trigger on close —
+  // but NOT on initial mount, or the browser auto-scrolls to the trigger and
+  // the page lands on the chatbot section instead of the hero.
+  const wasOpen = useRef(false);
   useEffect(() => {
     if (open) {
+      wasOpen.current = true;
       const id = window.setTimeout(() => inputRef.current?.focus(), 120);
       return () => window.clearTimeout(id);
-    } else {
+    }
+    if (wasOpen.current) {
       triggerRef.current?.focus();
     }
   }, [open]);
