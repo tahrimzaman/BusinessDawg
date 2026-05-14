@@ -1,18 +1,15 @@
 // BusinessDawg lead capture schema.
 //
-// LOCAL DEV: provider = "sqlite", DATABASE_URL = "file:./dev.db"
-// PRODUCTION: provider = "postgresql", DATABASE_URL = Neon connection string
-//
-// To switch for prod deploy, change `provider` below to "postgresql" and
-// regenerate migrations against Neon. The model definitions are portable
-// (no provider-specific column types).
+// Neon Postgres (Singapore region). Local dev points at the same Neon project
+// over its serverless connection — Neon scales to zero when idle, so this is
+// effectively free for low-traffic dev too.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

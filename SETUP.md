@@ -1,163 +1,183 @@
 # BusinessDawg — Backend Setup Guide
 
-Everything needed to take the Phase 1+2 backend live on Hostinger. Each section is a one-time setup that produces an env var you'll add to both `.env.local` (for local dev) and Hostinger hPanel (for prod).
+Status: **Phase 1+2 backend is fully provisioned and verified locally** (see "Status snapshot" below). This guide documents how each piece was set up so anyone (including future-Tahrim) can re-provision or rotate credentials.
 
-> **Order:** these can be done in parallel. Section 1 (Neon) is the highest priority because the production join/newsletter endpoints will 500 without it.
+The stack is intentionally lean — only services that are already part of the toolchain or actually free:
+
+| Layer | Service | Cost |
+|---|---|---|
+| Database | **Neon Postgres** (ap-southeast-1, Singapore) | Free tier, scales to zero |
+| Transactional email | **Hostinger SMTP** via `yo@businessdawg.com` mailbox | Included in current hosting plan, 100 emails/day |
+| Analytics | **PostHog Cloud** (US region) | Free 1M events/mo |
+| CMS (deferred) | Sanity | Free 3 users / 10k docs — Phase 3 |
+| Chatbot (gated) | Groq Llama 3.1 | Free tier — Phase 4 |
+
+No Resend, no MailerLite, no Supabase. One database, one mailbox, one analytics project.
+
+---
+
+## Status snapshot (2026-05-14)
+
+- ✅ Neon Postgres provisioned (project: `neondb`, region: `ap-southeast-1`)
+- ✅ Migration `20260514034108_init` applied (Subscriber + Application tables)
+- ✅ Hostinger mailbox `yo@businessdawg.com` created and SMTP verified
+- ✅ `notifyAdminOfApplication` delivers a real email to that mailbox
+- ✅ PostHog project key wired into `NEXT_PUBLIC_POSTHOG_KEY`
+- ✅ `ADMIN_PASSWORD` + `ADMIN_SESSION_SECRET` generated
+- ✅ `.env.local` populated; `.env` has `DATABASE_URL` for Prisma CLI
+- 🟡 Hostinger production environment vars: **not yet mirrored** — see section 7
+- 🟡 Sanity project: deferred to Phase 3
 
 ---
 
 ## 1. Neon Postgres (lead database)
 
-Why: stores every join application + newsletter signup. Production source of truth.
+The lead database. Subscribers + applications land here.
 
-1. Go to <https://console.neon.tech/sign-up> and sign up with `tahrimzaman4@gmail.com`. Free tier is fine.
-2. **Create project:**
-   - Name: `businessdawg`
-   - Region: closest to Hostinger (likely `aws-eu-central-1` or `ap-southeast-1`)
-   - Postgres version: 16 (latest)
-3. **Copy connection string** from the dashboard. Looks like: `postgresql://USER:PASSWORD@ep-xxx.aws.neon.tech/businessdawg?sslmode=require`
-4. **Switch Prisma to Postgres:**
-   - Open `prisma/schema.prisma`
-   - Change `provider = "sqlite"` → `provider = "postgresql"`
-   - Save
-5. **Update env vars** (locally first):
+1. Account created at <https://console.neon.tech>.
+2. Project `neondb`, region `ap-southeast-1` (Singapore — lowest latency to BD/MY/SG visitors and reasonable for global).
+3. Pooled connection string (use this, not the direct one — better for serverless):
    ```
-   DATABASE_URL="postgresql://...neon.tech/businessdawg?sslmode=require"
+   DATABASE_URL="postgresql://neondb_owner:****@ep-jolly-cherry-aok04uq3-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
    ```
-6. **Generate the prod migration** locally:
-   ```bash
-   npx prisma migrate dev --name init
-   ```
-   This applies the schema to Neon. Re-running `npx prisma migrate deploy` from Hostinger will apply migrations there too.
+4. Pasted into `.env.local` AND `.env` (the latter is read by the Prisma CLI; both must match).
+5. Migration applied with `npx prisma migrate dev --name init`.
 
----
-
-## 2. Resend (transactional email)
-
-Why: emails you when someone applies or (optionally) subscribes. Single API key, generous free tier (3k/mo).
-
-1. Sign up at <https://resend.com> with `tahrimzaman4@gmail.com`. Free tier is fine.
-2. **Add domain:** Domains → Add Domain → `businessdawg.com`.
-3. **DNS records** — Resend gives you 3 records (MX, SPF, DKIM). Add them in Hostinger:
-   - hPanel → Domains → `businessdawg.com` → DNS / Nameservers
-   - Add each record exactly as Resend specifies. TTL 14400 is fine.
-   - Wait 5–60 min, then hit "Verify" in Resend.
-4. **Create API key:** API Keys → Create. Scope: "Sending access" → "Full access". Copy the `re_…` key.
-5. **Env vars:**
-   ```
-   RESEND_API_KEY=re_xxxxxxxx
-   RESEND_FROM="BusinessDawg <yo@businessdawg.com>"
-   ADMIN_INBOX=yo@businessdawg.com   # where the notifications go
-   NOTIFY_ON_SUBSCRIBE=               # leave blank to skip newsletter pings
-   ```
-
-> Until DNS verifies, you can use Resend's onboarding sandbox (`onboarding@resend.dev` as from-address) for local testing.
-
----
-
-## 3. Custom email (yo@businessdawg.com)
-
-Why: more brandable than `tahrimzaman4@gmail.com`. Hostinger Business plan includes free business email.
-
-1. hPanel → Emails → Manage Email Accounts.
-2. Create new mailbox: `yo@businessdawg.com`. Pick a password. 5 GB included.
-3. Set up Gmail forwarding or download Hostinger Webmail / set up on phone IMAP. Up to you.
-4. (Optional) Forward `yo@businessdawg.com` → `tahrimzaman4@gmail.com` so everything still lands in your main inbox.
-
-> Resend will still send "from" yo@businessdawg.com regardless. The mailbox just needs to exist so people can reply.
-
----
-
-## 4. PostHog (product analytics)
-
-Why: track lead-gen funnel. Goal #1 per CLAUDE.md.
-
-1. Sign up at <https://us.posthog.com/signup>. Free tier: 1M events/mo, replay included.
-2. New project named `businessdawg`. Region: US (lower latency for global users; switch to EU if you prefer EU data residency).
-3. Copy the **Project API key** (`phc_…`) from Project Settings.
-4. **Env vars:**
-   ```
-   NEXT_PUBLIC_POSTHOG_KEY=phc_xxxxxxxx
-   NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
-   ```
-5. (Later) Set up dashboards: "Sessions", "Funnel: visit → book a call", "Event: cta_click on Book a Call".
-
----
-
-## 5. Sanity CMS (deferred to Phase 3 — set up now if you want)
-
-Why: edit Systems and case-study copy without code changes.
-
-1. Sign up / log in at <https://www.sanity.io/manage>.
-2. Create project `businessdawg`. Dataset: `production`. Free plan.
-3. Copy Project ID. Generate a read token (Settings → API → Tokens).
-4. **Env vars:**
-   ```
-   NEXT_PUBLIC_SANITY_PROJECT_ID=<id>
-   NEXT_PUBLIC_SANITY_DATASET=production
-   SANITY_API_TOKEN=<token>
-   ```
-5. Once env is set, deploy and visit `/studio` to log in and create content.
-
-> Schemas already exist in `sanity/schemas/`. Once content is added, Phase 3 wires the GROQ queries into pages.
-
----
-
-## 6. Admin password
-
-Why: protects `/admin` lead viewer.
-
-1. Pick a long random password (1Password / `openssl rand -hex 16`).
-2. Pick a different long random string for the session secret.
-3. **Env vars:**
-   ```
-   ADMIN_PASSWORD=<password>
-   ADMIN_SESSION_SECRET=<random 32+ char string>
-   ```
-
----
-
-## Adding all env vars to Hostinger
-
-1. hPanel → Hosting → `businessdawg.com` → Node.js → Settings → Environment Variables.
-2. Add every variable from `.env.local` (skip `DATABASE_URL` if it's the SQLite path — use the Neon URL instead).
-3. After saving, hit "Restart App" so the new env is picked up.
-4. Run migrations on prod once Neon URL is in place:
-   ```bash
-   npx prisma migrate deploy
-   ```
-   (Either from your local terminal pointing at the prod URL, or via Hostinger's Node terminal.)
-
----
-
-## First-time verification on prod
-
-After Hostinger redeploy with all env vars set:
-
+To verify any time:
 ```bash
-# Should return ok: true (real persistence, not dev fallback)
-curl -X POST https://businessdawg.com/api/newsletter \
-  -H 'content-type: application/json' \
-  -d '{"email":"diagnostic@example.com"}'
-
-# Should send you an email AND create a row in Neon
-curl -X POST https://businessdawg.com/api/join \
-  -H 'content-type: application/json' \
-  -d '{"name":"Test User","email":"test@example.com","note":"hello"}'
+npx prisma migrate status   # → "Database schema is up to date!"
 ```
 
-Then log in at <https://businessdawg.com/admin> with your `ADMIN_PASSWORD` and confirm both rows show up.
+To inspect rows quickly:
+```bash
+node -e 'require("@prisma/client"); const p=new (require("@prisma/client").PrismaClient)(); p.subscriber.findMany({take:5}).then(r=>console.log(r)).finally(()=>p.$disconnect())'
+```
+
+Or, in production, log in at `/admin` and use the dashboard.
 
 ---
 
-## What I cannot do for you (and why)
+## 2. Hostinger SMTP (transactional email)
 
-I work entirely from this repo. The following require your account credentials and have to be done by you in a browser:
+The `yo@businessdawg.com` mailbox doubles as the transactional sender. No external email provider needed.
 
-- **Neon signup + DB creation** (needs email verification on your address)
-- **Resend signup + domain verification** (needs DNS access on Hostinger)
-- **PostHog signup + project creation** (needs email verification)
-- **Sanity signup + project creation** (needs email verification)
-- **Hostinger hPanel env vars** (your account)
+1. Mailbox created via hPanel → Emails → Manage Email Accounts → `yo@businessdawg.com`.
+2. SMTP credentials live in `.env.local`:
+   ```
+   SMTP_HOST=smtp.hostinger.com
+   SMTP_PORT=465              # SSL — Hostinger also supports 587 STARTTLS
+   SMTP_USER=yo@businessdawg.com
+   SMTP_PASS=****             # the mailbox's own password, not your hPanel account
+   SMTP_FROM="BusinessDawg <yo@businessdawg.com>"
+   ADMIN_INBOX=yo@businessdawg.com
+   NOTIFY_ON_SUBSCRIBE=       # set to "true" to also be pinged on every newsletter signup
+   ```
+3. Verified locally with `nodemailer.verify()` and a real test send to the mailbox (subject: "BusinessDawg backend wired — Phase 1+2 verification").
 
-Once you've done these, just share the env vars (paste them in chat) and I'll wire them into local + verify everything works end-to-end before any deploy.
+If you rotate the mailbox password, update both `.env.local` and the Hostinger Node.js env (section 7) and restart.
+
+Quotas: Hostinger Business plans typically cap at 100 outbound emails / day per mailbox. Plenty for lead notifications. If you ever exceed it, switch to a transactional provider (Resend/Postmark) — the `transport()` factory in [src/lib/email/send.ts](src/lib/email/send.ts) is the only file to swap.
+
+---
+
+## 3. PostHog (analytics)
+
+Lead-gen attribution. Funnels, replays, events.
+
+1. Project created at <https://us.posthog.com>.
+2. Project API key (`phc_…`) pasted into `.env.local` as `NEXT_PUBLIC_POSTHOG_KEY`.
+3. `NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com` (US region).
+4. [PostHogProvider](src/components/analytics/PostHogProvider.tsx) is mounted in [app/layout.tsx](src/app/layout.tsx) and auto-tracks pageviews on route changes.
+
+Next: add custom events for `cta_click` (Book a Call), `newsletter_submit`, `join_submit`. Done as part of Phase 3+ polish.
+
+---
+
+## 4. Admin (/admin lead dashboard)
+
+Password-gated viewer for the lead DB.
+
+1. Pick a long random password (e.g. `openssl rand -base64 24`). Already generated and in `.env.local` as `ADMIN_PASSWORD`.
+2. Pick a separate long random session secret. Already generated as `ADMIN_SESSION_SECRET`.
+3. Visit `/admin` → redirected to `/admin/login` → enter password → 7-day session cookie.
+4. Dashboard shows: search, Applications + Subscribers tables, CSV export per tab, logout.
+
+Auth implementation: [src/lib/admin/auth.ts](src/lib/admin/auth.ts) (HMAC-SHA256 of password + secret, timing-safe compare, cookie path `/` so /api/admin/* shares the same session).
+
+---
+
+## 5. Custom email mailbox (yo@businessdawg.com)
+
+Already set up in section 2 — the same mailbox is used for SMTP sending. To read replies:
+
+- Hostinger Webmail: <https://hpanel.hostinger.com/> → Emails → Webmail
+- Or set up IMAP on your phone / desktop
+- Or forward to `tahrimzaman4@gmail.com` (Webmail → Forwarders) so everything lands in one inbox
+
+---
+
+## 6. Sanity CMS (deferred to Phase 3)
+
+Schemas + Studio mount already exist in the repo (`sanity/schemas/`, `/studio` route). When we wire Phase 3, the only env vars needed are:
+
+```
+NEXT_PUBLIC_SANITY_PROJECT_ID=
+NEXT_PUBLIC_SANITY_DATASET=production
+SANITY_API_TOKEN=
+```
+
+Project to be created at <https://www.sanity.io/manage> with `tahrimzaman4@gmail.com`. Free plan covers everything we need.
+
+---
+
+## 7. Pushing to Hostinger (production env vars)
+
+When you're ready to ship Phase 1+2 to production:
+
+1. hPanel → Hosting → `businessdawg.com` → Node.js → Settings → Environment Variables.
+2. Mirror **every variable** from `.env.local`:
+   ```
+   DATABASE_URL=<neon pooled url>
+   SMTP_HOST=smtp.hostinger.com
+   SMTP_PORT=465
+   SMTP_USER=yo@businessdawg.com
+   SMTP_PASS=<mailbox password>
+   SMTP_FROM=BusinessDawg <yo@businessdawg.com>
+   ADMIN_INBOX=yo@businessdawg.com
+   ADMIN_PASSWORD=<your password>
+   ADMIN_SESSION_SECRET=<your secret>
+   NEXT_PUBLIC_POSTHOG_KEY=<phc_key>
+   NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+   NEXT_PUBLIC_CAL_USERNAME=tahrim
+   NEXT_PUBLIC_WHATSAPP_NUMBER=8801733955555
+   ```
+3. Hit "Restart App" — required for new env to take effect.
+4. (Migration already applied from local; no action needed on Hostinger for the DB.)
+
+### Verification on prod
+
+```bash
+# Should return ok:true and create a real Neon row
+curl -X POST https://businessdawg.com/api/newsletter \
+  -H 'content-type: application/json' \
+  -d '{"email":"prod-smoke@example.com"}'
+
+# Should email yo@businessdawg.com + create a Neon row
+curl -X POST https://businessdawg.com/api/join \
+  -H 'content-type: application/json' \
+  -d '{"name":"Prod Smoke","email":"prod@example.com","note":"hello"}'
+```
+
+Then `/admin` on prod, log in, confirm both rows appear in the dashboard, export both CSVs, and the test email shows up in `yo@businessdawg.com`.
+
+---
+
+## Rotating credentials
+
+| If you rotate… | Change in |
+|---|---|
+| Neon DB password | `.env.local`, `.env`, Hostinger Node env, restart |
+| Hostinger mailbox password | `.env.local`, Hostinger Node env, restart |
+| PostHog project (new key) | `.env.local`, Hostinger Node env, restart |
+| Admin password | `.env.local`, Hostinger Node env, restart (existing sessions invalidated) |
+| Admin session secret | Same as above (existing sessions invalidated) |

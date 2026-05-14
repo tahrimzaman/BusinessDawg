@@ -1,16 +1,35 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-// Lazily create the Resend client so missing env vars don't crash imports.
-let _resend: Resend | null = null;
-function resend(): Resend | null {
-  if (_resend) return _resend;
-  const key = process.env.RESEND_API_KEY;
-  if (!key) return null;
-  _resend = new Resend(key);
-  return _resend;
+// Hostinger SMTP. yo@businessdawg.com is set up as a free Business Email
+// mailbox on Hostinger; SMTP creds live in env. 100 emails/day cap is plenty
+// for lead notifications.
+//
+// Required env vars:
+//   SMTP_HOST  e.g. smtp.hostinger.com
+//   SMTP_PORT  465 (SSL) or 587 (STARTTLS)
+//   SMTP_USER  full mailbox address (yo@businessdawg.com)
+//   SMTP_PASS  mailbox password (NOT a personal password — the mailbox's own)
+//   SMTP_FROM  display name + address, e.g. "BusinessDawg <yo@businessdawg.com>"
+//   ADMIN_INBOX  where lead notifications land
+
+let _transport: nodemailer.Transporter | null = null;
+function transport(): nodemailer.Transporter | null {
+  if (_transport) return _transport;
+  const host = process.env.SMTP_HOST;
+  const port = Number(process.env.SMTP_PORT || 465);
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  if (!host || !user || !pass) return null;
+  _transport = nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465, // SSL on 465, STARTTLS on 587
+    auth: { user, pass },
+  });
+  return _transport;
 }
 
-const FROM = process.env.RESEND_FROM || 'BusinessDawg <yo@businessdawg.com>';
+const FROM = process.env.SMTP_FROM || 'BusinessDawg <yo@businessdawg.com>';
 const ADMIN_INBOX = process.env.ADMIN_INBOX || 'yo@businessdawg.com';
 
 export type ApplicationEmail = {
@@ -22,10 +41,10 @@ export type ApplicationEmail = {
 };
 
 export async function notifyAdminOfApplication(payload: ApplicationEmail): Promise<void> {
-  const client = resend();
-  if (!client) {
+  const t = transport();
+  if (!t) {
     console.log(
-      '[email] RESEND_API_KEY not set — skipping admin notify for application',
+      '[email] SMTP not configured — skipping admin notify for application',
       payload.email,
     );
     return;
@@ -40,7 +59,7 @@ export async function notifyAdminOfApplication(payload: ApplicationEmail): Promi
     ${payload.note ? `<p><strong>Note:</strong><br>${escapeHtml(payload.note).replace(/\n/g, '<br>')}</p>` : ''}
   `;
 
-  await client.emails.send({
+  await t.sendMail({
     from: FROM,
     to: ADMIN_INBOX,
     subject: `Join: ${payload.name}${payload.role ? ` — ${payload.role}` : ''}`,
@@ -52,10 +71,10 @@ export async function notifyAdminOfApplication(payload: ApplicationEmail): Promi
 export type SubscriberEmail = { email: string; source: string };
 
 export async function notifyAdminOfSubscriber(payload: SubscriberEmail): Promise<void> {
-  const client = resend();
-  if (!client) {
+  const t = transport();
+  if (!t) {
     console.log(
-      '[email] RESEND_API_KEY not set — skipping admin notify for subscriber',
+      '[email] SMTP not configured — skipping admin notify for subscriber',
       payload.email,
     );
     return;
@@ -63,7 +82,7 @@ export async function notifyAdminOfSubscriber(payload: SubscriberEmail): Promise
   // Don't spam the inbox on every signup unless explicitly opted in.
   if (process.env.NOTIFY_ON_SUBSCRIBE !== 'true') return;
 
-  await client.emails.send({
+  await t.sendMail({
     from: FROM,
     to: ADMIN_INBOX,
     subject: `New subscriber: ${payload.email}`,
