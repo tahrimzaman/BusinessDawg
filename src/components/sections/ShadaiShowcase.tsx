@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Reveal from '@/components/motion/Reveal';
 import MagneticButton from '@/components/motion/MagneticButton';
 import { BUILT } from '@/lib/copy';
+import { sanityFetch } from '@/lib/sanity/client';
+import { caseStudiesQuery } from '@/lib/sanity/queries';
 
 const GALLERY = [
   {
@@ -16,13 +18,30 @@ const GALLERY = [
   },
 ];
 
+type SanityCaseStudy = {
+  _id?: string;
+  title?: string;
+  slug?: string;
+  liveUrl?: string;
+};
+
 /**
  * Shadai Ghar — flagship BusinessDawg build. Lives inside /about.
  * Replaces the deleted /built routes. Content lifted verbatim from the
  * old slug page so no copy is lost.
+ *
+ * Reads Sanity case_study docs when available; falls back to BUILT[] in
+ * /src/lib/copy.ts so the section never goes blank if Sanity is empty.
  */
-export default function ShadaiShowcase() {
-  const venture = BUILT[0];
+export default async function ShadaiShowcase() {
+  const cmsDocs = await sanityFetch<SanityCaseStudy[]>(caseStudiesQuery, {}, []);
+  const fallback = BUILT[0];
+  const cms = cmsDocs.find((d) => d.slug === fallback.slug) ?? cmsDocs[0];
+  const venture = {
+    ...fallback,
+    name: cms?.title || fallback.name,
+    liveUrl: cms?.liveUrl || fallback.liveUrl,
+  };
 
   return (
     <section className="relative mt-24 border-t border-white/8 px-6 py-24">

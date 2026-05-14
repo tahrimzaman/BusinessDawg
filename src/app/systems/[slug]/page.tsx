@@ -2,9 +2,40 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Reveal from '@/components/motion/Reveal';
 import MagneticButton from '@/components/motion/MagneticButton';
-import { SYSTEMS } from '@/lib/copy';
+import { SYSTEMS, type System } from '@/lib/copy';
+import { sanityFetch } from '@/lib/sanity/client';
+import { systemBySlugQuery } from '@/lib/sanity/queries';
 
 type Params = { slug: string };
+
+type SanitySystemDoc = {
+  _id?: string;
+  name?: string;
+  slug?: { current?: string };
+  tagline?: string;
+  description?: string;
+  deliverables?: string[];
+};
+
+// Resolve a system by slug: try Sanity first, fall back to hardcoded SYSTEMS.
+// Missing fields on the Sanity doc fall through to the hardcoded entry so the
+// page never renders empty sections.
+async function resolveSystem(slug: string): Promise<System | undefined> {
+  const base = SYSTEMS.find((s) => s.slug === slug);
+  const doc = await sanityFetch<SanitySystemDoc | null>(systemBySlugQuery, { slug }, null);
+  if (!doc || !doc.name) return base;
+  return {
+    slug,
+    name: doc.name,
+    shortName: base?.shortName ?? doc.name,
+    tagline: doc.tagline ?? base?.tagline ?? '',
+    description: doc.description ?? base?.description ?? '',
+    deliverables: doc.deliverables?.length ? doc.deliverables : (base?.deliverables ?? []),
+    pricing: { kind: 'custom' },
+    accent: base?.accent ?? '#c8ff00',
+    glyph: base?.glyph ?? '◆',
+  };
+}
 
 export function generateStaticParams() {
   return SYSTEMS.map((s) => ({ slug: s.slug }));
@@ -18,7 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }) 
 
 export default async function SystemPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  const system = SYSTEMS.find((s) => s.slug === slug);
+  const system = await resolveSystem(slug);
   if (!system) notFound();
 
   const idx = SYSTEMS.findIndex((s) => s.slug === slug);
