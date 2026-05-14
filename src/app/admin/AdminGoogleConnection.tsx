@@ -40,10 +40,12 @@ export default function AdminGoogleConnection({ initial }: { initial: GoogleConn
   const router = useRouter();
   const params = useSearchParams();
   const [busy, setBusy] = useState<'connect' | 'disconnect' | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   // Derived from URL — no local state needed, so no setState-in-effect.
   const flashCode = params.get('google');
-  const flashMsg = flashCode ? (MESSAGES[flashCode] ?? null) : null;
+  const urlMsg = flashCode ? (MESSAGES[flashCode] ?? null) : null;
+  const flashMsg = localError ? { tone: 'bad', text: localError } : urlMsg;
 
   // Side effect: strip the query param after first paint and refresh on success.
   useEffect(() => {
@@ -63,12 +65,13 @@ export default function AdminGoogleConnection({ initial }: { initial: GoogleConn
     )
       return;
     setBusy('disconnect');
+    setLocalError(null);
     try {
       const res = await fetch('/api/admin/google/disconnect', { method: 'POST' });
       if (!res.ok) throw new Error('disconnect failed');
       router.refresh();
     } catch (err) {
-      setFlashMsg({ tone: 'bad', text: err instanceof Error ? err.message : 'failed' });
+      setLocalError(err instanceof Error ? err.message : 'failed');
     } finally {
       setBusy(null);
     }
