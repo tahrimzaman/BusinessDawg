@@ -7,15 +7,15 @@ Built with Next.js (App Router), TypeScript, Tailwind CSS, Framer Motion, React 
 ## Prerequisites
 
 - Node 20 LTS or newer (`node -v`)
-- pnpm (`pnpm -v`) — install with `corepack enable && corepack prepare pnpm@latest --activate` or the standalone installer at https://pnpm.io/installation
+- npm 10+ (`npm -v`)
 
 ## Setup
 
 ```bash
-pnpm install
+npm install
 cp .env.local.example .env.local
 # Fill in env vars (see below).
-pnpm dev
+npm run dev
 ```
 
 The site runs at http://localhost:3000. Sanity Studio at http://localhost:3000/studio.
@@ -38,12 +38,12 @@ Chatbot vars are gated behind Approval Gate #1 (see `CLAUDE.md`). Don't add a pr
 
 | Command | What it does |
 |---|---|
-| `pnpm dev` | Start dev server with hot reload |
-| `pnpm build` | Production build |
-| `pnpm start` | Run the production build locally |
-| `pnpm lint` | ESLint |
-| `pnpm format` | Prettier write |
-| `pnpm format:check` | Prettier check (CI) |
+| `npm run dev` | Start dev server with hot reload |
+| `npm run build` | Production build |
+| `npm start` | Run the production build locally |
+| `npm run lint` | ESLint |
+| `npm run format` | Prettier write |
+| `npm run format:check` | Prettier check (CI) |
 
 ## Folder structure
 
@@ -71,7 +71,16 @@ public/
 
 ## Deploying
 
-Vercel free tier. Push to `main` → Vercel builds → previews per PR. Add all env vars from `.env.local.example` to the Vercel project settings.
+**Production: https://businessdawg.com** — hosted on Hostinger Business Web Hosting (Node.js 22, managed Next.js).
+
+- Push to `main` → Hostinger auto-deploys from the `BusinessDawg` GitHub repo
+- Build: `npm run build` (Hostinger Settings → Build and output settings → Package manager: `npm`)
+- Root directory: `./`, Output directory: `.next`
+- Env vars: managed via hPanel → Websites → businessdawg.com → Environment variables (never committed)
+- DNS: apex + www both point to Hostinger (`82.25.87.124`); SSL + CDN handled by Hostinger
+- Server features: SSR, `next/image` optimization (sharp), `/api` routes — all preserved
+
+Note: `package-lock.json` is the source of truth; pnpm files are intentionally absent. Hostinger's pnpm symlink layout breaks esbuild's postinstall on shared hosting, so we use npm.
 
 ## Project docs
 
