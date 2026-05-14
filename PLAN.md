@@ -4,6 +4,22 @@
 
 ---
 
+## STATE AS OF 2026-05-14 — READ FIRST
+
+This document is the **original spec**. The build has diverged in a few places — go to `SETUP.md` and `CLAUDE.md` for the current source of truth on what's actually live. Highlights of the drift:
+
+- **Stack:** the original spec mentioned React Three Fiber; the current build has **no R3F / Three.js dependency installed**. Hero motion is Framer Motion + Lenis only.
+- **CMS (Phase 3 — Sanity):** scaffolded but **not consumed by any page** — Phase 3 wiring was attempted (`b23645b`) and reverted (`4ce0e25`) on 2026-05-14 due to bugs. Page copy currently comes from hardcoded `src/lib/copy.ts`.
+- **Chatbot (Phase 4 — Groq):** **not wired** — Phase 4 streaming integration (`e7c5049`) was reverted (`36515a3`) on 2026-05-14 due to bugs. The chatbot UI is currently a static scripted preview.
+- **Email:** Hostinger SMTP via Nodemailer (the original Resend plan was dropped, and MailerLite is not in use). See `SETUP.md` §2.
+- **Database:** Neon Postgres via Prisma (migration `20260514034108_init` applied). See `SETUP.md` §1.
+- **Sitemap:** `/built` and `/built/[slug]` do **not** exist as routes. The Shadai showcase lives inside `/about` via the `ShadaiShowcase` component. The aspirational sitemap below is preserved for reference.
+- **Backend hardening (2026-05-14):** admin session secret fails-closed in production, CSV export capped at 10k rows, SMTP misconfig logs `[CRITICAL]` in production, `/api/join` no longer leaks Zod issues, rate-limit map self-prunes every 5 min.
+
+Everything below this banner is the **original plan**, kept intact for design intent and future-phase reference. Treat it as a vision document, not a status report.
+
+---
+
 ## 0. EXECUTIVE SUMMARY
 
 We're building a cinematic, conversion-driven flagship site for BusinessDawg in Next.js 14+ (App Router) with Sanity as CMS, deployed on Vercel. Animation intensity 9/10. Single-founder narrative (Tahrim). Mascot-led brand identity (the BusinessDawg). v1 ships the full vision in one go.

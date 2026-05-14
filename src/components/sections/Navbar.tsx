@@ -34,6 +34,7 @@ export default function Navbar() {
         <Link
           href="/"
           aria-label="BusinessDawg home"
+          onClick={() => setOpen(false)}
           className="group flex items-center gap-2 text-[color:var(--bd-bone)] transition-transform hover:scale-[1.02]"
         >
           <Logo className="h-9 md:h-11" />

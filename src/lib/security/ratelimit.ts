@@ -9,6 +9,19 @@ const buckets = new Map<string, Bucket>();
 
 export type RateLimitResult = { ok: true } | { ok: false; retryAfter: number };
 
+// Periodically purge expired buckets so the Map doesn't grow unbounded over
+// weeks/months of traffic. We check at most once every 5 minutes and drop
+// only buckets that have already expired.
+const PRUNE_INTERVAL_MS = 5 * 60_000;
+let _lastPruneAt = 0;
+function maybePrune(now: number): void {
+  if (now - _lastPruneAt < PRUNE_INTERVAL_MS) return;
+  _lastPruneAt = now;
+  for (const [k, b] of buckets) {
+    if (b.resetAt < now) buckets.delete(k);
+  }
+}
+
 export function rateLimit(
   key: string,
   opts?: { max?: number; windowMs?: number },
@@ -16,6 +29,7 @@ export function rateLimit(
   const max = opts?.max ?? 5;
   const windowMs = opts?.windowMs ?? 60_000;
   const now = Date.now();
+  maybePrune(now);
   const bucket = buckets.get(key);
 
   if (!bucket || bucket.resetAt < now) {

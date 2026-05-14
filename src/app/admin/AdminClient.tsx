@@ -24,6 +24,7 @@ export default function AdminClient({
   const router = useRouter();
   const [tab, setTab] = useState<'applications' | 'subscribers'>('applications');
   const [query, setQuery] = useState('');
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const filteredSubs = useMemo(() => {
     if (!query) return subscribers;
@@ -46,9 +47,15 @@ export default function AdminClient({
   }, [applications, query]);
 
   async function logout() {
-    await fetch('/api/admin/logout', { method: 'POST' });
-    router.push('/admin/login');
-    router.refresh();
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' });
+      router.push('/admin/login');
+      router.refresh();
+    } catch {
+      setLoggingOut(false);
+    }
   }
 
   return (
@@ -66,9 +73,10 @@ export default function AdminClient({
         </div>
         <button
           onClick={logout}
-          className="rounded-full border border-white/10 px-4 py-2 font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/70 uppercase hover:border-[color:var(--bd-lime)]/60 hover:text-[color:var(--bd-lime)]"
+          disabled={loggingOut}
+          className="rounded-full border border-white/10 px-4 py-2 font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/70 uppercase hover:border-[color:var(--bd-lime)]/60 hover:text-[color:var(--bd-lime)] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Log out
+          {loggingOut ? 'Logging out…' : 'Log out'}
         </button>
       </div>
 

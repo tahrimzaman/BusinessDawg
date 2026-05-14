@@ -9,8 +9,8 @@ The stack is intentionally lean — only services that are already part of the t
 | Database | **Neon Postgres** (ap-southeast-1, Singapore) | Free tier, scales to zero |
 | Transactional email | **Hostinger SMTP** via `yo@businessdawg.com` mailbox | Included in current hosting plan, 100 emails/day |
 | Analytics | **PostHog Cloud** (US region) | Free 1M events/mo |
-| CMS (deferred) | Sanity | Free 3 users / 10k docs — Phase 3 |
-| Chatbot (gated) | Groq Llama 3.1 | Free tier — Phase 4 |
+| CMS (scaffolded, unused) | Sanity | Free 3 users / 10k docs — Phase 3 attempted then reverted 2026-05-14 |
+| Chatbot (scaffolded, unused) | Groq Llama 3.1 | Free tier — Phase 4 attempted then reverted 2026-05-14 |
 
 No Resend, no MailerLite, no Supabase. One database, one mailbox, one analytics project.
 
@@ -26,7 +26,9 @@ No Resend, no MailerLite, no Supabase. One database, one mailbox, one analytics 
 - ✅ `ADMIN_PASSWORD` + `ADMIN_SESSION_SECRET` generated
 - ✅ `.env.local` populated; `.env` has `DATABASE_URL` for Prisma CLI
 - 🟡 Hostinger production environment vars: **not yet mirrored** — see section 7
-- 🟡 Sanity project: deferred to Phase 3
+- 🟡 Sanity project: scaffolded; Phase 3 wiring attempted on 2026-05-14, reverted due to bugs — needs root-cause + retry
+- 🟡 Chatbot: static UI; Phase 4 (Groq streaming) attempted on 2026-05-14, reverted due to bugs — needs root-cause + retry
+- ✅ Backend hardened on 2026-05-14: admin session secret fails-closed in production, CSV export capped at 10k rows, SMTP misconfig logs `[CRITICAL]` in production, `/api/join` no longer leaks Zod schema, rate-limit buckets self-prune
 
 ---
 
@@ -116,9 +118,11 @@ Already set up in section 2 — the same mailbox is used for SMTP sending. To re
 
 ---
 
-## 6. Sanity CMS (deferred to Phase 3)
+## 6. Sanity CMS (scaffolded; Phase 3 reverted 2026-05-14)
 
-Schemas + Studio mount already exist in the repo (`sanity/schemas/`, `/studio` route). When we wire Phase 3, the only env vars needed are:
+Schemas + Studio mount already exist in the repo (`sanity/schemas/`, `/studio` route). The Sanity client and GROQ queries live in [src/lib/sanity/](src/lib/sanity/). Phase 3 wired the Systems and Shadai showcase pages to Sanity with a hardcoded fallback (`b23645b`) but was reverted (`4ce0e25`) the same day due to bugs — content currently comes from [src/lib/copy.ts](src/lib/copy.ts) (hardcoded). Before re-attempting, diff the revert and root-cause why the fallback path didn't hold up.
+
+When we re-wire Phase 3, the only env vars needed are:
 
 ```
 NEXT_PUBLIC_SANITY_PROJECT_ID=

@@ -93,18 +93,18 @@ export default function Join() {
           />
           <input
             name="role"
-            placeholder="Role you want (or invent one)"
+            placeholder="Role you want, or invent one (optional)"
             className="h-12 rounded-full border border-white/10 bg-transparent px-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
           />
           <textarea
             name="note"
-            placeholder="Tell us what you’d build here."
+            placeholder="Tell us what you’d build here (optional)"
             rows={5}
             className="rounded-3xl border border-white/10 bg-transparent p-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
           />
           <input
             name="portfolio"
-            placeholder="Link to work (Figma, GitHub, site, etc.)"
+            placeholder="Link to work — Figma, GitHub, site, etc. (optional)"
             className="h-12 rounded-full border border-white/10 bg-transparent px-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
           />
           <button

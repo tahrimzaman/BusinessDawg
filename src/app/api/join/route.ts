@@ -33,10 +33,13 @@ export async function POST(req: Request) {
 
   const parsed = Schema.safeParse(raw);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'invalid fields', issues: parsed.error.issues },
-      { status: 400 },
-    );
+    // Don't leak the Zod schema in the response — generic message only. The
+    // frontend already enforces field constraints client-side, so a 400 here
+    // is either a misconfigured client or a probe.
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[/api/join] validation failed', parsed.error.issues);
+    }
+    return NextResponse.json({ error: 'invalid fields' }, { status: 400 });
   }
 
   if (isLikelyBot(parsed.data)) {

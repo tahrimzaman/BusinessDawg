@@ -2,12 +2,23 @@ import { createHash, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
 
 const COOKIE_NAME = 'bd_admin';
-const SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || 'change-me-in-production';
+
+// Resolve the session secret per-call rather than at module load. In production
+// we refuse to fall back to a default — a missing secret makes admin auth
+// fail-closed (every isAuthed/verifyPassword returns false). In dev we allow a
+// known-weak fallback so local work isn't blocked.
+function sessionSecret(): string | null {
+  const s = process.env.ADMIN_SESSION_SECRET;
+  if (s) return s;
+  if (process.env.NODE_ENV === 'production') return null;
+  return 'change-me-in-production-DEV-ONLY';
+}
 
 function expectedToken(): string | null {
   const pw = process.env.ADMIN_PASSWORD;
-  if (!pw) return null;
-  return createHash('sha256').update(`${pw}:${SESSION_SECRET}`).digest('hex');
+  const secret = sessionSecret();
+  if (!pw || !secret) return null;
+  return createHash('sha256').update(`${pw}:${secret}`).digest('hex');
 }
 
 export async function setAdminCookie(): Promise<void> {
@@ -48,7 +59,9 @@ export async function isAuthed(): Promise<boolean> {
 
 export function verifyPassword(submitted: string): boolean {
   const pw = process.env.ADMIN_PASSWORD;
-  if (!pw) return false;
+  // Also require a session secret to be configured in production — otherwise
+  // the cookie we set wouldn't validate on subsequent requests.
+  if (!pw || sessionSecret() === null) return false;
   const a = Buffer.from(submitted);
   const b = Buffer.from(pw);
   if (a.length !== b.length) return false;

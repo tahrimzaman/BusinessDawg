@@ -12,8 +12,16 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const type = url.searchParams.get('type');
 
+  // Cap export size to protect memory + response time as the table grows. If we
+  // ever need a full snapshot we'll add pagination via ?cursor= or a one-off
+  // backend export — the admin UI never needs more than this in a single click.
+  const EXPORT_LIMIT = 10_000;
+
   if (type === 'subscribers') {
-    const rows = await prisma.subscriber.findMany({ orderBy: { createdAt: 'desc' } });
+    const rows = await prisma.subscriber.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: EXPORT_LIMIT,
+    });
     const csv = toCsv(
       ['createdAt', 'email', 'source'],
       rows.map((r) => [r.createdAt.toISOString(), r.email, r.source]),
@@ -27,7 +35,10 @@ export async function GET(req: Request) {
   }
 
   if (type === 'applications') {
-    const rows = await prisma.application.findMany({ orderBy: { createdAt: 'desc' } });
+    const rows = await prisma.application.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: EXPORT_LIMIT,
+    });
     const csv = toCsv(
       ['createdAt', 'name', 'email', 'role', 'portfolio', 'note'],
       rows.map((r) => [

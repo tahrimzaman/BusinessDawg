@@ -13,13 +13,29 @@ import nodemailer from 'nodemailer';
 //   ADMIN_INBOX  where lead notifications land
 
 let _transport: nodemailer.Transporter | null = null;
+let _missingConfigLogged = false;
 function transport(): nodemailer.Transporter | null {
   if (_transport) return _transport;
   const host = process.env.SMTP_HOST;
   const port = Number(process.env.SMTP_PORT || 465);
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
-  if (!host || !user || !pass) return null;
+  if (!host || !user || !pass) {
+    // Loud failure in production — a misconfigured deploy must NOT silently
+    // swallow lead notifications. Log once at error level so it shows up in
+    // Hostinger / any error tracker; subsequent calls stay quiet.
+    if (!_missingConfigLogged) {
+      _missingConfigLogged = true;
+      const msg =
+        '[email] SMTP not configured (missing SMTP_HOST/SMTP_USER/SMTP_PASS) — lead notifications will not be delivered.';
+      if (process.env.NODE_ENV === 'production') {
+        console.error('[CRITICAL]', msg);
+      } else {
+        console.warn(msg);
+      }
+    }
+    return null;
+  }
   _transport = nodemailer.createTransport({
     host,
     port,
