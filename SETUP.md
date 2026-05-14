@@ -10,7 +10,7 @@ The stack is intentionally lean — only services that are already part of the t
 | Transactional email | **Hostinger SMTP** via `yo@businessdawg.com` mailbox | Included in current hosting plan, 100 emails/day |
 | Analytics | **PostHog Cloud** (US region) | Free 1M events/mo |
 | CMS (scaffolded, unused) | Sanity | Free 3 users / 10k docs — Phase 3 attempted then reverted 2026-05-14 |
-| Chatbot (scaffolded, unused) | Groq Llama 3.1 | Free tier — Phase 4 attempted then reverted 2026-05-14 |
+| Chatbot (live) | Google Gemini 2.5 Flash Lite | Free tier (1M TPM, 15 RPM, 1500 RPD) — Phase 4 retry shipped 2026-05-14 |
 
 No Resend, no MailerLite, no Supabase. One database, one mailbox, one analytics project.
 
@@ -27,7 +27,7 @@ No Resend, no MailerLite, no Supabase. One database, one mailbox, one analytics 
 - ✅ `.env.local` populated; `.env` has `DATABASE_URL` for Prisma CLI
 - 🟡 Hostinger production environment vars: **not yet mirrored** — see section 7
 - 🟡 Sanity project: scaffolded; Phase 3 wiring attempted on 2026-05-14, reverted due to bugs — needs root-cause + retry
-- 🟡 Chatbot: static UI; Phase 4 (Groq streaming) attempted on 2026-05-14, reverted due to bugs — needs root-cause + retry
+- ✅ Chatbot: Phase 4 retry shipped on 2026-05-14. Google Gemini 2.5 Flash Lite via OpenAI-compat endpoint. Inline preview + cinematic full-bleed overlay with streaming. See §8 below.
 - ✅ Backend hardened on 2026-05-14: admin session secret fails-closed in production, CSV export capped at 10k rows, SMTP misconfig logs `[CRITICAL]` in production, `/api/join` no longer leaks Zod schema, rate-limit buckets self-prune
 
 ---
@@ -176,6 +176,30 @@ Then `/admin` on prod, log in, confirm both rows appear in the dashboard, export
 
 ---
 
+## 8. Chatbot (Google Gemini, free tier)
+
+The "Ask the dawg" section on the home page launches a cinematic full-bleed overlay backed by Gemini. Lives at [src/app/api/chat/route.ts](src/app/api/chat/route.ts) (server) and [src/components/sections/Chatbot.tsx](src/components/sections/Chatbot.tsx) (client).
+
+1. Get a free API key from <https://aistudio.google.com/apikey>. No billing or credit card required.
+2. Paste into `.env.local`:
+   ```
+   GEMINI_API_KEY=AIzaSy...
+   GEMINI_MODEL=gemini-2.5-flash-lite
+   ```
+3. Confirm locally: `npm run dev` → home page → "Talk to the dawg" CTA → ask "What do you build?". You should see a streamed reply that mentions the Systems Stack.
+
+**Model choice**: `gemini-2.5-flash-lite` is the right pick today. Empirically (2026-05-14) `gemini-2.0-flash` returns `limit:0` on new accounts and `gemini-2.5-flash` burns its budget on thinking-mode before producing output. The lite variant streams fast and stays on free tier.
+
+**Quotas**: 1M tokens/minute, 15 requests/minute, 1500 requests/day on free tier. Plenty for a marketing site with 2–3 concurrent visitors. The `/api/chat` route also has its own per-IP rate limit (20 req/min) so a single visitor can't burn the org quota.
+
+**System prompt + guardrails** are baked into the route (`buildSystemPrompt()`). Never quote prices, 1–3 sentence replies, on-brand Gen Z voice, "I don't know" → Book a Call / WhatsApp punt. To tune the personality, edit the constants in `route.ts` and re-deploy — no env change needed.
+
+**If you hit `503 chat not configured`**: `GEMINI_API_KEY` is missing in the env. Mirror it to Hostinger hPanel → Node.js → Environment Variables and restart the app.
+
+**If streaming gets buffered on production** (Hostinger LiteSpeed sometimes does this for SSE): set `stream: false` inside the Gemini fetch call in `route.ts` and ship a non-streaming response. The client handles both — it just won't type-on-screen, the full reply will land at once.
+
+---
+
 ## Rotating credentials
 
 | If you rotate… | Change in |
@@ -183,5 +207,6 @@ Then `/admin` on prod, log in, confirm both rows appear in the dashboard, export
 | Neon DB password | `.env.local`, `.env`, Hostinger Node env, restart |
 | Hostinger mailbox password | `.env.local`, Hostinger Node env, restart |
 | PostHog project (new key) | `.env.local`, Hostinger Node env, restart |
+| Gemini API key | `.env.local`, Hostinger Node env, restart |
 | Admin password | `.env.local`, Hostinger Node env, restart (existing sessions invalidated) |
 | Admin session secret | Same as above (existing sessions invalidated) |

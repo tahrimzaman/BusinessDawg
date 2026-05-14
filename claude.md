@@ -42,7 +42,7 @@ These are settled. Do not re-debate without explicit approval from Tahrim.
 
 Claude Code **must pause and ask** before doing any of the following:
 
-1. **Wiring the AI chatbot.** Use a free/open-source model (e.g. via Hugging Face Inference API, Groq free tier, or Ollama for local dev). Confirm the exact provider with Tahrim before writing API calls or storing keys.
+1. ~~**Wiring the AI chatbot.**~~ **RESOLVED 2026-05-14.** Provider: **Google Gemini 2.5 Flash Lite** via the OpenAI-compatible endpoint. Free tier (1M TPM / 15 RPM / 1500 RPD) covers expected traffic. The earlier Groq attempt was reverted because Groq's 12k-TPM free cap broke under real use. Chatbot is live on the home page with an inline preview + full-bleed cinematic overlay; system prompt and guardrails in [src/app/api/chat/route.ts](src/app/api/chat/route.ts) — never quote prices, 1–3 sentence Gen Z voice, "I don't know" → Book a Call / WhatsApp punt.
 2. **Picking the final 3 easter eggs.** Propose ~6, let Tahrim pick.
 3. **Spending money on anything** (paid Sanity tier, paid fonts, premium 3D assets, etc.). Default is always free tier.
 4. **Generating additional mascot poses.** The base mascot exists in the logo. New poses (running, sleeping, waving, thinking) should match the existing style — sample 2–3 directions for Tahrim to approve before producing a full set.

@@ -144,6 +144,32 @@ body {
   border-color: rgba(200, 255, 0, 0.35);
 }
 
+/* CRT scan-line overlay used on the chatbot avatar inside the cinematic mode. */
+.bd-scanline-avatar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.35) 3px,
+    transparent 4px
+  );
+  mix-blend-mode: overlay;
+  animation: bd-scan 6s linear infinite;
+  opacity: 0.6;
+}
+@keyframes bd-scan {
+  0% {
+    transform: translateY(-12%);
+  }
+  100% {
+    transform: translateY(12%);
+  }
+}
+
 /* Lenis smooth scroll guard */
 html.lenis,
 html.lenis body {

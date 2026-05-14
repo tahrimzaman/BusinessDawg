@@ -10,7 +10,7 @@ This document is the **original spec**. The build has diverged in a few places �
 
 - **Stack:** the original spec mentioned React Three Fiber; the current build has **no R3F / Three.js dependency installed**. Hero motion is Framer Motion + Lenis only.
 - **CMS (Phase 3 — Sanity):** scaffolded but **not consumed by any page** — Phase 3 wiring was attempted (`b23645b`) and reverted (`4ce0e25`) on 2026-05-14 due to bugs. Page copy currently comes from hardcoded `src/lib/copy.ts`.
-- **Chatbot (Phase 4 — Groq):** **not wired** — Phase 4 streaming integration (`e7c5049`) was reverted (`36515a3`) on 2026-05-14 due to bugs. The chatbot UI is currently a static scripted preview.
+- **Chatbot (Phase 4):** **shipped 2026-05-14** — Google Gemini 2.5 Flash Lite via the OpenAI-compatible endpoint, free tier. Inline preview on the home page launches a full-bleed cinematic overlay with streaming, lime gradient glow, mascot scan-line CRT accent, and hardcoded answer for "Who is Tahrim?". System prompt + guardrails in [src/app/api/chat/route.ts](src/app/api/chat/route.ts). The earlier Groq attempt was reverted because the 12k-TPM free cap broke under real use.
 - **Email:** Hostinger SMTP via Nodemailer (the original Resend plan was dropped, and MailerLite is not in use). See `SETUP.md` §2.
 - **Database:** Neon Postgres via Prisma (migration `20260514034108_init` applied). See `SETUP.md` §1.
 - **Sitemap:** `/built` and `/built/[slug]` do **not** exist as routes. The Shadai showcase lives inside `/about` via the `ShadaiShowcase` component. The aspirational sitemap below is preserved for reference.
