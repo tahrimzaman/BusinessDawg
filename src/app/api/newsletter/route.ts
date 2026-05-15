@@ -6,6 +6,7 @@ import { rateLimit, clientIp } from '@/lib/security/ratelimit';
 import { isLikelyBot, HONEYPOT_FIELD, TIMESTAMP_FIELD } from '@/lib/security/honeypot';
 import { hashIp } from '@/lib/security/hash';
 import { notifyAdminOfSubscriber, notifyVisitorSubscribed } from '@/lib/email/send';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 
@@ -16,7 +17,7 @@ const Schema = z.object({
   [TIMESTAMP_FIELD]: z.union([z.number(), z.string()]).optional(),
 });
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const raw = await req.json().catch(() => null);
   if (!raw) return NextResponse.json({ error: 'invalid body' }, { status: 400 });
 
@@ -68,3 +69,5 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ ok: true });
 }
+
+export const POST = withLogging('newsletter.subscribe', handlePOST);

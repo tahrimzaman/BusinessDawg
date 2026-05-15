@@ -19,6 +19,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Mascot from '@/components/brand/Mascot';
 import Reveal from '@/components/motion/Reveal';
+import { useFocusTrap } from '@/components/motion/useFocusTrap';
 import { EASE } from '@/lib/motion/easing';
 
 type Msg = { role: 'assistant' | 'user'; content: string };
@@ -362,11 +363,16 @@ function CinematicOverlay({
   onInputChange,
   onInputKey,
 }: OverlayProps) {
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  // Trap Tab focus inside the panel while open. Esc + focus-on-open +
+  // focus-restore-on-close are already wired in the parent component.
+  useFocusTrap(true, panelRef);
+
   return (
     <motion.div
       role="dialog"
       aria-modal="true"
-      aria-label="Dawg chat"
+      aria-labelledby="chatbot-title"
       className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -400,6 +406,7 @@ function CinematicOverlay({
 
       {/* Panel */}
       <motion.div
+        ref={panelRef}
         className="bd-cinematic-panel relative z-10 mx-3 flex h-[88vh] w-full max-w-[720px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)]/95 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6),0_0_0_1px_color-mix(in_srgb,var(--bd-lime)_25%,transparent)] backdrop-blur-2xl sm:mx-0 sm:h-[78vh]"
         initial={{ y: 24, scale: 0.98, opacity: 0 }}
         animate={{ y: 0, scale: 1, opacity: 1 }}
@@ -412,7 +419,9 @@ function CinematicOverlay({
             <Mascot pose="idle" size={36} />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold">Dawg</p>
+            <p id="chatbot-title" className="text-sm font-semibold">
+              Dawg
+            </p>
             <p className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
               {isStreaming ? 'Thinking…' : 'Live · ready when you are'}
             </p>
@@ -478,8 +487,12 @@ function CinematicOverlay({
 
         {/* Input row */}
         <div className="border-t border-white/8 px-5 py-4">
+          <label htmlFor="chatbot-input" className="sr-only">
+            Ask the dawg a question
+          </label>
           <div className="flex items-end gap-2 rounded-2xl border border-white/10 bg-[color:var(--bd-ink)]/60 px-3 py-2 focus-within:border-[color:var(--bd-lime)]/60">
             <textarea
+              id="chatbot-input"
               ref={inputRef}
               value={input}
               onChange={(e) => onInputChange(e.target.value)}
@@ -494,7 +507,7 @@ function CinematicOverlay({
               type="button"
               onClick={onSend}
               disabled={isStreaming || !input.trim()}
-              className="inline-flex h-9 items-center rounded-full bg-[color:var(--bd-lime)] px-4 text-sm font-semibold text-[color:var(--bd-ink)] transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+              className="focus-bd inline-flex h-9 items-center rounded-full bg-[color:var(--bd-lime)] px-4 text-sm font-semibold text-[color:var(--bd-ink)] transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
             >
               Send
             </button>

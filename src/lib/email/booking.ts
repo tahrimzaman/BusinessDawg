@@ -5,7 +5,8 @@
  * iCalendar attachment so visitors can add the call to their calendar.
  */
 
-import { getTransport, FROM, ADMIN_INBOX } from './transport';
+import { FROM, ADMIN_INBOX } from './transport';
+import { sendWithRetry } from './sendWithRetry';
 import { emailShell, escapeHtml, infoCard, greyCard, ctaButton, fieldRow } from './template';
 import { signManageToken } from '@/lib/booking/tokens';
 
@@ -107,9 +108,6 @@ export function buildIcs(b: BookingEmailPayload, method: 'REQUEST' | 'CANCEL' = 
 // ─── Visitor booking confirmation ──────────────────────────────────────────────
 
 export async function notifyVisitorBookingConfirmed(b: BookingEmailPayload): Promise<void> {
-  const t = getTransport();
-  if (!t) return;
-
   const firstName = b.name.split(' ')[0] || b.name;
   const visitorLong = formatLong(b.startUtc, b.visitorTz);
   const ownerLong = formatLong(b.startUtc, b.ownerTz);
@@ -168,28 +166,27 @@ export async function notifyVisitorBookingConfirmed(b: BookingEmailPayload): Pro
         },
       ];
 
-  const info = await t.sendMail({
-    from: FROM,
-    to: b.email,
-    subject,
-    text,
-    html: emailShell({
-      label: '/ Booking Confirmed',
-      tone: 'success',
-      headline: 'Booked. See you then.',
-      body,
-    }),
-    attachments,
-  });
-  console.log('[email] visitor confirmation sent to', b.email, '| msgId:', info.messageId);
+  await sendWithRetry(
+    {
+      from: FROM,
+      to: b.email,
+      subject,
+      text,
+      html: emailShell({
+        label: '/ Booking Confirmed',
+        tone: 'success',
+        headline: 'Booked. See you then.',
+        body,
+      }),
+      attachments,
+    },
+    { type: 'visitor_booking_confirmation', bookingId: b.id, distinctId: b.email },
+  );
 }
 
 // ─── Admin booking notification ────────────────────────────────────────────────
 
 export async function notifyAdminOfBooking(b: BookingEmailPayload): Promise<void> {
-  const t = getTransport();
-  if (!t) return;
-
   const ownerShort = formatShort(b.startUtc, b.ownerTz);
   const subject = `New booking: ${b.name} — ${ownerShort}`;
   const adminLink = `${BOOKING_BASE_URL}/admin/bookings/${b.id}`;
@@ -232,28 +229,27 @@ export async function notifyAdminOfBooking(b: BookingEmailPayload): Promise<void
     .filter(Boolean)
     .join('\n');
 
-  const info = await t.sendMail({
-    from: FROM,
-    to: ADMIN_INBOX,
-    replyTo: b.email,
-    subject,
-    text,
-    html: emailShell({
-      label: '/ New Booking',
-      tone: 'info',
-      headline: `${escapeHtml(b.name)} just booked.`,
-      body,
-    }),
-  });
-  console.log('[email] admin booking notification sent | msgId:', info.messageId);
+  await sendWithRetry(
+    {
+      from: FROM,
+      to: ADMIN_INBOX,
+      replyTo: b.email,
+      subject,
+      text,
+      html: emailShell({
+        label: '/ New Booking',
+        tone: 'info',
+        headline: `${escapeHtml(b.name)} just booked.`,
+        body,
+      }),
+    },
+    { type: 'admin_booking_notification', bookingId: b.id },
+  );
 }
 
 // ─── Visitor 24h reminder ──────────────────────────────────────────────────────
 
 export async function notifyVisitorBookingReminder(b: BookingEmailPayload): Promise<void> {
-  const t = getTransport();
-  if (!t) return;
-
   const firstName = b.name.split(' ')[0] || b.name;
   const visitorLong = formatLong(b.startUtc, b.visitorTz);
   const hasMeet = !!b.meetUrl;
@@ -286,27 +282,26 @@ export async function notifyVisitorBookingReminder(b: BookingEmailPayload): Prom
     .filter(Boolean)
     .join('\n');
 
-  const info = await t.sendMail({
-    from: FROM,
-    to: b.email,
-    subject,
-    text,
-    html: emailShell({
-      label: "/ Tomorrow's Call",
-      tone: 'info',
-      headline: 'Quick reminder.',
-      body,
-    }),
-  });
-  console.log('[email] 24h reminder sent to', b.email, '| msgId:', info.messageId);
+  await sendWithRetry(
+    {
+      from: FROM,
+      to: b.email,
+      subject,
+      text,
+      html: emailShell({
+        label: "/ Tomorrow's Call",
+        tone: 'info',
+        headline: 'Quick reminder.',
+        body,
+      }),
+    },
+    { type: 'visitor_booking_reminder', bookingId: b.id, distinctId: b.email },
+  );
 }
 
 // ─── Visitor cancellation ──────────────────────────────────────────────────────
 
 export async function notifyVisitorBookingCancelled(b: BookingEmailPayload): Promise<void> {
-  const t = getTransport();
-  if (!t) return;
-
   const firstName = b.name.split(' ')[0] || b.name;
   const visitorLong = formatLong(b.startUtc, b.visitorTz);
   const subject = `Cancelled: your BusinessDawg call — ${formatShort(b.startUtc, b.visitorTz)}`;
@@ -332,24 +327,26 @@ export async function notifyVisitorBookingCancelled(b: BookingEmailPayload): Pro
     '— BusinessDawg',
   ].join('\n');
 
-  const info = await t.sendMail({
-    from: FROM,
-    to: b.email,
-    subject,
-    text,
-    html: emailShell({
-      label: '/ Booking Cancelled',
-      tone: 'cancel',
-      headline: "Your call's off.",
-      body,
-    }),
-    attachments: [
-      {
-        filename: 'cancel.ics',
-        content: buildIcs(b, 'CANCEL'),
-        contentType: 'text/calendar; charset=UTF-8; method=CANCEL',
-      },
-    ],
-  });
-  console.log('[email] cancellation sent to', b.email, '| msgId:', info.messageId);
+  await sendWithRetry(
+    {
+      from: FROM,
+      to: b.email,
+      subject,
+      text,
+      html: emailShell({
+        label: '/ Booking Cancelled',
+        tone: 'cancel',
+        headline: "Your call's off.",
+        body,
+      }),
+      attachments: [
+        {
+          filename: 'cancel.ics',
+          content: buildIcs(b, 'CANCEL'),
+          contentType: 'text/calendar; charset=UTF-8; method=CANCEL',
+        },
+      ],
+    },
+    { type: 'visitor_booking_cancellation', bookingId: b.id, distinctId: b.email },
+  );
 }

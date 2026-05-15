@@ -16,6 +16,8 @@ import { hashIp } from '@/lib/security/hash';
 import { getBookingRule } from '@/lib/booking/rules';
 import { authedClient, getGoogleEnv, insertBookingEvent } from '@/lib/booking/google';
 import { notifyVisitorBookingConfirmed, notifyAdminOfBooking } from '@/lib/email/booking';
+import { withLogging } from '@/lib/log/route';
+import { capture } from '@/lib/analytics/posthog-server';
 
 export const runtime = 'nodejs';
 
@@ -25,7 +27,11 @@ const Schema = z.object({
   company: z.string().trim().max(160).optional().nullable(),
   role: z.string().trim().max(160).optional().nullable(),
   phone: z.string().trim().max(40).optional().nullable(),
-  intent: z.string().trim().min(1).max(2000),
+  // Tighter cap than the schema's old 2000 — 800 chars is the upper end of a
+  // useful "what do you want to build?" answer. Beyond that it stops being
+  // a booking note and starts being free-text exfil. Frontend caps at 2000
+  // so client-side validation stays loose; server tightens the actual store.
+  intent: z.string().trim().min(1).max(800),
   source: z.string().trim().max(40).optional().nullable(),
   startUtc: z.string().datetime(),
   visitorTz: z.string().min(1).max(60),
@@ -44,7 +50,7 @@ const Schema = z.object({
 class SlotContestedError extends Error {}
 class SlotTakenError extends Error {}
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const raw = await req.json().catch(() => null);
   if (!raw) return NextResponse.json({ error: 'invalid body' }, { status: 400 });
 
@@ -209,6 +215,13 @@ export async function POST(req: Request) {
       }
     } catch (err) {
       console.error('[/api/booking] gcal insert failed (fail-open)', err);
+      // Server-side event so a broken Google integration shows up in PostHog
+      // immediately rather than waiting for Tahrim to notice a stack of
+      // "Needs Meet link" badges.
+      capture('gcal_insert_failed', created.email, {
+        bookingId: created.id,
+        errorMessage: (err as Error)?.message,
+      });
     }
 
     if (meetUrl || gcalEventId) {
@@ -255,15 +268,20 @@ export async function POST(req: Request) {
       // two events on their calendar.
       skipIcs: !!meetUrl && googleConfigured,
     };
-    // Fire-and-forget — returns the response immediately so the visitor sees
-    // the success screen fast. Emails complete async on the persistent Node
-    // process. Each function logs its own messageId or error.
-    void notifyVisitorBookingConfirmed(emailPayload).catch((err: Error) =>
-      console.error('[/api/booking] visitor email failed:', err.message),
-    );
-    void notifyAdminOfBooking(emailPayload).catch((err: Error) =>
-      console.error('[/api/booking] admin email failed:', err.message),
-    );
+    // Fire-and-forget — visitor sees the success screen fast. sendWithRetry
+    // handles retries + outbox internally so these never need a .catch.
+    void notifyVisitorBookingConfirmed(emailPayload);
+    void notifyAdminOfBooking(emailPayload);
+
+    // Business event — visible in PostHog server-side. Use email as distinctId
+    // so the same person's events stitch across pageview, booking, etc.
+    capture('booking_created', created.email, {
+      bookingId: created.id,
+      source: created.source,
+      utmSource: created.utmSource,
+      utmCampaign: created.utmCampaign,
+      hasMeet: !!meetUrl,
+    });
 
     return NextResponse.json({ ok: true, bookingId });
   } catch (err) {
@@ -274,3 +292,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'persistence failed' }, { status: 500 });
   }
 }
+
+export const POST = withLogging('booking.create', handlePOST);

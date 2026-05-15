@@ -192,3 +192,43 @@ model GoogleToken {
   lastRefreshAt DateTime  @default(now())
   createdAt     DateTime  @default(now())
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Observability + reliability — Phase 3 (perf-audit follow-up)
+// ─────────────────────────────────────────────────────────────────────────
+
+// Emails that ALL retries failed land here, so admin can manually replay
+// them (e.g. from /admin/email-debug). `status` enum-as-string so it's easy
+// to grep + extend later without a migration.
+//   'unsent'  — gave up after retries; needs manual replay
+//   'sent'    — eventually succeeded (mostly informational; we don't write these)
+//   'gave_up' — permanent failure (e.g. invalid recipient); won't be replayed
+model EmailOutbox {
+  id        String   @id @default(cuid())
+  to        String
+  subject   String
+  bodyHtml  String   @db.Text
+  bodyText  String?  @db.Text
+  attempts  Int      @default(0)
+  lastError String?  @db.Text
+  status    String   @default("unsent")
+  // { type: 'visitor_confirmation' | 'admin_notification' | ..., bookingId?: string }
+  context   Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+}
+
+// Audit trail for security-relevant admin actions. Right now: login attempts
+// (success + failure). Future: booking cancels by admin, customer edits, etc.
+model AdminAudit {
+  id          String   @id @default(cuid())
+  action      String   // e.g. 'login_success' | 'login_failure'
+  actorIpHash String?  // HMAC-hashed (see src/lib/security/hash.ts)
+  userAgent   String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([action, createdAt])
+}

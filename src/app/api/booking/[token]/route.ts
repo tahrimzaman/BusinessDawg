@@ -9,11 +9,12 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { verifyManageToken } from '@/lib/booking/tokens';
 import { getBookingRule } from '@/lib/booking/rules';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(
+async function handleGET(
   _req: Request,
   ctx: { params: Promise<{ token: string }> },
 ): Promise<NextResponse> {
@@ -60,3 +61,5 @@ export async function GET(
     meetingTitle: rule.meetingTitle,
   });
 }
+
+export const GET = withLogging('booking.manage.fetch', handleGET);

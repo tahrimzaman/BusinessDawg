@@ -37,17 +37,17 @@ export default function Navbar() {
           href="/"
           aria-label="BusinessDawg home"
           onClick={() => setOpen(false)}
-          className="group flex items-center gap-2 text-[color:var(--bd-bone)] transition-transform hover:scale-[1.02]"
+          className="focus-bd group flex items-center gap-2 text-[color:var(--bd-bone)] transition-transform hover:scale-[1.02]"
         >
           <Logo className="h-9 md:h-11" />
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
           {LINKS.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className="text-sm font-medium text-[color:var(--bd-bone)]/70 transition-colors hover:text-[color:var(--bd-lime)]"
+              className="focus-bd text-sm font-medium text-[color:var(--bd-bone)]/70 transition-colors hover:text-[color:var(--bd-lime)]"
             >
               {l.label}
             </Link>
@@ -59,23 +59,28 @@ export default function Navbar() {
         </div>
 
         <button
-          aria-label="Open menu"
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-expanded={open}
+          aria-controls="mobile-nav"
           onClick={() => setOpen((o) => !o)}
-          className="rounded-full border border-white/10 px-3 py-2 text-xs tracking-widest text-[color:var(--bd-bone)]/80 uppercase md:hidden"
+          className="focus-bd rounded-full border border-white/10 px-3 py-2 text-xs tracking-widest text-[color:var(--bd-bone)]/80 uppercase md:hidden"
         >
           {open ? 'Close' : 'Menu'}
         </button>
       </div>
 
       {open && (
-        <div className="md:hidden">
-          <nav className="flex flex-col gap-4 border-t border-white/5 bg-[color:var(--bd-ink)]/95 px-6 py-6 backdrop-blur-lg">
+        <div id="mobile-nav" className="md:hidden">
+          <nav
+            aria-label="Mobile"
+            className="flex flex-col gap-4 border-t border-white/5 bg-[color:var(--bd-ink)]/95 px-6 py-6 backdrop-blur-lg"
+          >
             {LINKS.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className="text-2xl font-semibold text-[color:var(--bd-bone)] italic hover:text-[color:var(--bd-lime)]"
+                className="focus-bd text-2xl font-semibold text-[color:var(--bd-bone)] italic hover:text-[color:var(--bd-lime)]"
               >
                 {l.label}
               </Link>
@@ -83,7 +88,7 @@ export default function Navbar() {
             <Link
               href="/contact"
               onClick={() => setOpen(false)}
-              className="mt-2 inline-flex h-12 w-fit items-center rounded-full bg-[color:var(--bd-lime)] px-5 text-sm font-semibold text-[color:var(--bd-ink)]"
+              className="focus-bd mt-2 inline-flex h-12 w-fit items-center rounded-full bg-[color:var(--bd-lime)] px-5 text-sm font-semibold text-[color:var(--bd-ink)]"
             >
               Book a Call →
             </Link>

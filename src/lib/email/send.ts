@@ -2,9 +2,14 @@
  * Admin notification emails (application, subscriber) plus new visitor
  * auto-reply emails (newsletter welcome, application receipt). All use
  * emailShell() from template.ts for consistent on-brand layout.
+ *
+ * All sends go through sendWithRetry → 3 attempts → outbox row on final
+ * failure. Callers can `await` these without try/catch; the helper never
+ * throws.
  */
 
-import { getTransport, FROM, ADMIN_INBOX } from './transport';
+import { FROM, ADMIN_INBOX } from './transport';
+import { sendWithRetry } from './sendWithRetry';
 import { emailShell, escapeHtml, greyCard, ctaButton, fieldRow } from './template';
 
 const BOOKING_BASE_URL = process.env.BOOKING_BASE_URL || 'https://businessdawg.com';
@@ -20,9 +25,6 @@ export type ApplicationEmail = {
 };
 
 export async function notifyAdminOfApplication(payload: ApplicationEmail): Promise<void> {
-  const t = getTransport();
-  if (!t) return;
-
   const rows = [
     fieldRow('Name', escapeHtml(payload.name)),
     fieldRow(
@@ -54,28 +56,30 @@ export async function notifyAdminOfApplication(payload: ApplicationEmail): Promi
 
   const subject = `New application: ${payload.name}${payload.role ? ` — ${payload.role}` : ''}`;
 
-  const info = await t.sendMail({
-    from: FROM,
-    to: ADMIN_INBOX,
-    replyTo: payload.email,
-    subject,
-    html: emailShell({
-      label: '/ New Application',
-      tone: 'info',
-      headline: `${escapeHtml(payload.name)} wants in.`,
-      body,
-    }),
-    text: [
-      `${payload.name} just applied${payload.role ? ` for ${payload.role}` : ''}.`,
-      '',
-      `Email: ${payload.email}`,
-      payload.portfolio ? `Portfolio: ${payload.portfolio}` : '',
-      payload.note ? `\nNote:\n${payload.note}` : '',
-    ]
-      .filter(Boolean)
-      .join('\n'),
-  });
-  console.log('[email] admin application notification sent | msgId:', info.messageId);
+  await sendWithRetry(
+    {
+      from: FROM,
+      to: ADMIN_INBOX,
+      replyTo: payload.email,
+      subject,
+      html: emailShell({
+        label: '/ New Application',
+        tone: 'info',
+        headline: `${escapeHtml(payload.name)} wants in.`,
+        body,
+      }),
+      text: [
+        `${payload.name} just applied${payload.role ? ` for ${payload.role}` : ''}.`,
+        '',
+        `Email: ${payload.email}`,
+        payload.portfolio ? `Portfolio: ${payload.portfolio}` : '',
+        payload.note ? `\nNote:\n${payload.note}` : '',
+      ]
+        .filter(Boolean)
+        .join('\n'),
+    },
+    { type: 'admin_application_notification' },
+  );
 }
 
 // ─── Admin: new newsletter subscriber ─────────────────────────────────────────
@@ -83,9 +87,6 @@ export async function notifyAdminOfApplication(payload: ApplicationEmail): Promi
 export type SubscriberEmail = { email: string; source: string };
 
 export async function notifyAdminOfSubscriber(payload: SubscriberEmail): Promise<void> {
-  const t = getTransport();
-  if (!t) return;
-
   // Suppressed unless explicitly opted in — avoids inbox spam on every signup.
   if (process.env.NOTIFY_ON_SUBSCRIBE !== 'true') return;
 
@@ -96,22 +97,26 @@ export async function notifyAdminOfSubscriber(payload: SubscriberEmail): Promise
     </p>
   `;
 
-  const info = await t.sendMail({
-    from: FROM,
-    to: ADMIN_INBOX,
-    subject: `New subscriber: ${payload.email}`,
-    html: emailShell({ label: '/ New Subscriber', tone: 'info', headline: '+1 subscriber.', body }),
-    text: `${payload.email} signed up via ${payload.source}.`,
-  });
-  console.log('[email] admin subscriber notification sent | msgId:', info.messageId);
+  await sendWithRetry(
+    {
+      from: FROM,
+      to: ADMIN_INBOX,
+      subject: `New subscriber: ${payload.email}`,
+      html: emailShell({
+        label: '/ New Subscriber',
+        tone: 'info',
+        headline: '+1 subscriber.',
+        body,
+      }),
+      text: `${payload.email} signed up via ${payload.source}.`,
+    },
+    { type: 'admin_subscriber_notification' },
+  );
 }
 
 // ─── Visitor: newsletter welcome ───────────────────────────────────────────────
 
 export async function notifyVisitorSubscribed(email: string): Promise<void> {
-  const t = getTransport();
-  if (!t) return;
-
   const body = `
     <p style="margin:0 0 16px;font-size:15px;color:#0A0A0A;line-height:1.6">
       You're on the BusinessDawg list.
@@ -123,26 +128,28 @@ export async function notifyVisitorSubscribed(email: string): Promise<void> {
     ${ctaButton('See what we build →', BOOKING_BASE_URL)}
   `;
 
-  const info = await t.sendMail({
-    from: FROM,
-    to: email,
-    subject: "You're in — BusinessDawg list",
-    html: emailShell({
-      label: '/ Welcome to the Pack',
-      tone: 'success',
-      headline: "You're in.",
-      body,
-    }),
-    text: [
-      "You're on the BusinessDawg list.",
-      '',
-      "No fluff — just the good stuff on growth, builds, and business systems. We'll drop in when we have something worth saying.",
-      '',
-      `— BusinessDawg`,
-      BOOKING_BASE_URL,
-    ].join('\n'),
-  });
-  console.log('[email] newsletter welcome sent to', email, '| msgId:', info.messageId);
+  await sendWithRetry(
+    {
+      from: FROM,
+      to: email,
+      subject: "You're in — BusinessDawg list",
+      html: emailShell({
+        label: '/ Welcome to the Pack',
+        tone: 'success',
+        headline: "You're in.",
+        body,
+      }),
+      text: [
+        "You're on the BusinessDawg list.",
+        '',
+        "No fluff — just the good stuff on growth, builds, and business systems. We'll drop in when we have something worth saying.",
+        '',
+        `— BusinessDawg`,
+        BOOKING_BASE_URL,
+      ].join('\n'),
+    },
+    { type: 'visitor_subscribed_welcome', distinctId: email },
+  );
 }
 
 // ─── Visitor: application acknowledgement ─────────────────────────────────────
@@ -156,9 +163,6 @@ export type ApplicationReceiptPayload = {
 export async function notifyVisitorApplicationReceived(
   payload: ApplicationReceiptPayload,
 ): Promise<void> {
-  const t = getTransport();
-  if (!t) return;
-
   const firstName = payload.name.split(' ')[0] || payload.name;
   const roleText = payload.role ? ` for ${payload.role}` : '';
 
@@ -173,25 +177,27 @@ export async function notifyVisitorApplicationReceived(
     ${ctaButton('businessdawg.com →', BOOKING_BASE_URL)}
   `;
 
-  const info = await t.sendMail({
-    from: FROM,
-    to: payload.email,
-    subject: `Got your application${roleText} — BusinessDawg`,
-    html: emailShell({
-      label: '/ Application Received',
-      tone: 'success',
-      headline: 'Got it. Talk soon.',
-      body,
-    }),
-    text: [
-      `Hey ${firstName},`,
-      '',
-      `We got your application${roleText}. We'll review it and get back to you within a week.`,
-      '',
-      `Check out what we're building: ${BOOKING_BASE_URL}`,
-      '',
-      '— BusinessDawg',
-    ].join('\n'),
-  });
-  console.log('[email] application receipt sent to', payload.email, '| msgId:', info.messageId);
+  await sendWithRetry(
+    {
+      from: FROM,
+      to: payload.email,
+      subject: `Got your application${roleText} — BusinessDawg`,
+      html: emailShell({
+        label: '/ Application Received',
+        tone: 'success',
+        headline: 'Got it. Talk soon.',
+        body,
+      }),
+      text: [
+        `Hey ${firstName},`,
+        '',
+        `We got your application${roleText}. We'll review it and get back to you within a week.`,
+        '',
+        `Check out what we're building: ${BOOKING_BASE_URL}`,
+        '',
+        '— BusinessDawg',
+      ].join('\n'),
+    },
+    { type: 'visitor_application_receipt', distinctId: payload.email },
+  );
 }

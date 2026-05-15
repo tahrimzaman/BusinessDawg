@@ -11,11 +11,12 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { getBookingRule } from '@/lib/booking/rules';
 import { generateSlots } from '@/lib/booking/slots';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: Request) {
+async function handleGET(req: Request) {
   const url = new URL(req.url);
   const fromParam = url.searchParams.get('from');
   const toParam = url.searchParams.get('to');
@@ -24,12 +25,25 @@ export async function GET(req: Request) {
 
   const rule = await getBookingRule();
 
-  const fromUtc = fromParam ? Date.parse(fromParam + 'T00:00:00Z') : now;
-  const toUtc = toParam
-    ? Date.parse(toParam + 'T23:59:59Z')
-    : now + rule.maxHorizonDays * 86_400_000;
+  // Parse YYYY-MM-DD explicitly instead of concatenating into Date.parse.
+  // `Date.parse('2025-13-45T00:00:00Z')` returns NaN as we want, but
+  // `Date.parse('2025-13-01T00:00:00Z')` quietly rolls into 2026-01-01 in
+  // some engines. Strict regex → Date.UTC removes that whole class of bug.
+  const parseDateParam = (p: string | null, endOfDay: boolean): number | null => {
+    if (!p) return null;
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(p);
+    if (!m) return null;
+    const y = Number(m[1]);
+    const mo = Number(m[2]);
+    const d = Number(m[3]);
+    if (mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+    return Date.UTC(y, mo - 1, d, endOfDay ? 23 : 0, endOfDay ? 59 : 0, endOfDay ? 59 : 0);
+  };
 
-  if (!Number.isFinite(fromUtc) || !Number.isFinite(toUtc)) {
+  const fromUtc = fromParam ? parseDateParam(fromParam, false) : now;
+  const toUtc = toParam ? parseDateParam(toParam, true) : now + rule.maxHorizonDays * 86_400_000;
+
+  if (fromUtc === null || toUtc === null || !Number.isFinite(fromUtc) || !Number.isFinite(toUtc)) {
     return NextResponse.json({ error: 'invalid from/to' }, { status: 400 });
   }
 
@@ -100,3 +114,5 @@ export async function GET(req: Request) {
     { headers: { 'cache-control': 'no-store' } },
   );
 }
+
+export const GET = withLogging('booking.availability', handleGET);

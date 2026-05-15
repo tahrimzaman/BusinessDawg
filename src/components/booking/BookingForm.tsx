@@ -37,28 +37,37 @@ type Props = {
 };
 
 const INPUT_BASE =
-  'w-full rounded-2xl border border-white/10 bg-[color:var(--bd-ink)] px-4 text-sm text-[color:var(--bd-bone)] placeholder:text-[color:var(--bd-bone)]/65 focus:border-[color:var(--bd-lime)] focus:outline-none';
+  'focus-bd w-full rounded-2xl border border-white/10 bg-[color:var(--bd-ink)] px-4 text-sm text-[color:var(--bd-bone)] placeholder:text-[color:var(--bd-bone)]/65 focus:border-[color:var(--bd-lime)] focus:outline-none';
 const INPUT = `${INPUT_BASE} h-12`;
 
+// Field uses explicit htmlFor+id association in addition to the visual <label>
+// wrapping. The wrapping alone is technically valid HTML, but some older AT
+// stacks (e.g. Dragon NaturallySpeaking, certain Windows screen readers in
+// "browse" mode) skip implicit associations. Belt + suspenders.
 function Field({
+  id,
   label,
   required,
   children,
   className,
 }: {
+  id: string;
   label: string;
   required?: boolean;
   children: React.ReactNode;
   className?: string;
 }) {
   return (
-    <label className={`block ${className ?? ''}`}>
-      <span className="mb-1.5 block font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/70 uppercase">
+    <div className={`block ${className ?? ''}`}>
+      <label
+        htmlFor={id}
+        className="mb-1.5 block font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/70 uppercase"
+      >
         {label}
-        {required ? ' *' : ''}
-      </span>
+        {required ? <span aria-label="required"> *</span> : ''}
+      </label>
       {children}
-    </label>
+    </div>
   );
 }
 
@@ -121,8 +130,10 @@ export default function BookingForm({
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <Field label="Name" required>
+        <Field id="bf-name" label="Name" required>
           <input
+            id="bf-name"
+            name="name"
             type="text"
             required
             value={data.name}
@@ -132,8 +143,10 @@ export default function BookingForm({
             autoComplete="name"
           />
         </Field>
-        <Field label="Email" required>
+        <Field id="bf-email" label="Email" required>
           <input
+            id="bf-email"
+            name="email"
             type="email"
             required
             value={data.email}
@@ -143,8 +156,10 @@ export default function BookingForm({
             autoComplete="email"
           />
         </Field>
-        <Field label="Company / role">
+        <Field id="bf-company" label="Company / role">
           <input
+            id="bf-company"
+            name="company"
             type="text"
             value={data.company}
             onChange={(e) => update('company', e.target.value)}
@@ -153,8 +168,10 @@ export default function BookingForm({
             autoComplete="organization"
           />
         </Field>
-        <Field label="Phone (optional)">
+        <Field id="bf-phone" label="Phone (optional)">
           <input
+            id="bf-phone"
+            name="phone"
             type="tel"
             value={data.phone}
             onChange={(e) => update('phone', e.target.value)}
@@ -165,20 +182,24 @@ export default function BookingForm({
         </Field>
       </div>
 
-      <Field label="What do you want to build?" required className="mt-3">
+      <Field id="bf-intent" label="What do you want to build?" required className="mt-3">
         <textarea
+          id="bf-intent"
+          name="intent"
           required
           rows={4}
           value={data.intent}
           onChange={(e) => update('intent', e.target.value)}
           placeholder="A few sentences. The clearer the better."
           className={`${INPUT_BASE} min-h-[120px] resize-y py-4`}
-          maxLength={2000}
+          maxLength={800}
         />
       </Field>
 
-      <Field label="How did you find us?" required className="mt-3">
+      <Field id="bf-source" label="How did you find us?" required className="mt-3">
         <select
+          id="bf-source"
+          name="source"
           required
           value={data.source}
           onChange={(e) => update('source', e.target.value)}
@@ -208,7 +229,7 @@ export default function BookingForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:opacity-60 sm:w-auto sm:min-w-[220px]"
+        className="focus-bd mt-6 inline-flex h-12 w-full items-center justify-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:opacity-60 sm:w-auto sm:min-w-[220px]"
       >
         {isSubmitting ? 'Confirming…' : 'Confirm booking →'}
       </button>

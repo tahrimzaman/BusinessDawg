@@ -9,6 +9,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
 import { isAuthed } from '@/lib/admin/auth';
+import { log } from '@/lib/log/logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -38,10 +39,14 @@ export async function PATCH(
   const raw = await req.json().catch(() => null);
   const parsed = PatchBody.safeParse(raw);
   if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'invalid payload', issues: parsed.error.issues },
-      { status: 400 },
-    );
+    // Log the structured schema error server-side (request-id ties it to the
+    // route log line) but return only a generic message to the caller. Leaking
+    // `issues` would hand attackers a free map of admin-edit validation rules.
+    log('warn', 'admin.customers.patch.invalid_payload', {
+      customerId: id,
+      issues: parsed.error.issues,
+    });
+    return NextResponse.json({ error: 'invalid payload' }, { status: 400 });
   }
   const existing = await prisma.customer.findUnique({ where: { id }, select: { id: true } });
   if (!existing) return NextResponse.json({ error: 'not found' }, { status: 404 });

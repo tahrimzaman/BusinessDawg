@@ -55,18 +55,25 @@ export default function Newsletter() {
             className="relative mx-auto mt-10 flex max-w-md flex-col items-stretch gap-3 sm:flex-row"
           >
             <Honeypot />
+            <label htmlFor="newsletter-email" className="sr-only">
+              Email address
+            </label>
             <input
+              id="newsletter-email"
+              name="email"
               type="email"
               required
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@domain.com"
-              className="h-12 flex-1 rounded-full border border-white/10 bg-[color:var(--bd-smoke)] px-5 text-sm text-[color:var(--bd-bone)] placeholder:text-[color:var(--bd-bone)]/65 focus:border-[color:var(--bd-lime)] focus:outline-none"
+              aria-describedby="newsletter-status"
+              className="focus-bd h-12 flex-1 rounded-full border border-white/10 bg-[color:var(--bd-smoke)] px-5 text-sm text-[color:var(--bd-bone)] placeholder:text-[color:var(--bd-bone)]/65 focus:border-[color:var(--bd-lime)] focus:outline-none"
             />
             <button
               type="submit"
               disabled={state === 'loading' || state === 'done'}
-              className="inline-flex h-12 items-center justify-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:opacity-60"
+              className="focus-bd inline-flex h-12 items-center justify-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:opacity-60"
             >
               {state === 'loading' ? 'Sending…' : state === 'done' ? 'Subscribed' : 'Subscribe'}
             </button>
@@ -88,30 +95,34 @@ export default function Newsletter() {
           </Reveal>
         )}
 
-        <AnimatePresence>
-          {state === 'done' && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="mx-auto mt-10 max-w-2xl text-left"
-            >
-              <MascotReward
-                headline="You’re in."
-                sub="Playbook drops once or twice a month. No fluff."
-              />
-            </motion.div>
-          )}
-          {state === 'error' && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mt-6 text-sm text-[color:var(--bd-signal)]"
-            >
-              Something went sideways. Try again in a sec.
-            </motion.p>
-          )}
-        </AnimatePresence>
+        {/* aria-live region so screen readers announce success/failure without
+            stealing focus. polite = wait for current speech to finish. */}
+        <div id="newsletter-status" role="status" aria-live="polite" aria-atomic="true">
+          <AnimatePresence>
+            {state === 'done' && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="mx-auto mt-10 max-w-2xl text-left"
+              >
+                <MascotReward
+                  headline="You’re in."
+                  sub="Playbook drops once or twice a month. No fluff."
+                />
+              </motion.div>
+            )}
+            {state === 'error' && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mt-6 text-sm text-[color:var(--bd-signal)]"
+              >
+                Something went sideways. Try again in a sec.
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </section>
   );

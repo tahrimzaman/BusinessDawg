@@ -13,9 +13,19 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { getBookingRule } from '@/lib/booking/rules';
 import { notifyVisitorBookingReminder } from '@/lib/email/booking';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+// Fail-loud at module load if CRON_SECRET is missing in production. The dev
+// fallback inside isAuthorized() is fine for local — but on a real deploy a
+// missing secret would silently allow unauthenticated reminder triggers,
+// which can send live emails. Throwing here keeps that failure mode out of
+// the loaded-handler universe.
+if (process.env.NODE_ENV === 'production' && !process.env.CRON_SECRET) {
+  throw new Error('CRON_SECRET required in production for /api/booking/reminders');
+}
 
 function isAuthorized(req: Request): boolean {
   const secret = process.env.CRON_SECRET;
@@ -29,7 +39,7 @@ function isAuthorized(req: Request): boolean {
   return header === `Bearer ${secret}`;
 }
 
-export async function GET(req: Request) {
+async function handleGET(req: Request) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
@@ -101,3 +111,5 @@ export async function GET(req: Request) {
     holdsCleaned: cleaned.count,
   });
 }
+
+export const GET = withLogging('booking.reminders.cron', handleGET);

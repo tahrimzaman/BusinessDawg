@@ -14,6 +14,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { rateLimit, clientIp } from '@/lib/security/ratelimit';
 import { SITE, SYSTEMS, FOUNDER } from '@/lib/copy';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 
@@ -76,7 +77,7 @@ function buildSystemPrompt(): string {
   ].join('\n');
 }
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: 'chat not configured' }, { status: 503 });
@@ -145,7 +146,10 @@ export async function POST(req: Request) {
     if (upstream.status === 429) {
       return NextResponse.json({ error: 'upstream rate limited' }, { status: 429 });
     }
-    return NextResponse.json({ error: 'upstream error', status: upstream.status }, { status: 502 });
+    // Generic message — don't leak the upstream status code in the response.
+    // Full detail is already in the server log line above + the route's
+    // withLogging wrapper.
+    return NextResponse.json({ error: 'chat unavailable' }, { status: 502 });
   }
 
   // Transform OpenAI-style SSE into a plain-text token stream the client can
@@ -206,3 +210,5 @@ export async function POST(req: Request) {
     },
   });
 }
+
+export const POST = withLogging('chat.message', handlePOST);

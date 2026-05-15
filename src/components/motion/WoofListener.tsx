@@ -12,17 +12,41 @@ export default function WoofListener() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     let buf = '';
+    let idleId: number | null = null;
     const onKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      buf = (buf + e.key.toLowerCase()).slice(-4);
+      // Ignore keys while the user is typing in any text-entry surface. Covers
+      // <input>, <textarea>, and any contenteditable element (rich text, etc.).
+      const t = e.target as HTMLElement | null;
+      if (
+        t instanceof HTMLInputElement ||
+        t instanceof HTMLTextAreaElement ||
+        (t && typeof t.isContentEditable === 'boolean' && t.isContentEditable)
+      ) {
+        return;
+      }
+      // Only collect printable single-char keys. Skip modifiers and named keys
+      // ('Shift', 'Tab', 'Enter', etc.) which would otherwise pollute the buffer.
+      if (e.key.length === 1) {
+        buf = (buf + e.key.toLowerCase()).slice(-4);
+      }
       if (buf === 'woof') {
         setShow(true);
-        setTimeout(() => setShow(false), 2000);
+        window.setTimeout(() => setShow(false), 2000);
         buf = '';
       }
+      // Reset the buffer after 1.5s of no typing — keeps the easter egg from
+      // accidentally firing across long gaps (e.g. "w" now, "oof" tomorrow).
+      if (idleId !== null) window.clearTimeout(idleId);
+      idleId = window.setTimeout(() => {
+        buf = '';
+        idleId = null;
+      }, 1500);
     };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      if (idleId !== null) window.clearTimeout(idleId);
+    };
   }, []);
 
   return (

@@ -13,9 +13,9 @@ import { prisma } from '@/lib/db/prisma';
 import { rateLimit, clientIp } from '@/lib/security/ratelimit';
 import { verifyManageToken } from '@/lib/booking/tokens';
 import { getBookingRule } from '@/lib/booking/rules';
-import { authedClient, getGoogleEnv } from '@/lib/booking/google';
-import { google as googleApi } from 'googleapis';
+import { authedClient, getGoogleEnv, patchBookingEventTime } from '@/lib/booking/google';
 import { notifyVisitorBookingConfirmed, notifyAdminOfBooking } from '@/lib/email/booking';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -25,7 +25,7 @@ const Body = z.object({ startUtc: z.string().datetime() });
 class SlotContestedError extends Error {}
 class SlotTakenError extends Error {}
 
-export async function POST(
+async function handlePOST(
   req: Request,
   ctx: { params: Promise<{ token: string }> },
 ): Promise<NextResponse> {
@@ -134,15 +134,9 @@ export async function POST(
         const token = await prisma.googleToken.findUnique({ where: { id: 'singleton' } });
         if (token) {
           const client = authedClient(env, token);
-          const calendar = googleApi.calendar({ version: 'v3', auth: client });
-          await calendar.events.patch({
-            calendarId: env.ownerCalendarId,
-            eventId: updated.gcalEventId,
-            sendUpdates: 'all',
-            requestBody: {
-              start: { dateTime: updated.startUtc.toISOString(), timeZone: 'UTC' },
-              end: { dateTime: updated.endUtc.toISOString(), timeZone: 'UTC' },
-            },
+          await patchBookingEventTime(client, env, updated.gcalEventId, {
+            startUtc: updated.startUtc,
+            endUtc: updated.endUtc,
           });
         }
       }
@@ -179,3 +173,5 @@ export async function POST(
 
   return NextResponse.json({ ok: true, bookingId: updated.id });
 }
+
+export const POST = withLogging('booking.reschedule', handlePOST);

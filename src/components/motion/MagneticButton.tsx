@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useMotionValue, useSpring } from 'framer-motion';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 type Props = {
   children: React.ReactNode;
@@ -26,7 +26,21 @@ export default function MagneticButton({
   const sx = useSpring(x, SPRING);
   const sy = useSpring(y, SPRING);
 
+  // Coarse pointers (touch) never trigger the magnetic pull anyway. The
+  // gate lives in a ref because flipping it does not change the rendered
+  // output — only whether the per-event work inside onMove is skipped — so
+  // a re-render would be wasted, and `setState`-in-effect is a React 19 /
+  // Next 16 lint error anyway.
+  const enableMagnetRef = useRef(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const coarse = window.matchMedia('(pointer: coarse)').matches;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    enableMagnetRef.current = !coarse && !reducedMotion;
+  }, []);
+
   const onMove = (e: React.PointerEvent) => {
+    if (!enableMagnetRef.current) return;
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();

@@ -44,11 +44,24 @@ export default function DawgRail() {
       setRanges(next);
     }
     compute();
-    window.addEventListener('resize', compute);
-    const t = window.setTimeout(compute, 400);
+    // Trailing-edge debounce: only recompute 250 ms after the last resize
+    // event. Rapid window drags (or mobile keyboard show/hide on viewport
+    // resize) used to fire compute() per pixel — now we wait until things
+    // settle. Also reschedule the initial late-compute on the same handle so
+    // it can't fire concurrently with a resize-triggered recompute.
+    let resizeId: number | null = null;
+    const onResize = () => {
+      if (resizeId !== null) window.clearTimeout(resizeId);
+      resizeId = window.setTimeout(compute, 250);
+    };
+    window.addEventListener('resize', onResize);
+    // Late initial compute — fonts/images settling can shift section tops
+    // after first paint.
+    const lateId = window.setTimeout(compute, 400);
     return () => {
-      window.removeEventListener('resize', compute);
-      window.clearTimeout(t);
+      window.removeEventListener('resize', onResize);
+      if (resizeId !== null) window.clearTimeout(resizeId);
+      window.clearTimeout(lateId);
     };
   }, []);
 

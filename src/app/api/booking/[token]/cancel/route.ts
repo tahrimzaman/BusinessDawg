@@ -12,11 +12,13 @@ import { verifyManageToken } from '@/lib/booking/tokens';
 import { getBookingRule } from '@/lib/booking/rules';
 import { authedClient, cancelBookingEvent, getGoogleEnv } from '@/lib/booking/google';
 import { notifyVisitorBookingCancelled } from '@/lib/email/booking';
+import { withLogging } from '@/lib/log/route';
+import { capture } from '@/lib/analytics/posthog-server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function POST(
+async function handlePOST(
   req: Request,
   ctx: { params: Promise<{ token: string }> },
 ): Promise<NextResponse> {
@@ -58,7 +60,10 @@ export async function POST(
     }),
   ]);
 
-  // Tear down the GCal event if any. Best-effort.
+  // Tear down the GCal event if any. Best-effort and idempotent: if Google
+  // says 404, the event was already gone (e.g. cancelled directly in Calendar
+  // before we got the cancel POST) — that's a success from our point of view,
+  // not an error worth surfacing.
   if (booking.gcalEventId) {
     try {
       const env = getGoogleEnv();
@@ -70,11 +75,24 @@ export async function POST(
         }
       }
     } catch (err) {
-      console.error('[/api/booking/cancel] gcal delete failed (continuing)', err);
+      const status =
+        (err as { code?: number; response?: { status?: number } })?.code ??
+        (err as { response?: { status?: number } })?.response?.status;
+      if (status === 404 || status === 410) {
+        // Already deleted on Google's side — treat as success.
+      } else {
+        console.error('[/api/booking/cancel] gcal delete failed (continuing)', err);
+        capture('gcal_cancel_failed', booking.email, {
+          bookingId: booking.id,
+          status,
+          errorMessage: (err as Error)?.message,
+        });
+      }
     }
   }
 
-  notifyVisitorBookingCancelled({
+  // sendWithRetry handles retries + outbox; no .catch needed.
+  void notifyVisitorBookingCancelled({
     id: updated.id,
     name: updated.name,
     email: updated.email,
@@ -88,7 +106,15 @@ export async function POST(
     visitorTz: updated.visitorTz,
     ownerTz: rule.ownerTz,
     meetingTitle: rule.meetingTitle,
-  }).catch((err) => console.error('[/api/booking/cancel] email failed', err));
+  });
+
+  capture('booking_cancelled', booking.email, {
+    bookingId: booking.id,
+    actor: 'visitor',
+    hoursUntilStart: Math.round((booking.startUtc.getTime() - Date.now()) / 3_600_000),
+  });
 
   return NextResponse.json({ ok: true });
 }
+
+export const POST = withLogging('booking.cancel', handlePOST);
