@@ -29,6 +29,7 @@ export function emailShell({ label, tone, headline, body }: ShellOptions): strin
   const labelColor = TONE_LABEL_COLOR[tone];
   const headlineColor = tone === 'cancel' ? '#a02020' : '#0A0A0A';
   const siteDisplay = SITE_URL.replace(/^https?:\/\//, '');
+  const logoUrl = `${SITE_URL}/brand/logo-horizontal.png`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -43,29 +44,37 @@ export function emailShell({ label, tone, headline, body }: ShellOptions): strin
 <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="background:#f2f2f2">
   <tr>
     <td align="center" style="padding:40px 16px">
-      <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="max-width:560px">
+      <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="max-width:560px;box-shadow:0 4px 16px rgba(0,0,0,0.08);border-radius:16px;overflow:hidden">
 
-        <!-- Card -->
+        <!-- Dark hero band -->
         <tr>
-          <td style="background:#ffffff;border-radius:16px;padding:40px;box-shadow:0 2px 8px rgba(0,0,0,0.07)">
+          <td style="background:#0A0A0A;padding:36px 40px;text-align:left">
+            <a href="${SITE_URL}" style="text-decoration:none;display:inline-block">
+              <img src="${logoUrl}"
+                   alt="BusinessDawg"
+                   width="200"
+                   height="52"
+                   style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;width:200px;height:auto"/>
+            </a>
+          </td>
+        </tr>
 
-            <!-- Wordmark -->
-            <p style="margin:0 0 20px;font-size:20px;font-weight:800;font-style:italic;color:#0A0A0A;letter-spacing:-0.5px;line-height:1">
-              Business<span style="color:#C8FF00">Dawg</span>
-            </p>
+        <!-- Lime accent stripe -->
+        <tr>
+          <td style="background:#C8FF00;height:3px;line-height:3px;font-size:0">&nbsp;</td>
+        </tr>
 
-            <!-- Divider -->
-            <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="margin:0 0 24px">
-              <tr><td style="border-top:1px solid #E5E5E5;font-size:0;line-height:0">&nbsp;</td></tr>
-            </table>
+        <!-- White card -->
+        <tr>
+          <td style="background:#ffffff;padding:40px">
 
             <!-- Label chip -->
-            <p style="margin:0 0 8px;font-family:'Courier New',Courier,monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:${labelColor};line-height:1">
+            <p style="margin:0 0 10px;font-family:'Courier New',Courier,monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:${labelColor};line-height:1">
               ${label}
             </p>
 
             <!-- Headline -->
-            <h1 style="margin:0 0 28px;font-size:28px;font-weight:800;font-style:italic;line-height:1.1;color:${headlineColor}">
+            <h1 style="margin:0 0 28px;font-size:30px;font-weight:800;font-style:italic;line-height:1.1;color:${headlineColor};letter-spacing:-0.5px">
               ${headline}
             </h1>
 
@@ -73,18 +82,18 @@ export function emailShell({ label, tone, headline, body }: ShellOptions): strin
             ${body}
 
             <!-- Footer divider -->
-            <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="margin:32px 0 0">
+            <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="margin:36px 0 0">
               <tr><td style="border-top:1px solid #E5E5E5;font-size:0;line-height:0">&nbsp;</td></tr>
             </table>
 
             <!-- Footer -->
-            <p style="margin:16px 0 0;font-size:13px;color:#999;line-height:1.7">
+            <p style="margin:18px 0 0;font-size:13px;color:#999;line-height:1.7">
               — BusinessDawg<br/>
-              <a href="${SITE_URL}" style="color:#5b6500;text-decoration:none">${siteDisplay}</a>
+              <a href="${SITE_URL}" style="color:#5b6500;text-decoration:none;font-weight:600">${siteDisplay}</a>
               &nbsp;&middot;&nbsp;
-              <a href="${INSTAGRAM}" style="color:#5b6500;text-decoration:none">Instagram</a>
+              <a href="${INSTAGRAM}" style="color:#5b6500;text-decoration:none;font-weight:600">Instagram</a>
               &nbsp;&middot;&nbsp;
-              <a href="${LINKEDIN}" style="color:#5b6500;text-decoration:none">LinkedIn</a>
+              <a href="${LINKEDIN}" style="color:#5b6500;text-decoration:none;font-weight:600">LinkedIn</a>
             </p>
 
           </td>
