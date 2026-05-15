@@ -37,7 +37,7 @@ export const SYSTEMS: System[] = [
     shortName: 'Growth',
     tagline: 'Strategy that ships. Funnels that don’t leak.',
     description:
-      'GTM, positioning, funnels, and the unsexy ops that actually move revenue. We build the operating cadence so the business runs whether or not you’re in the room.',
+      'GTM, positioning, funnels, and the unsexy ops that actually move revenue. We build the operating cadence so your business runs without you.',
     deliverables: [
       'Positioning + GTM map',
       'Funnel + offer architecture',
@@ -48,7 +48,7 @@ export const SYSTEMS: System[] = [
     glyph: '↗',
   },
   {
-    slug: 'ai',
+    slug: 'ai-automation',
     name: 'AI Automation Systems',
     shortName: 'AI',
     tagline: 'Internal tools that work harder than your interns.',
@@ -80,7 +80,7 @@ export const SYSTEMS: System[] = [
     glyph: '◐',
   },
   {
-    slug: 'web',
+    slug: 'web-product',
     name: 'Web & Product Systems',
     shortName: 'Web',
     tagline: 'Sites and MVPs that look like the future and load like yesterday.',
@@ -92,7 +92,7 @@ export const SYSTEMS: System[] = [
     glyph: '◼',
   },
   {
-    slug: 'marketing',
+    slug: 'marketing-infrastructure',
     name: 'Marketing Infrastructure',
     shortName: 'Marketing',
     tagline: 'The plumbing behind the brand.',
@@ -109,34 +109,29 @@ export const FOUNDER = {
   name: 'Tahrim Zaman',
   // Short — homepage card
   short:
-    'I’m Tahrim. I run an 8.5-crore-a-month distribution territory in Faridpur, operate Shadai Ghar — BusinessDawg’s flagship build — and pitched in Boston at Hult Prize Global.',
+    'I’m Tahrim. I run an 8.5-crore-a-month distribution territory in Faridpur, pitched in Boston at Hult Prize Global, and founded BusinessDawg to build what operators actually need.',
   hook: 'BusinessDawg is what happens when an operator gets tired of agencies that have never actually shipped anything.',
   // Medium — /about Founder section, ~140 words across paragraphs
   bio: [
     'I’m Tahrim. I’m 22. I run the Faridpur distribution territory for Akij Food & Beverage and Grameenphone — about 8.5 crore taka a month, 24 people on the ground, 7am retailer briefings, depots, routes, cash flow, the whole machine.',
-    'I also operate Shadai Ghar — a direct-to-consumer grocery in Faridpur that BusinessDawg designed and built end-to-end. 500 families in six weeks, 23–27% gross margins. It’s the studio’s flagship build and my proof that the systems we sell actually run on real revenue.',
     'Before all that, I flew to Boston with Team Fortune 501 to represent Bangladesh at Hult Prize Global. Made Top 20 of 5,000+ at Marico’s Over The Wall.',
     'I started BusinessDawg because most agencies want to sell you a logo. I want to sell you the machine.',
   ],
   credibility: [
     { label: '8.5 cr / month', sub: 'Distribution territory I run, day to day.' },
-    { label: '500 families', sub: 'Shadai Ghar from zero to traction in 6 weeks.' },
     { label: 'Top 20 of 5,000+', sub: 'Marico Over The Wall · Hult Prize Global, Boston.' },
   ],
 };
 
-export const BUILT = [
-  {
-    slug: 'shadai',
-    name: 'Shadai Ghar',
-    label: 'A BusinessDawg build',
-    tagline:
-      'D2C grocery for Faridpur households. Designed, built, and shipped end-to-end by BusinessDawg.',
-    metrics: ['500 families in 6 weeks', '23–27% gross margin', 'Targeting 10,000 households'],
-    stack: ['Next.js', 'Postgres', 'Prisma', 'Payments', 'AI recs'],
-    liveUrl: 'https://www.shadaighar.com',
-  },
-];
+export const BUILT: {
+  slug: string;
+  name: string;
+  label: string;
+  tagline: string;
+  metrics: string[];
+  stack: string[];
+  liveUrl: string;
+}[] = [];
 
 // FAQ used on the homepage AND emitted as FAQPage JSON-LD for AI engines.
 // Answers follow the chatbot guardrails — no prices, no contracts, real voice.

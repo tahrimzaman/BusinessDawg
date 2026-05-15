@@ -13,7 +13,7 @@ This document is the **original spec**. The build has diverged in a few places �
 - **Chatbot (Phase 4):** **shipped 2026-05-14** — Google Gemini 2.5 Flash Lite via the OpenAI-compatible endpoint, free tier. Inline preview on the home page launches a full-bleed cinematic overlay with streaming, lime gradient glow, mascot scan-line CRT accent, and hardcoded answer for "Who is Tahrim?". System prompt + guardrails in [src/app/api/chat/route.ts](src/app/api/chat/route.ts). The earlier Groq attempt was reverted because the 12k-TPM free cap broke under real use.
 - **Email:** Hostinger SMTP via Nodemailer (the original Resend plan was dropped, and MailerLite is not in use). See `SETUP.md` §2.
 - **Database:** Neon Postgres via Prisma (migration `20260514034108_init` applied). See `SETUP.md` §1.
-- **Sitemap:** `/built` and `/built/[slug]` do **not** exist as routes. The Shadai showcase lives inside `/about` via the `ShadaiShowcase` component. The aspirational sitemap below is preserved for reference.
+- **Sitemap:** `/built` and `/built/[slug]` do **not** exist as routes. No public portfolio yet — a portfolio route will ship later when Tahrim has client work to display. The aspirational sitemap below is preserved as a reference but the founder-venture / `/built/[slug]` sections are stale and will be redesigned before any portfolio ships.
 - **Backend hardening (2026-05-14):** admin session secret fails-closed in production, CSV export capped at 10k rows, SMTP misconfig logs `[CRITICAL]` in production, `/api/join` no longer leaks Zod issues, rate-limit map self-prunes every 5 min.
 
 Everything below this banner is the **original plan**, kept intact for design intent and future-phase reference. Treat it as a vision document, not a status report.
@@ -117,22 +117,18 @@ All free / open-source fonts. No paid licenses.
 /                       Home
 /systems                Systems overview
 /systems/growth         Business Growth Systems
-/systems/ai             AI Automation Systems
-/systems/branding       Branding Systems
-/systems/web            Web & Product Systems
-/systems/marketing      Marketing Infrastructure
-/work                   Client portfolio index (concept placeholders in v1)
-/work/[slug]            Client case study (placeholder concepts in v1)
-/built                  Founder ventures index
-/built/shadai           Shadai Ghar — flagship founder venture, real
-/about                  Founder + brand story
-/join                   Talent / intern recruitment
-/contact                Booking + WhatsApp + email
-/404                    Custom 404 with mascot
-/studio                 Sanity Studio (admin)
+/systems/ai-automation              AI Automation Systems
+/systems/branding                   Branding Systems
+/systems/web-product                Web & Product Systems
+/systems/marketing-infrastructure   Marketing Infrastructure
+/about                              Founder + brand story
+/join                               Talent / intern recruitment
+/contact                            Booking + WhatsApp + email
+/404                                Custom 404 with mascot
+/studio                             Sanity Studio (admin)
 ```
 
-**Critical separation:** `/work` is for actual client engagements. `/built` is for ventures Tahrim owns. Shadai Ghar lives under `/built` because Tahrim owns Shadai — it's a separate company, not a BusinessDawg client. Don't describe a commercial relationship between BusinessDawg and Shadai on the site. The framing is simply: "another company Tahrim runs."
+**Portfolio:** there is no public portfolio yet. `/built` and `/work` will be designed and shipped later, when Tahrim has client work to display. Until then, no founder-venture or client-case-study routes exist. The chatbot is configured to punt portfolio questions to Book a Call / WhatsApp.
 
 Future (post-v1, scaffolded but not populated): `/insights` (blog), `/playbook` (free resources).
 
@@ -177,22 +173,9 @@ Cards have a slight 3D tilt on hover (Framer Motion). Background swaps to a syst
 - Social row: X, LinkedIn, Instagram, GitHub (handles provided)
 - Subtle parallax on the photo, mascot peeks from behind a corner
 
-### 3.5 Founder ventures teaser ("What I've built")
+### 3.5 Portfolio teaser (DEFERRED)
 
-Sits right after the founder section. One large featured card:
-- **Shadai Ghar** (real, live link) — cinematic preview, hover plays a 3s product reel
-- Label: **"Another company I run"** — simple, no commercial-relationship framing
-- Subline: short line about Shadai's traction (e.g. "D2C grocery, Faridpur, 500 families in six weeks")
-
-CTA: "See what I've built →" → `/built`
-
-### 3.6 Client portfolio teaser
-
-Three-card row of conceptual client work, each card clearly tagged **"Concept"** so it's not deceptive. Real client case studies replace these as work ships.
-
-CTA: "See client work →" → `/work`
-
-> **Why split:** Shadai is Tahrim's own venture, not a client engagement. Mixing it into the client portfolio would misrepresent it. Showing it under "Founder ventures" — as another thing Tahrim runs, without trying to describe a commercial relationship — keeps things honest and simple.
+Original plan called for a "Founder ventures" card plus a separate "Client work" placeholder row. Both are removed for v1. No portfolio surfaces until Tahrim has real client work to display. When portfolio ships later, design will be reworked from scratch.
 
 ### 3.7 The chatbot section
 
@@ -226,21 +209,8 @@ Logo + tagline. Sitemap links. Social row. WhatsApp button. Email. Subtle Busine
 ### `/systems/[slug]`
 Hero with system name + tagline. "What it is" → "What you get" → "How we build it" (3-step) → Pricing or "Book a Call" → Related work → Adjacent system suggestion.
 
-### `/work` and `/work/[slug]`
-Client engagements only. Case study layout: hero image/video, client + role + outcome + timeline metadata, problem, approach, what we built, results, testimonial slot, next/prev navigation. In v1 these are concept placeholders, each clearly tagged "Concept" until real client case studies ship.
-
-### `/built` and `/built/[slug]`
-Founder ventures — separate companies Tahrim runs. v1 features `/built/shadai`.
-
-Case study layout for `/built/shadai`:
-- **Header label:** "Another company I run" — simple, no commercial-relationship framing
-- Hero with Shadai's branding (not BusinessDawg's), live URL prominent
-- Metadata: Tahrim's role (founder + operator), timeline, stack used
-- What Shadai is (the business) — D2C grocery, Faridpur, 500 families in 6 weeks, 23-27% margins
-- What's behind it — e-commerce platform, Next.js, Postgres, Prisma, payments, image pipeline, email, AI shopping recs, full admin workflows. Described without crediting BusinessDawg explicitly; the work is shown, attribution stays neutral.
-- Outcome — traction, plans (10,000 households, ~2 crore EBT/month at maturity)
-- Outbound link to Shadai's live site
-- Next/prev nav (in v1, only Shadai exists under `/built`, so this is hidden)
+### `/work` and `/built` (DEFERRED)
+No portfolio routes exist in v1. Will be designed from scratch when Tahrim has client work to display.
 
 ### `/about`
 Long-form founder narrative. Manifesto. Values (3–5). What we believe. What we don't do. Press / mentions slot (empty for now).
@@ -317,7 +287,7 @@ NEXT_PUBLIC_CAL_USERNAME=
 
 - **system** — name, slug, tagline, description, deliverables[], starter pack (price, included[], optional: hidden), gallery[], CTA type (price | book), order
 - **case_study** — title, slug, client, role, timeline, problem (block content), approach (block content), outcome (block content), gallery[], live URL, is_concept (bool). **Client work only.**
-- **founder_venture** — name, slug, tagline, owner_role (e.g. "Founder + Operator"), timeline, stack[], business_description, build_description, outcome (block content), gallery[], live URL. **Tahrim's own companies, shown as parallel ventures with no commercial-relationship framing.** First entry: Shadai Ghar.
+- ~~**founder_venture**~~ — DEFERRED. Portfolio schema TBD when portfolio ships later.
 - **founder_block** — bio, story, credibility[] (label + value), socials[]
 - **values** — title, body
 - **role** — title, description, location (remote/hybrid), is_open
@@ -422,7 +392,7 @@ Studio mounts at `/studio`. Free tier sufficient.
 ### Phase 4 — Subpages + CMS wiring (Day 15–21)
 - Sanity schemas live, data flowing
 - 5 system pages
-- Work index + Shadai case study + 2 concept placeholders
+- ~~Work index + case studies~~ DEFERRED — no portfolio routes ship in v1
 - About, Join, Contact
 - 404
 - Cal.com embed live
@@ -471,9 +441,9 @@ Studio mounts at `/studio`. Free tier sufficient.
 | 1 | Founder photo (high res, 2–3 options) | Phase 3 founder section |
 | 2 | ~~Founder bio / story~~ — **DONE** (see `/assets/inbox/founder-bio.md`, short + medium + long versions) | Phase 3 founder section |
 | 3 | Social handles (X, LinkedIn, Instagram, GitHub, others) | Phase 3 + footer |
-| 4 | Shadai live URL | Phase 4 case study |
-| 5 | Shadai screenshots / mockups | Phase 4 case study |
-| 6 | Shadai write-up (role, outcome, what was built) | Phase 4 case study |
+| 4 | ~~Portfolio assets~~ | Deferred — no portfolio routes ship in v1 |
+| 5 | ~~Portfolio screenshots / mockups~~ | Deferred |
+| 6 | ~~Portfolio write-ups~~ | Deferred |
 | 7 | Final color palette pick (A / B / C / remix) | Phase 1 |
 | 8 | Final 3 easter eggs from the list | Phase 5 |
 | 9 | AI chatbot provider confirmation | Phase 6 |

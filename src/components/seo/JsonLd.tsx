@@ -133,3 +133,36 @@ export function BreadcrumbJsonLd({ items }: { items: { name: string; url: string
   };
   return <Script data={data} />;
 }
+
+export function JobPostingJsonLd({
+  title,
+  description,
+  datePosted,
+}: {
+  title: string;
+  description: string;
+  datePosted: string;
+}) {
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title,
+    description,
+    datePosted,
+    employmentType: 'CONTRACTOR',
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: 'BusinessDawg',
+      sameAs: 'https://businessdawg.com',
+      logo: 'https://businessdawg.com/brand/logo-mark.png',
+    },
+    jobLocationType: 'TELECOMMUTE',
+    applicantLocationRequirements: {
+      '@type': 'Country',
+      name: 'Worldwide',
+    },
+    directApply: false,
+    url: 'https://businessdawg.com/join',
+  };
+  return <Script data={data} />;
+}

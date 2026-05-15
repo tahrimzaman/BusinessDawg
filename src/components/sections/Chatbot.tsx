@@ -31,7 +31,7 @@ const GREETING: Msg = {
 const QUICK_PILLS = [
   'What do you actually build?',
   'How does it work?',
-  'Tell me about Shadai',
+  'Show me the systems',
   'Who is Tahrim?',
   'Can I book a call?',
   'What makes you different?',

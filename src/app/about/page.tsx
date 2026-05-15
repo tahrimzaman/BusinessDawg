@@ -7,6 +7,7 @@ import KineticText from '@/components/motion/KineticText';
 import PullQuoteMarquee from '@/components/sections/PullQuoteMarquee';
 import TalkersVsShippers from '@/components/sections/TalkersVsShippers';
 import { SITE, FOUNDER, PULL_QUOTES } from '@/lib/copy';
+import { BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 
 function Eyebrow({ label }: { label: string }) {
   return (
@@ -19,12 +20,18 @@ function Eyebrow({ label }: { label: string }) {
 export default function About() {
   return (
     <div className="relative">
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Home', url: 'https://businessdawg.com' },
+          { name: 'About', url: 'https://businessdawg.com/about' },
+        ]}
+      />
       {/* 1 — Hero / intro */}
       <section className="mx-auto max-w-4xl px-6 pt-40 pb-20">
         <Reveal>
           <Image
             src="/brand/logo-vertical.png"
-            alt="BusinessDawg"
+            alt="BusinessDawg — wordmark"
             width={990}
             height={715}
             priority
@@ -87,7 +94,7 @@ export default function About() {
               <div className="relative aspect-[499/898]">
                 <Image
                   src="/founder-portrait.png"
-                  alt={FOUNDER.name}
+                  alt={`${FOUNDER.name}, founder of BusinessDawg`}
                   fill
                   sizes="260px"
                   className="object-contain"

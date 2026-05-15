@@ -45,7 +45,7 @@ export default async function OG() {
         We build <span style={{ color: '#c8ff00' }}>business</span> machines.
       </div>
       <div style={{ fontSize: 26, color: '#fafafa99' }}>
-        Branding · AI · Web · Growth · Marketing infrastructure
+        Growth · AI Automation · Branding · Web & Product · Marketing Infrastructure
       </div>
     </div>,
     { ...size },

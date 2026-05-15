@@ -19,7 +19,7 @@ Have these ready before you open Claude Code. If you don't have one, mark it "la
 | Cal.com account | Free. Sign up at cal.com. Pick a username — that becomes your booking URL slug. | ☐ later OK |
 | MailerLite account | Free up to 1000 subs. Sign up at mailerlite.com. | ☐ later OK |
 | Founder photo | Drop a high-res photo (2-3 options) into `/assets/inbox/`. | ☐ later OK |
-| Shadai assets | Live URL, screenshots, and short write-up dropped into `/assets/inbox/`. | ☐ later OK |
+| ~~Portfolio assets~~ | Deferred — no portfolio routes ship until Tahrim has client work to display. | ☐ later |
 
 Anything marked "later OK" can wait — Claude Code only needs them when it reaches the phase that uses them.
 

@@ -17,7 +17,7 @@ const aiCrawlers = [
 ];
 
 export default function robots(): MetadataRoute.Robots {
-  const restricted = ['/studio', '/api', '/admin'];
+  const restricted = ['/studio', '/api', '/admin', '/booking'];
   return {
     rules: [
       { userAgent: '*', allow: '/', disallow: restricted },

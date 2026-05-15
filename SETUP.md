@@ -120,7 +120,7 @@ Already set up in section 2 — the same mailbox is used for SMTP sending. To re
 
 ## 6. Sanity CMS (scaffolded; Phase 3 reverted 2026-05-14)
 
-Schemas + Studio mount already exist in the repo (`sanity/schemas/`, `/studio` route). The Sanity client and GROQ queries live in [src/lib/sanity/](src/lib/sanity/). Phase 3 wired the Systems and Shadai showcase pages to Sanity with a hardcoded fallback (`b23645b`) but was reverted (`4ce0e25`) the same day due to bugs — content currently comes from [src/lib/copy.ts](src/lib/copy.ts) (hardcoded). Before re-attempting, diff the revert and root-cause why the fallback path didn't hold up.
+Schemas + Studio mount already exist in the repo (`sanity/schemas/`, `/studio` route). The Sanity client and GROQ queries live in [src/lib/sanity/](src/lib/sanity/). Phase 3 wired the Systems pages to Sanity with a hardcoded fallback (`b23645b`) but was reverted (`4ce0e25`) the same day due to bugs — content currently comes from [src/lib/copy.ts](src/lib/copy.ts) (hardcoded). Before re-attempting, diff the revert and root-cause why the fallback path didn't hold up.
 
 When we re-wire Phase 3, the only env vars needed are:
 

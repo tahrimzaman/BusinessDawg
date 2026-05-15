@@ -13,7 +13,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { rateLimit, clientIp } from '@/lib/security/ratelimit';
-import { SITE, SYSTEMS, FOUNDER, BUILT } from '@/lib/copy';
+import { SITE, SYSTEMS, FOUNDER } from '@/lib/copy';
 
 export const runtime = 'nodejs';
 
@@ -38,9 +38,6 @@ function buildSystemPrompt(): string {
   const systemsBlock = SYSTEMS.map(
     (s) => `- ${s.name} (${s.shortName}): ${s.tagline} — ${s.description}`,
   ).join('\n');
-  const builtBlock = BUILT.map(
-    (b) => `- ${b.name}: ${b.tagline} Metrics: ${b.metrics.join(' / ')}.`,
-  ).join('\n');
   const founderBlock = FOUNDER.bio.join(' ');
 
   return [
@@ -61,9 +58,8 @@ function buildSystemPrompt(): string {
     `# Founder`,
     `${FOUNDER.name}. ${founderBlock}`,
     ``,
-    `# Built case studies (the ONLY real client work)`,
-    builtBlock,
-    `Do NOT invent any other client work, testimonials, or case studies. Shadai is the only one.`,
+    `# Portfolio`,
+    `The studio has not published a public portfolio yet. Do NOT invent client work, testimonials, or case studies. If asked, say the portfolio is on the way and punt to Book a Call or WhatsApp.`,
     ``,
     `# HARD RULES`,
     `- NEVER quote dollar amounts, package prices, hourly rates, or specific dollar ranges. ALWAYS punt pricing questions to the "Book a Call" button on every page.`,

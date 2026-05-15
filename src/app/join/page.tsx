@@ -3,13 +3,36 @@
 import { useState } from 'react';
 import Reveal from '@/components/motion/Reveal';
 import Honeypot from '@/components/security/Honeypot';
+import { BreadcrumbJsonLd, JobPostingJsonLd } from '@/components/seo/JsonLd';
 
 const ROLES = [
-  { title: 'Brand designer', tag: 'Remote · contract → hire' },
-  { title: 'Full-stack engineer (Next.js)', tag: 'Remote · contract → hire' },
-  { title: 'Growth ops / RevOps', tag: 'Remote · part-time' },
-  { title: 'AI automation engineer', tag: 'Remote · contract' },
+  {
+    title: 'Brand designer',
+    tag: 'Remote · contract → hire',
+    description:
+      'Help BusinessDawg build identity and design language systems for founder-led brands. Remote, contract-to-hire. Strong taste, motion fluency, and a portfolio that ships are required.',
+  },
+  {
+    title: 'Full-stack engineer (Next.js)',
+    tag: 'Remote · contract → hire',
+    description:
+      'Ship web products and MVPs in Next.js + TypeScript with motion, performance, and CMS-backed copy. Remote, contract-to-hire. Strong React, type-safety, and ownership instincts required.',
+  },
+  {
+    title: 'Growth ops / RevOps',
+    tag: 'Remote · part-time',
+    description:
+      'Build and run the operating cadence behind funnels, analytics, and lifecycle. Remote, part-time contract. Spreadsheet fluency, attribution literacy, and a bias to ship.',
+  },
+  {
+    title: 'AI automation engineer',
+    tag: 'Remote · contract',
+    description:
+      'Wire LLM-backed agents, internal tools, and workflow automations for studio and client projects. Remote, contract. Comfortable with model APIs, evals, and shipping production prompts.',
+  },
 ];
+
+const JOB_DATE_POSTED = '2026-05-15';
 
 export default function Join() {
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
@@ -34,6 +57,20 @@ export default function Join() {
 
   return (
     <div className="mx-auto max-w-4xl px-6 pt-40 pb-24">
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Home', url: 'https://businessdawg.com' },
+          { name: 'Join', url: 'https://businessdawg.com/join' },
+        ]}
+      />
+      {ROLES.map((r) => (
+        <JobPostingJsonLd
+          key={r.title}
+          title={r.title}
+          description={r.description}
+          datePosted={JOB_DATE_POSTED}
+        />
+      ))}
       <Reveal>
         <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
           / Join the movement

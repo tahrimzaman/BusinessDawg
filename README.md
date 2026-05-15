@@ -75,7 +75,7 @@ The refresh token in OAuth Testing mode expires every 7 days. Reconnect from `/a
 src/
   app/                      Next.js App Router pages + layouts
     page.tsx                Home
-    about/                  Founder + Shadai showcase
+    about/                  Founder + studio story
     systems/                Systems landing + [slug] detail
     contact/                Cal.com embed + WhatsApp
     join/                   Talent application form

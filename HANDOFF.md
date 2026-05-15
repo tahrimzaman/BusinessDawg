@@ -9,7 +9,7 @@
 1. Open a terminal at `/Users/tahrimzaman/Documents/Claude/Projects/Business Dawg`.
 2. Run `claude` (or open Claude Code).
 3. Paste the prompt below as your first message.
-4. **Don't skip the asset prep step** — gather as many items from `PLAN.md` Section 14 as you can before starting, especially the founder photo and Shadai links. The agent will block on these.
+4. **Don't skip the asset prep step** — gather as many items from `PLAN.md` Section 14 as you can before starting, especially the founder photo. The agent will block on these.
 5. Watch for the four approval gates. Claude Code is instructed to pause at each.
 
 ---
@@ -83,7 +83,7 @@ DO NOT:
 - Create logos or mascots until Phase 1 starts and brand tokens are settled.
 
 ASSET DROP-OFF:
-I will be adding files into /assets/inbox/ as I gather them (founder photo, Shadai screenshots, etc.). Check that folder at the start of each phase.
+I will be adding files into /assets/inbox/ as I gather them (founder photo, brand assets, etc.). Check that folder at the start of each phase.
 
 When you're done with Phase 0, give me the Phase 0 report and ask me which palette I want before Phase 1 begins.
 ```
@@ -121,7 +121,7 @@ Easter eggs: #1 dog cursor (mandatory), plus [pick 3 from #2–#7 in PLAN.md Sec
 
 When you drop assets:
 ```
-I just added [photo.jpg / shadai screenshots / bio.md] to /assets/inbox/. Use them in [section].
+I just added [photo.jpg / bio.md / etc.] to /assets/inbox/. Use them in [section].
 ```
 
 ---

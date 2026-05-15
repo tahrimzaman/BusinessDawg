@@ -31,6 +31,7 @@ export const metadata: Metadata = {
   },
   description:
     'Branding, AI, web, and growth systems for founders who actually ship. A Gen Z–native business growth studio.',
+  alternates: { canonical: '/' },
   openGraph: {
     title: 'BusinessDawg — We build business machines.',
     description: 'Branding, AI, web, and growth systems for founders who actually ship.',

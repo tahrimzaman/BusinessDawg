@@ -93,7 +93,7 @@ export default function Hero() {
           >
             <Image
               src="/brand/logo-vertical.png"
-              alt="BusinessDawg"
+              alt="BusinessDawg — Gen Z business growth studio"
               width={990}
               height={715}
               priority
@@ -169,7 +169,7 @@ export default function Hero() {
             >
               <Image
                 src="/brand/mascot-pos-1.png"
-                alt="BusinessDawg mascot"
+                alt="BusinessDawg mascot — bulldog with lime sunglasses"
                 fill
                 sizes="(min-width: 1024px) 50vw, 80vw"
                 className="object-contain object-bottom"

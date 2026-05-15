@@ -134,24 +134,15 @@ Performance budget: LCP < 2.5s on mid-tier mobile. Motion must not destroy Light
 
 Detailed in `PLAN.md`. High level:
 
-- `/` — Home (hero, systems, built case study, recruitment teaser, chatbot, CTAs)
-- `/systems/[slug]` — Per-system deep page (5 total)
-- `/built` — Built-by-BusinessDawg case studies (Shadai is the flagship)
-- `/built/[slug]` — Case study detail (`/built/shadai` is the flagship)
+- `/` — Home (hero, systems, recruitment teaser, chatbot, CTAs)
+- `/systems/[slug]` — Per-system deep page (5 total). Slugs: `growth`, `ai-automation`, `branding`, `web-product`, `marketing-infrastructure`.
 - `/about` — Founder + brand story
 - `/join` — Talent/intern recruitment
 - `/contact` — Booking + WhatsApp + email
 - `/404` — Custom with mascot
 - `/studio` — Sanity Studio (CMS admin)
 
-There is no client portfolio yet — `/work` is intentionally not in the sitemap until real client work exists.
-
-**Shadai Ghar framing (hybrid — updated 2026-05-14):** Shadai is presented as **a BusinessDawg build that Tahrim operates**. BusinessDawg owns the *building* of Shadai (design, code, ship); Tahrim owns the *operating* of it (running the D2C, managing the P&L). Both can appear on the site.
-
-Allowed first-person language: "I operate Shadai Ghar", "I run Shadai", "the BusinessDawg build I operate", "Shadai is the studio's flagship — and the company I run on top of it."
-NOT allowed: first-person *builder* language for Shadai — "I built Shadai", "I designed Shadai", "Shadai is a site I built." That credit belongs to the studio, not the operator.
-
-Practically: Shadai *can* appear in Tahrim's founder bio and credibility stats (e.g., "500 families in 6 weeks — Shadai Ghar"), framed as something he operates, not something he personally built. Shadai still lives as a BusinessDawg case study on `/about` (via ShadaiShowcase) and the showcase copy continues to credit the studio as builder.
+**No public portfolio yet.** A `/built` or `/work` route will ship later, once Tahrim has client work to display. Until then, do not invent case studies, testimonials, or client logos. The chatbot is configured to punt portfolio questions to Book a Call / WhatsApp.
 
 ---
 
@@ -174,7 +165,7 @@ After visiting, users should feel: *"this feels like the future"*, *"I need this
 
 ## 13. OPEN ITEMS (NEEDED FROM TAHRIM)
 
-Tracked in `PLAN.md` Section 14. Includes: founder photo, founder bio, social handles, Shadai live URL, Shadai screenshots, Shadai write-up, final palette pick, final easter-egg picks, AI chatbot provider confirmation.
+Tracked in `PLAN.md` Section 14. Includes: founder photo, founder bio, brand social handles (when they exist), final easter-egg picks. Portfolio assets queued for later — no client work to show yet.
 
 ---
 
@@ -189,4 +180,4 @@ Tracked in `PLAN.md` Section 14. Includes: founder photo, founder bio, social ha
 
 ---
 
-*Last updated: 2026-05-14 — Shadai framing reverted to hybrid: BusinessDawg builds it, Tahrim operates it (first-person operator language allowed; first-person builder language is not). Backend Phase 1+2 in progress: Neon Postgres + Prisma + Resend lead capture, custom /admin viewer, PostHog analytics, hybrid founder bio, all pricing hidden behind "Book a Call", Instagram added to socials, custom email yo@businessdawg.com, 404 mini-game easter egg.*
+*Last updated: 2026-05-15 — Prior founder-venture references and `/built` route plans removed from the site, code, and project docs. No public portfolio until Tahrim has client work to display. System slugs renamed to multi-word for long-tail SEO (`ai-automation`, `web-product`, `marketing-infrastructure`). SEO refresh: home canonical, full-name titles on system pages, JobPosting JSON-LD on /join, BreadcrumbList on /about, /join, /contact, FAQ JSON-LD deduplicated to /faq only, /booking added to robots disallow, descriptive image alts. Backend Phase 1+2 in progress: Neon Postgres + Prisma + Resend lead capture, custom /admin viewer, PostHog analytics, all pricing hidden behind "Book a Call", custom email yo@businessdawg.com, 404 mini-game easter egg.*

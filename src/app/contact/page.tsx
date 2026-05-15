@@ -13,6 +13,7 @@ import DawgAvatar from '@/components/brand/DawgAvatar';
 import BookingFlow from '@/components/booking/BookingFlow';
 import type { Slot } from '@/components/booking/SlotList';
 import { SITE } from '@/lib/copy';
+import { BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 
 const description =
   'Book a 15-minute call with BusinessDawg. No decks — tell us what’s leaking and we’ll tell you what to do about it. WhatsApp, email, and instant calendar booking all open.';
@@ -53,6 +54,12 @@ export default async function Contact() {
 
   return (
     <div className="mx-auto max-w-6xl px-6 pt-40 pb-24">
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Home', url: 'https://businessdawg.com' },
+          { name: 'Contact', url: 'https://businessdawg.com/contact' },
+        ]}
+      />
       <Reveal>
         <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
           / Contact

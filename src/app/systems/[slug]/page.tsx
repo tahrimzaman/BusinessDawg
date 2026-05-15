@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Reveal from '@/components/motion/Reveal';
 import MagneticButton from '@/components/motion/MagneticButton';
 import Faq from '@/components/sections/Faq';
-import { ServiceJsonLd, BreadcrumbJsonLd, FaqJsonLd } from '@/components/seo/JsonLd';
+import { ServiceJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import { SYSTEMS, FAQ } from '@/lib/copy';
 
 type Params = { slug: string };
@@ -17,10 +17,10 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params;
   const s = SYSTEMS.find((x) => x.slug === slug);
   if (!s) return { title: 'System' };
-  const description = `${s.tagline} ${s.description}`.slice(0, 200);
+  const description = s.description;
   const url = `https://businessdawg.com/systems/${s.slug}`;
   return {
-    title: s.shortName,
+    title: s.name,
     description,
     alternates: { canonical: `/systems/${s.slug}` },
     openGraph: {
@@ -61,7 +61,6 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
           { name: system.name, url },
         ]}
       />
-      <FaqJsonLd items={FAQ.slice(0, 6)} />
       <div className="mx-auto max-w-6xl px-6 pt-40 pb-24">
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
