@@ -33,6 +33,83 @@ export type JournalPost = {
 
 export const JOURNAL: JournalPost[] = [
   {
+    slug: 'brand-studio-vs-growth-studio-whats-the-difference',
+    title: 'Brand studio vs growth studio: what is the difference',
+    excerpt:
+      'Brand studios make you look real. Growth studios make you move money. Most teams need both, in the right order. Here is the operator-level distinction and how to tell which you actually need first.',
+    publishedAt: '2026-05-15',
+    readingTime: 7,
+    kicker: 'Field notes / Positioning',
+    lede: 'Brand studios make you look real. Growth studios make you move money. Most teams need both — in the right order, with the right shape underneath. Picking wrong burns a quarter and the budget that came with it. Here is the operator-level distinction.',
+    sections: [
+      {
+        heading: 'The one-line version',
+        paragraphs: [
+          'A brand studio designs how the company is perceived. A growth studio designs how the company compounds revenue. Both are real disciplines. Both are valuable. They are not interchangeable, and almost nobody is honest about which one they actually are.',
+          'You can tell which you are talking to in two minutes. Brand studios open with "what is your story". Growth studios open with "what is your bottleneck". Same energy, different question. Different engagement.',
+        ],
+      },
+      {
+        heading: 'What a brand studio actually does',
+        paragraphs: [
+          'A brand studio ships the system that makes a company look and sound like itself. Logo, typography, color, motion language, voice, tone, content templates, the rules that let the brand keep building itself after the studio leaves. The deliverable is consistency at scale. The hard part is taste plus systems thinking.',
+        ],
+        list: [
+          'Visual identity (mark, type, color, motion)',
+          'Voice + tone system (how the brand sounds across every channel)',
+          'Component library or design system (so the brand survives a year of execution)',
+          'Content templates (so non-designers ship on-brand without breaking it)',
+          'Brand guidelines doc (the source of truth everyone on the team uses)',
+        ],
+      },
+      {
+        heading: 'What a growth studio actually does',
+        paragraphs: [
+          'A growth studio ships the operating cadence that turns inputs into revenue, week after week. Strategy, positioning, funnel architecture, lifecycle, pricing, retention, the unsexy ops that compound. The deliverable is a running system the founder owns after the engagement ends. The hard part is honest scoping plus operator instinct.',
+        ],
+        list: [
+          'Positioning + GTM thesis (who you are for, what you charge, why now)',
+          'Funnel + offer architecture (the path from cold to closed)',
+          'Operating cadence (weekly rhythm, dashboards, decision points)',
+          'Lifecycle / retention system (how a customer becomes a second purchase)',
+          'Hand-off package (the playbook the team runs after the studio is gone)',
+        ],
+      },
+      {
+        heading: 'Where the two overlap (and where it gets confusing)',
+        paragraphs: [
+          'The overlap is real and it is where most teams get sold the wrong thing. A "brand refresh" that improves conversion is doing growth work. A "growth retainer" that tightens the positioning is doing brand work. The disciplines touch. The deliverables blur.',
+          'The right way to think about it: brand is upstream of growth, and growth is downstream of brand. If the brand is wrong, growth tactics will look like they are working until they are not — because you attracted the wrong customer. If the growth thesis is wrong, brand work will look like progress until the revenue number does not move. Both directions, the same answer: the work depends on the layer below being honest.',
+        ],
+      },
+      {
+        heading: 'How to tell which you need first',
+        paragraphs: [
+          'There are three honest tests. None of them require a sales call. All of them require you to be specific.',
+        ],
+        list: [
+          'If your problem is "people do not believe we are real yet" — you need brand work. Logo, type, site, voice. Get to "this looks like a real company" before you scale anything.',
+          'If your problem is "people believe we are real but nobody is buying" — you need growth work. Funnel, offer, positioning, pricing. Fix the bottleneck before you spend on more reach.',
+          'If your problem is "we have customers but the brand is holding back what we charge" — you need brand work pretending to be growth work. Reposition the offer, then re-skin the company to match.',
+        ],
+      },
+      {
+        heading: 'Red flags either direction',
+        paragraphs: [
+          'A brand studio that promises growth outcomes is selling a deliverable it cannot ship. Logos do not move revenue alone. A growth studio that opens with a "discovery phase" instead of a bottleneck thesis is selling time. Time is not a thesis.',
+          'A studio that calls itself both and cannot tell you in one sentence which discipline is the lead capability is hedging. Hedging is the agency move. You do not need an agency. You need an operator-shaped studio with one discipline they actually run and one they support.',
+        ],
+      },
+      {
+        heading: 'How BusinessDawg sits on this map',
+        paragraphs: [
+          'BusinessDawg is a growth studio that ships branding as one of five systems, not the other way around. Branding Systems is in the stack because brand is upstream of growth and we cannot ship the system below it if the brand layer is broken. But the engagement is always scoped to a revenue outcome, not a logo deliverable.',
+          'If you are deciding between hiring a brand studio and hiring a growth studio, the honest first step is naming the layer the business is actually stuck at. Book the call. We will name it with you in 15 minutes, or tell you which kind of studio you actually need (even if it is not us).',
+        ],
+      },
+    ],
+  },
+  {
     slug: 'when-to-hire-an-ai-automation-agency-vs-build-in-house',
     title: 'When to hire an AI automation agency vs build in-house',
     excerpt:
