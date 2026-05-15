@@ -6,14 +6,14 @@ import Recruitment from '@/components/sections/Recruitment';
 import Newsletter from '@/components/sections/Newsletter';
 import ClosingCTA from '@/components/sections/ClosingCTA';
 import TweakPanel from '@/components/dev/TweakPanel';
-import SectionStack from '@/components/motion/SectionStack';
+import DawgRail from '@/components/motion/DawgRail';
 import DriftingBlobs from '@/components/motion/DriftingBlobs';
 
 export default function HomePage() {
   return (
     <>
       <DriftingBlobs />
-      <SectionStack />
+      <DawgRail />
 
       <div id="hero">
         <Hero />
