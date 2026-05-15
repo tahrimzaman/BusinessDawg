@@ -6,10 +6,11 @@
 
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 
-export async function DELETE(
+async function handleDELETE(
   _req: Request,
   ctx: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
@@ -17,3 +18,5 @@ export async function DELETE(
   await prisma.slotHold.deleteMany({ where: { id } });
   return NextResponse.json({ ok: true });
 }
+
+export const DELETE = withLogging('booking.hold.delete', handleDELETE);

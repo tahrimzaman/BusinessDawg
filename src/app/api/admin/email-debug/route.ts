@@ -9,6 +9,7 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { isAuthed } from '@/lib/admin/auth';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 
@@ -27,7 +28,7 @@ type Diag = {
   testSend?: { ok: boolean; error: string | null; messageId: string | null; timeMs: number };
 };
 
-export async function GET(req: Request) {
+async function handleGET(req: Request) {
   if (!(await isAuthed())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
@@ -103,3 +104,5 @@ export async function GET(req: Request) {
 
   return NextResponse.json(diag, { status: 200 });
 }
+
+export const GET = withLogging('admin.emailDebug', handleGET);

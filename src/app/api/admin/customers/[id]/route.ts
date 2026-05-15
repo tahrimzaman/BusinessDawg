@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
 import { isAuthed } from '@/lib/admin/auth';
 import { log } from '@/lib/log/logger';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -28,7 +29,7 @@ const PatchBody = z.object({
   stage: StageEnum.optional(),
 });
 
-export async function PATCH(
+async function handlePATCH(
   req: Request,
   ctx: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
@@ -76,7 +77,7 @@ export async function PATCH(
   });
 }
 
-export async function DELETE(
+async function handleDELETE(
   req: Request,
   ctx: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
@@ -93,3 +94,7 @@ export async function DELETE(
   await prisma.customer.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
+
+export const PATCH = withLogging('admin.customers.update', handlePATCH);
+
+export const DELETE = withLogging('admin.customers.delete', handleDELETE);

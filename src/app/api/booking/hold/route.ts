@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
 import { rateLimit, clientIp } from '@/lib/security/ratelimit';
 import { getBookingRule } from '@/lib/booking/rules';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 
@@ -20,7 +21,7 @@ const Schema = z.object({
 
 const HOLD_TTL_MS = 5 * 60_000;
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const ip = clientIp(req);
   const limit = rateLimit(`hold:${ip}`, { max: 20, windowMs: 60_000 });
   if (!limit.ok) {
@@ -55,3 +56,5 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ holdId: hold.id, expiresAt: expiresAt.toISOString() });
 }
+
+export const POST = withLogging('booking.hold.create', handlePOST);

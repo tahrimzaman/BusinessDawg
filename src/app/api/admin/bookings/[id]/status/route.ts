@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
 import { isAuthed } from '@/lib/admin/auth';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -16,7 +17,7 @@ const Body = z.object({
   status: z.enum(['CONFIRMED', 'COMPLETED', 'NO_SHOW']),
 });
 
-export async function PATCH(
+async function handlePATCH(
   req: Request,
   ctx: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
@@ -45,3 +46,5 @@ export async function PATCH(
 
   return NextResponse.json({ ok: true, status: parsed.data.status });
 }
+
+export const PATCH = withLogging('admin.bookings.status', handlePATCH);

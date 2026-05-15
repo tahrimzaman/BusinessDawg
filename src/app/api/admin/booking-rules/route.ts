@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
 import { isAuthed } from '@/lib/admin/auth';
 import { getBookingRule } from '@/lib/booking/rules';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -26,7 +27,7 @@ const RulePayload = z.object({
   meetingTitle: z.string().min(1).max(200),
 });
 
-export async function GET() {
+async function handleGET() {
   if (!(await isAuthed())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
@@ -42,7 +43,7 @@ export async function GET() {
   });
 }
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   if (!(await isAuthed())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
@@ -78,3 +79,7 @@ export async function POST(req: Request) {
     meetingTitle: updated.meetingTitle,
   });
 }
+
+export const GET = withLogging('admin.bookingRules.get', handleGET);
+
+export const POST = withLogging('admin.bookingRules.update', handlePOST);

@@ -7,11 +7,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { isAuthed } from '@/lib/admin/auth';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function DELETE(
+async function handleDELETE(
   req: Request,
   ctx: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
@@ -28,3 +29,5 @@ export async function DELETE(
   await prisma.booking.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
+
+export const DELETE = withLogging('admin.bookings.delete', handleDELETE);
