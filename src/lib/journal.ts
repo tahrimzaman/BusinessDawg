@@ -33,6 +33,97 @@ export type JournalPost = {
 
 export const JOURNAL: JournalPost[] = [
   {
+    slug: 'productized-vs-custom-agency-engagement',
+    title: 'Productized vs custom agency engagement: which one are you actually buying',
+    excerpt:
+      'Productized agency engagements ship predictable scope on a fixed clock. Custom engagements ship depth on an open one. Most teams pick the wrong model and pay for it twice. Here is the operator-level distinction.',
+    publishedAt: '2026-05-15',
+    readingTime: 6,
+    kicker: 'Field notes / Engagement models',
+    lede: 'Productized agency engagements ship predictable scope on a fixed clock. Custom engagements ship depth on an open one. Both are valid. Most teams pick the wrong model — and pay for it twice, in cash and in calendar.',
+    sections: [
+      {
+        heading: 'The one-line version',
+        paragraphs: [
+          'Productized means the scope, the timeline, and the deliverable are defined before you sign. You are buying a known shape. Custom means the scope is defined after a discovery period, by the team you hired to define it. You are buying a process, not a deliverable.',
+          'Both can produce great work. The mistake is buying one model thinking you are buying the other.',
+        ],
+      },
+      {
+        heading: 'What productized actually means',
+        paragraphs: [
+          'A productized engagement has a fixed scope, a fixed clock, and a fixed deliverable. The agency has run this exact shape 30 times before, so they can quote it, ship it, and hand it off without renegotiating mid-engagement. The work is real. The scope discipline is the product.',
+        ],
+        list: [
+          'Scope is written in concrete deliverables, not abstract goals',
+          'Timeline is fixed (2 weeks, 6 weeks, etc.) and the team works backward from it',
+          'Price is named upfront, even if it is custom-quoted per engagement',
+          'The agency owns scope creep — extra work either gets cut or quoted as a separate engagement',
+          'Hand-off is part of the engagement, not an afterthought',
+        ],
+      },
+      {
+        heading: 'What custom actually means',
+        paragraphs: [
+          'A custom engagement starts with a discovery phase. Discovery is real work — but it is also the agency figuring out what to build, on your dime. The scope, timeline, and price emerge from discovery, not before it. The depth is the product.',
+        ],
+        list: [
+          'Discovery phase is paid (sometimes called "audit", "strategy sprint", "intake")',
+          'Scope is written after discovery, in a phase 2 SOW',
+          'Timeline expands as discovery surfaces complexity',
+          'Price is "estimate to actual" — final cost is known at the end',
+          'Hand-off is usually negotiated separately',
+        ],
+      },
+      {
+        heading: 'When productized is the right call',
+        paragraphs: [
+          'Productized wins when the work is concentrated, the team has run the shape before, and you do not have unlimited calendar to spend defining what to build.',
+        ],
+        list: [
+          'You can describe the deliverable in one sentence (a brand identity, a landing page, an automation workflow). The shape is known.',
+          'You have a deadline that is real — not "Q3" but "August 15".',
+          'You have done this kind of engagement before and you know what you are buying.',
+          'Your business needs the output more than the team needs to learn alongside the agency.',
+        ],
+      },
+      {
+        heading: 'When custom is the right call',
+        paragraphs: [
+          'Custom wins when the work is genuinely new for the agency too, when the depth required is more than any productized scope can fit, or when the discovery itself is what you are buying.',
+        ],
+        list: [
+          'The work touches multiple systems and you do not yet know which one is the bottleneck.',
+          'You are buying expertise more than execution — you want the agency in the room rethinking the company with you.',
+          'Your domain is so specific that a productized scope would miss the point.',
+          'You have the calendar (and the budget) to absorb discovery without it stalling the business.',
+        ],
+      },
+      {
+        heading: 'Why most engagements should start productized',
+        paragraphs: [
+          'Even when the work is eventually going to be custom, starting with a productized engagement is almost always the right move. A 2-week productized audit will tell you whether the bigger custom engagement is worth scoping. It is a small bet that produces a clear decision. It costs less than the discovery phase of a custom engagement would have cost, and it leaves you with a deliverable either way.',
+          'This is also how agencies should sell. The productized first engagement is the test. The custom second engagement, if it ships, is the trust. Skipping the test and going straight to custom is how engagements turn into Notion graveyards.',
+        ],
+      },
+      {
+        heading: 'Red flags either direction',
+        paragraphs: [
+          'A productized engagement that promises "fully custom outcomes" is selling a contradiction. The whole point of productized is that the scope is fixed. If the agency negotiates scope on every call, you bought custom and got billed productized.',
+          'A custom engagement that cannot tell you what the deliverable will look like at the end of discovery is selling you the discovery, not the engagement. Discovery is the easiest part to bill and the hardest part to verify. If the only proof of work is a deck at the end of phase one, the engagement has not shipped anything yet.',
+        ],
+      },
+      {
+        heading: 'How BusinessDawg engagements work',
+        paragraphs: [
+          'BusinessDawg sells productized systems. Five of them. Each one has a fixed scope, a fixed shape, and a hand-off package. We will write the SOW before you sign, not after. We name the deliverable and the cadence on the intro call.',
+          'When the work is genuinely custom — multiple systems in one engagement, real depth required, hybrid that pulls from three of the five — we scope that custom build on top of one or two productized systems as the anchor. The custom work earns its scope. The productized work proves it can ship.',
+          'If you are trying to decide whether what you need is productized or custom, book the 15-minute call. We will tell you honestly.',
+        ],
+      },
+    ],
+  },
+  {
     slug: 'brand-studio-vs-growth-studio-whats-the-difference',
     title: 'Brand studio vs growth studio: what is the difference',
     excerpt:
