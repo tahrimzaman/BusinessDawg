@@ -231,7 +231,9 @@ export async function POST(req: Request) {
         .catch(() => {});
     }
 
-    // Fire-and-forget emails so the response stays fast.
+    // Await both emails so errors surface in logs and Node doesn't move on
+    // before the bigger visitor send (with ICS attachment) finishes. The
+    // extra ~1s on the response is well worth guaranteed delivery.
     const emailPayload = {
       id: created.id,
       name: created.name,
@@ -253,12 +255,18 @@ export async function POST(req: Request) {
       // two events on their calendar.
       skipIcs: !!meetUrl && googleConfigured,
     };
-    notifyVisitorBookingConfirmed(emailPayload).catch((err) =>
-      console.error('[/api/booking] visitor email failed', err),
-    );
-    notifyAdminOfBooking(emailPayload).catch((err) =>
-      console.error('[/api/booking] admin email failed', err),
-    );
+    const [visitorResult, adminResult] = await Promise.allSettled([
+      notifyVisitorBookingConfirmed(emailPayload),
+      notifyAdminOfBooking(emailPayload),
+    ]);
+    if (visitorResult.status === 'rejected') {
+      console.error('[/api/booking] visitor email failed', visitorResult.reason);
+    } else {
+      console.log('[/api/booking] visitor email sent to', created.email);
+    }
+    if (adminResult.status === 'rejected') {
+      console.error('[/api/booking] admin email failed', adminResult.reason);
+    }
 
     return NextResponse.json({ ok: true, bookingId });
   } catch (err) {
