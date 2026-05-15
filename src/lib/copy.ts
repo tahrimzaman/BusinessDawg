@@ -240,17 +240,16 @@ export const FOUNDER = {
   name: 'Tahrim Zaman',
   // Short — homepage card
   short:
-    'I’m Tahrim. I run an 8.5-crore-a-month distribution territory in Faridpur, pitched in Boston at Hult Prize Global, and founded BusinessDawg to build what operators actually need.',
+    'I’m Tahrim. I run an 8.5-crore-a-month distribution territory in Faridpur and founded BusinessDawg to build the systems most agencies only talk about.',
   hook: 'BusinessDawg is what happens when an operator gets tired of agencies that have never actually shipped anything.',
   // Medium — /about Founder section, ~140 words across paragraphs
   bio: [
     'I’m Tahrim. I’m 22. I run the Faridpur distribution territory for Akij Food & Beverage and Grameenphone — about 8.5 crore taka a month, 24 people on the ground, 7am retailer briefings, depots, routes, cash flow, the whole machine.',
-    'Before all that, I flew to Boston with Team Fortune 501 to represent Bangladesh at Hult Prize Global. Made Top 20 of 5,000+ at Marico’s Over The Wall.',
     'I started BusinessDawg because most agencies want to sell you a logo. I want to sell you the machine.',
   ],
   credibility: [
     { label: '8.5 cr / month', sub: 'Distribution territory I run, day to day.' },
-    { label: 'Top 20 of 5,000+', sub: 'Marico Over The Wall · Hult Prize Global, Boston.' },
+    { label: '24 on the ground', sub: 'Faridpur ops team, daily cadence.' },
   ],
 };
 
