@@ -9,7 +9,6 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
 import { isAuthed } from '@/lib/admin/auth';
-import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -36,7 +35,7 @@ const Payload = z.object({
   exceptions: z.array(ExceptionSchema).max(200),
 });
 
-async function handleGET() {
+export async function GET() {
   if (!(await isAuthed())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
@@ -63,7 +62,7 @@ async function handleGET() {
   });
 }
 
-async function handlePOST(req: Request) {
+export async function POST(req: Request) {
   if (!(await isAuthed())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
@@ -102,7 +101,3 @@ async function handlePOST(req: Request) {
 
   return NextResponse.json({ ok: true });
 }
-
-export const GET = withLogging('admin.availability.list', handleGET);
-
-export const POST = withLogging('admin.availability.update', handlePOST);

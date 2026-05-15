@@ -11,12 +11,11 @@ import { isAuthed } from '@/lib/admin/auth';
 import { getBookingRule } from '@/lib/booking/rules';
 import { authedClient, cancelBookingEvent, getGoogleEnv } from '@/lib/booking/google';
 import { notifyVisitorBookingCancelled } from '@/lib/email/booking';
-import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-async function handlePOST(
+export async function POST(
   _req: Request,
   ctx: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
@@ -83,5 +82,3 @@ async function handlePOST(
 
   return NextResponse.json({ ok: true });
 }
-
-export const POST = withLogging('admin.bookings.cancel', handlePOST);

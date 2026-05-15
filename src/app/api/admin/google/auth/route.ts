@@ -7,12 +7,11 @@
 import { NextResponse } from 'next/server';
 import { isAuthed } from '@/lib/admin/auth';
 import { getGoogleEnv, buildAuthUrl } from '@/lib/booking/google';
-import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-async function handleGET() {
+export async function GET() {
   if (!(await isAuthed())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
@@ -26,5 +25,3 @@ async function handleGET() {
   const url = buildAuthUrl(env);
   return NextResponse.redirect(url);
 }
-
-export const GET = withLogging('admin.google.auth', handleGET);

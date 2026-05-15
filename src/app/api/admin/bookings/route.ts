@@ -8,12 +8,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { isAuthed } from '@/lib/admin/auth';
-import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-async function handleGET() {
+export async function GET() {
   if (!(await isAuthed())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
@@ -38,5 +37,3 @@ async function handleGET() {
     })),
   });
 }
-
-export const GET = withLogging('admin.bookings.list', handleGET);
