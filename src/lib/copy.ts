@@ -28,6 +28,12 @@ export type System = {
   pricing: { kind: 'custom' };
   accent: string;
   glyph: string;
+  // Optional long-form fields for expanded /systems/[slug] pages. When present,
+  // the system page renders deep sections; otherwise it falls back to the
+  // short tagline-and-bullet layout. Phase 4.2 rollout: Growth first, then the
+  // other 4 systems get backfilled in follow-up sessions.
+  whatItIs?: string[];
+  deliverableDetails?: { title: string; description: string; timeline: string }[];
 };
 
 export const SYSTEMS: System[] = [
@@ -46,6 +52,31 @@ export const SYSTEMS: System[] = [
     pricing: { kind: 'custom' },
     accent: '#c8ff00',
     glyph: '↗',
+    whatItIs: [
+      'Business Growth Systems is not a marketing retainer and not a strategy deck. It is the operating layer that turns positioning, offers, funnels, and weekly ops into a single running machine — one your team operates after we leave.',
+      'The engagement starts where most growth projects end: with one number the business has to move, by when, and the bottleneck thesis behind it. From there we scope the smallest system that can move that number reliably, build it in weeks, and hand off the rhythm that keeps it compounding.',
+      'It is built for operator-founders and Gen Z teams who have outgrown spreadsheet growth, are tired of agencies that ship decks, and want infrastructure they can run without re-hiring the studio next quarter. If you can name the number that has to move, you are ready for this system.',
+    ],
+    deliverableDetails: [
+      {
+        title: 'Positioning + GTM map',
+        description:
+          'A one-page map naming exactly who the business is for, the offer it leads with, the channels that earn that audience, and the proof points that close them. Built from your existing customer interviews, sales calls, and the audit conversations we run in week one — not from a competitive matrix.',
+        timeline: 'Week 1–2',
+      },
+      {
+        title: 'Funnel + offer architecture',
+        description:
+          'The full path from cold attention to closed revenue: top-of-funnel mechanic, qualifying offer, sales motion, onboarding, and the upgrade path. We ship the architecture as a working funnel, not a slide. The deliverable is the system running in production, instrumented end-to-end.',
+        timeline: 'Week 2–5',
+      },
+      {
+        title: 'Weekly growth operating cadence',
+        description:
+          'The recurring rhythm that keeps the system honest after we leave: weekly review template, dashboard, decision rules, and the meeting structure that turns numbers into next-week actions. Without this, every growth project reverts to a project. With it, it compounds.',
+        timeline: 'Week 5–6, ongoing',
+      },
+    ],
   },
   {
     slug: 'ai-automation',

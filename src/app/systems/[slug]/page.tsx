@@ -76,30 +76,76 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
           <p className="mt-6 max-w-2xl text-xl text-[color:var(--bd-bone)]/70">{system.tagline}</p>
         </Reveal>
 
-        <div className="mt-20 grid gap-12 md:grid-cols-2">
+        {/* What it is — long-form when whatItIs is set, otherwise the short tagline-only fallback */}
+        {system.whatItIs && system.whatItIs.length > 0 ? (
           <Reveal>
-            <h2 className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
-              What it is
-            </h2>
-            <p className="mt-4 text-lg text-[color:var(--bd-bone)]/85">{system.description}</p>
+            <section className="mt-20 max-w-3xl">
+              <h2 className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
+                What it is
+              </h2>
+              <div className="mt-6 space-y-5 text-lg leading-relaxed text-[color:var(--bd-bone)]/85">
+                {system.whatItIs.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
+            </section>
           </Reveal>
+        ) : (
+          <Reveal>
+            <section className="mt-20 max-w-2xl">
+              <h2 className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
+                What it is
+              </h2>
+              <p className="mt-4 text-lg text-[color:var(--bd-bone)]/85">{system.description}</p>
+            </section>
+          </Reveal>
+        )}
+
+        {/* What you actually get — expanded cards with timeline when deliverableDetails is set */}
+        {system.deliverableDetails && system.deliverableDetails.length > 0 ? (
           <Reveal delay={0.06}>
-            <h2 className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
-              What you get
-            </h2>
-            <ul className="mt-4 space-y-3">
-              {system.deliverables.map((d) => (
-                <li
-                  key={d}
-                  className="flex items-start gap-3 text-lg text-[color:var(--bd-bone)]/85"
-                >
-                  <span className="mt-3 inline-block h-1 w-4 bg-[color:var(--bd-lime)]" />
-                  {d}
-                </li>
-              ))}
-            </ul>
+            <section className="mt-16">
+              <h2 className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
+                What you actually get
+              </h2>
+              <div className="mt-6 grid gap-5 md:grid-cols-3">
+                {system.deliverableDetails.map((d) => (
+                  <article
+                    key={d.title}
+                    className="flex flex-col rounded-3xl border border-white/8 bg-[color:var(--bd-smoke)] p-6"
+                  >
+                    <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
+                      {d.timeline}
+                    </p>
+                    <h3 className="font-display mt-3 text-2xl font-bold italic">{d.title}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-[color:var(--bd-bone)]/75">
+                      {d.description}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </section>
           </Reveal>
-        </div>
+        ) : (
+          <Reveal delay={0.06}>
+            <section className="mt-16 max-w-2xl">
+              <h2 className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
+                What you get
+              </h2>
+              <ul className="mt-4 space-y-3">
+                {system.deliverables.map((d) => (
+                  <li
+                    key={d}
+                    className="flex items-start gap-3 text-lg text-[color:var(--bd-bone)]/85"
+                  >
+                    <span className="mt-3 inline-block h-1 w-4 bg-[color:var(--bd-lime)]" />
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </Reveal>
+        )}
 
         <Reveal>
           <div className="mt-20 grid gap-6 md:grid-cols-3">
