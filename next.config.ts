@@ -6,10 +6,10 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   images: {
-    formats: ['image/avif', 'image/webp'],
-    deviceSizes: [360, 640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [16, 32, 64, 96, 128, 256, 384],
-    minimumCacheTTL: ONE_YEAR,
+    // Hostinger's Node runtime can't reliably run /_next/image (sharp missing
+    // or wrong-arch → 503s). Every WebP in /public is already hand-tuned and
+    // right-sized, so we serve them directly as <img src> instead.
+    unoptimized: true,
   },
   async headers() {
     const immutable = [
@@ -18,9 +18,15 @@ const nextConfig: NextConfig = {
         value: `public, max-age=${ONE_YEAR}, immutable`,
       },
     ];
+    const noStore = [{ key: 'Cache-Control', value: 'no-store, must-revalidate' }];
     return [
+      // Static assets — long-cache, immutable
       { source: '/brand/:path*', headers: immutable },
       { source: '/:all*(svg|webp|avif|jpg|jpeg|png|ico|woff|woff2)', headers: immutable },
+      // HTML pages — never cache at the edge. If nginx ever caches an HTML
+      // response that references build-hash chunks, a later redeploy makes
+      // those chunks 404 → unstyled page. no-store kills that whole failure mode.
+      { source: '/((?!_next/|brand/|api/).*)', headers: noStore },
     ];
   },
 };
