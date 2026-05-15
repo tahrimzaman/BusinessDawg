@@ -134,6 +134,46 @@ export function BreadcrumbJsonLd({ items }: { items: { name: string; url: string
   return <Script data={data} />;
 }
 
+export function ArticleJsonLd({
+  headline,
+  description,
+  url,
+  datePublished,
+  dateModified,
+}: {
+  headline: string;
+  description: string;
+  url: string;
+  datePublished: string;
+  dateModified?: string;
+}) {
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline,
+    description,
+    url,
+    mainEntityOfPage: url,
+    datePublished,
+    dateModified: dateModified ?? datePublished,
+    author: {
+      '@type': 'Person',
+      name: 'Tahrim Zaman',
+      url: 'https://businessdawg.com/about',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'BusinessDawg',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://businessdawg.com/brand/logo-mark.png',
+      },
+    },
+    image: 'https://businessdawg.com/opengraph-image',
+  };
+  return <Script data={data} />;
+}
+
 export function JobPostingJsonLd({
   title,
   description,

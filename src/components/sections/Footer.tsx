@@ -6,7 +6,10 @@ import Logo from '@/components/brand/Logo';
 import Mascot from '@/components/brand/Mascot';
 import { SITE } from '@/lib/copy';
 
-const COL_PRODUCT = [{ href: '/systems', label: 'Systems' }];
+const COL_PRODUCT = [
+  { href: '/systems', label: 'Systems' },
+  { href: '/journal', label: 'Journal' },
+];
 const COL_STUDIO = [
   { href: '/about', label: 'About' },
   { href: '/join', label: 'Join' },
