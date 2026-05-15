@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db/prisma';
 import { rateLimit, clientIp } from '@/lib/security/ratelimit';
 import { isLikelyBot, HONEYPOT_FIELD, TIMESTAMP_FIELD } from '@/lib/security/honeypot';
 import { hashIp } from '@/lib/security/hash';
-import { notifyAdminOfSubscriber } from '@/lib/email/send';
+import { notifyAdminOfSubscriber, notifyVisitorSubscribed } from '@/lib/email/send';
 
 export const runtime = 'nodejs';
 
@@ -59,8 +59,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'persistence failed' }, { status: 500 });
   }
 
-  notifyAdminOfSubscriber({ email, source: source || 'newsletter' }).catch((err) =>
-    console.error('[/api/newsletter] email error', err),
+  void notifyAdminOfSubscriber({ email, source: source || 'newsletter' }).catch((err: Error) =>
+    console.error('[/api/newsletter] admin email error:', err.message),
+  );
+  void notifyVisitorSubscribed(email).catch((err: Error) =>
+    console.error('[/api/newsletter] visitor welcome email error:', err.message),
   );
 
   return NextResponse.json({ ok: true });

@@ -1,33 +1,15 @@
 /**
  * Booking transactional emails — visitor confirmation, visitor cancellation,
- * admin notification — plus a hand-rolled ICS builder so visitors can drop
- * the call straight into Google/Apple/Outlook calendar from the confirmation
- * email. Reuses the Nodemailer transport from send.ts via SMTP_* env vars.
+ * admin notification, 24h reminder. All use emailShell() from template.ts for
+ * consistent on-brand layout. Also exports buildIcs() for the hand-rolled
+ * iCalendar attachment so visitors can add the call to their calendar.
  */
 
-import nodemailer from 'nodemailer';
+import { getTransport, FROM, ADMIN_INBOX } from './transport';
+import { emailShell, escapeHtml, infoCard, greyCard, ctaButton, fieldRow } from './template';
 import { signManageToken } from '@/lib/booking/tokens';
 
-const FROM = process.env.SMTP_FROM || 'BusinessDawg <yo@businessdawg.com>';
-const ADMIN_INBOX = process.env.ADMIN_INBOX || 'yo@businessdawg.com';
 const BOOKING_BASE_URL = process.env.BOOKING_BASE_URL || 'http://localhost:3000';
-
-let _transport: nodemailer.Transporter | null = null;
-function transport(): nodemailer.Transporter | null {
-  if (_transport) return _transport;
-  const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT || 465);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-  if (!host || !user || !pass) return null;
-  _transport = nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465,
-    auth: { user, pass },
-  });
-  return _transport;
-}
 
 export type BookingEmailPayload = {
   id: string;
@@ -44,12 +26,13 @@ export type BookingEmailPayload = {
   ownerTz: string;
   meetingTitle: string;
   meetUrl?: string | null;
-  /** Current tokenVersion — used to mint reschedule/cancel manage links. */
   tokenVersion?: number;
-  // When true, omit the hand-rolled ICS attachment. Set this when Google
-  // already sent the visitor its native calendar invite to avoid a duplicate.
+  // When true, skip the hand-rolled ICS. Set when Google already sent its own
+  // native calendar invite so the visitor doesn't end up with two events.
   skipIcs?: boolean;
 };
+
+// ─── Utilities ────────────────────────────────────────────────────────────────
 
 function manageUrl(b: BookingEmailPayload): string | null {
   if (typeof b.tokenVersion !== 'number') return null;
@@ -61,7 +44,7 @@ function manageUrl(b: BookingEmailPayload): string | null {
   return `${BOOKING_BASE_URL}/booking/${token}/manage`;
 }
 
-function formatTime(date: Date, tz: string): string {
+function formatShort(date: Date, tz: string): string {
   return new Intl.DateTimeFormat('en-US', {
     timeZone: tz,
     weekday: 'short',
@@ -86,28 +69,21 @@ function formatLong(date: Date, tz: string): string {
 }
 
 function toIcsDate(d: Date): string {
-  // YYYYMMDDTHHMMSSZ — UTC
-  const iso = d.toISOString();
-  return iso.replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+  return d
+    .toISOString()
+    .replace(/[-:]/g, '')
+    .replace(/\.\d{3}/, '');
 }
 
 function escapeIcs(s: string): string {
   return s.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
 }
 
-/** Hand-rolled ICS for the booking. method=REQUEST → calendar invite. */
+// ─── ICS builder ──────────────────────────────────────────────────────────────
+
 export function buildIcs(b: BookingEmailPayload, method: 'REQUEST' | 'CANCEL' = 'REQUEST'): string {
   const uid = `${b.id}@businessdawg.com`;
-  const lines = [
+  return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//BusinessDawg//Booking//EN',
@@ -125,77 +101,62 @@ export function buildIcs(b: BookingEmailPayload, method: 'REQUEST' | 'CANCEL' = 
     `STATUS:${method === 'CANCEL' ? 'CANCELLED' : 'CONFIRMED'}`,
     'END:VEVENT',
     'END:VCALENDAR',
-  ];
-  return lines.join('\r\n');
+  ].join('\r\n');
 }
 
-const SHELL_STYLE =
-  'font-family:system-ui,-apple-system,sans-serif;color:#0A0A0A;line-height:1.5;max-width:560px;margin:0 auto;padding:0 16px';
+// ─── Visitor booking confirmation ──────────────────────────────────────────────
 
 export async function notifyVisitorBookingConfirmed(b: BookingEmailPayload): Promise<void> {
-  const t = transport();
-  if (!t) {
-    console.log('[email] SMTP not configured — skipping visitor confirmation for', b.email);
-    return;
-  }
+  const t = getTransport();
+  if (!t) return;
 
-  const visitorWhen = formatTime(b.startUtc, b.visitorTz);
+  const firstName = b.name.split(' ')[0] || b.name;
   const visitorLong = formatLong(b.startUtc, b.visitorTz);
   const ownerLong = formatLong(b.startUtc, b.ownerTz);
-  const subject = `Confirmed: ${b.meetingTitle} — ${visitorWhen}`;
-
   const hasMeet = !!b.meetUrl;
   const manage = manageUrl(b);
+  const visitorShort = formatShort(b.startUtc, b.visitorTz);
+  const subject = `Confirmed: ${b.meetingTitle} — ${visitorShort}`;
+
+  const timeCard = infoCard(`
+    <p style="margin:0 0 4px;font-family:'Courier New',Courier,monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#5b6500">Your time</p>
+    <p style="margin:0;font-size:16px;font-weight:700;color:#0A0A0A;line-height:1.3">${escapeHtml(visitorLong)}</p>
+    <p style="margin:8px 0 0;font-size:13px;color:#5b6500">Our time: ${escapeHtml(ownerLong)}</p>
+  `);
+
+  const meetSection = hasMeet
+    ? `<p style="margin:0 0 12px;font-size:15px;color:#0A0A0A">Your Google Meet is ready. See you there:</p>
+       ${ctaButton('Join Google Meet →', b.meetUrl!)}
+       <p style="margin:0 0 20px;font-size:12px;color:#999">Or copy the link: <a href="${b.meetUrl}" style="color:#5b6500;word-break:break-all;text-decoration:none">${escapeHtml(b.meetUrl!)}</a></p>`
+    : `<p style="margin:0 0 20px;font-size:15px;color:#555">A Google Meet link is on its way — keep an eye on your inbox.</p>`;
+
+  const manageSection = manage
+    ? `<p style="margin:0;font-size:14px;color:#888">Need to change things? <a href="${manage}" style="color:#5b6500;font-weight:600;text-decoration:none">Reschedule or cancel →</a></p>`
+    : `<p style="margin:0;font-size:14px;color:#888">Reply to this email to reschedule or cancel.</p>`;
+
+  const body = `
+    <p style="margin:0 0 20px;font-size:15px;color:#0A0A0A;line-height:1.6">
+      Hey ${escapeHtml(firstName)} — your 15-minute call with BusinessDawg is locked in.
+    </p>
+    ${timeCard}
+    ${meetSection}
+    ${manageSection}
+  `;
 
   const text = [
-    `Hey ${b.name.split(' ')[0] || b.name},`,
+    `Hey ${firstName},`,
     '',
-    `Your 15-minute call with BusinessDawg is locked in.`,
+    'Your 15-minute call with BusinessDawg is confirmed.',
     '',
-    `Your time:   ${visitorLong}`,
-    `Our time:    ${ownerLong}`,
+    `Your time:  ${visitorLong}`,
+    `Our time:   ${ownerLong}`,
     '',
-    hasMeet
-      ? `Join here:   ${b.meetUrl}`
-      : 'A Google Meet link will follow shortly so it lives on your calendar.',
-    manage
-      ? `\nManage:      ${manage}`
-      : 'Reply to this email if you need to reschedule or cancel.',
+    hasMeet ? `Join here:  ${b.meetUrl}` : 'A Google Meet link is on its way.',
+    manage ? `\nManage:     ${manage}` : 'Reply to reschedule or cancel.',
     '',
     '— BusinessDawg',
-    `${BOOKING_BASE_URL}`,
+    BOOKING_BASE_URL,
   ].join('\n');
-
-  const meetBlock = hasMeet
-    ? `<p style="margin:0 0 12px">Join the call here:</p>
-       <p style="margin:0 0 24px"><a href="${b.meetUrl}" style="display:inline-block;padding:12px 20px;background:#C8FF00;color:#0A0A0A;text-decoration:none;border-radius:999px;font-weight:700">Join Google Meet →</a></p>
-       <p style="margin:0 0 12px;font-size:13px;color:#555">If the button doesn't work: <a href="${b.meetUrl}" style="color:#5b6500;word-break:break-all">${escapeHtml(b.meetUrl!)}</a></p>`
-    : `<p style="margin:0 0 12px">A Google Meet link will follow shortly so it lives on your calendar.</p>`;
-
-  const html = `
-    <div style="${SHELL_STYLE}">
-      <p style="font-size:14px;letter-spacing:1px;color:#5b6500;text-transform:uppercase;margin:24px 0 8px">/ Booking confirmed</p>
-      <h1 style="font-size:28px;font-weight:800;font-style:italic;margin:0 0 16px;color:#0A0A0A">Booked. See you then.</h1>
-      <p style="margin:0 0 12px">Hey ${escapeHtml(b.name.split(' ')[0] || b.name)} —</p>
-      <p style="margin:0 0 24px">Your 15-minute call with BusinessDawg is locked in.</p>
-      <table cellspacing="0" cellpadding="0" style="border-collapse:collapse;width:100%;margin:0 0 24px">
-        <tr>
-          <td style="padding:14px 16px;background:#F4FFB8;border-radius:12px">
-            <p style="margin:0 0 6px;font-size:12px;letter-spacing:1px;color:#5b6500;text-transform:uppercase">Your time</p>
-            <p style="margin:0;font-weight:700;font-size:16px">${escapeHtml(visitorLong)}</p>
-            <p style="margin:8px 0 0;font-size:13px;color:#5b6500">Our time: ${escapeHtml(ownerLong)}</p>
-          </td>
-        </tr>
-      </table>
-      ${meetBlock}
-      ${
-        manage
-          ? `<p style="margin:0 0 24px;font-size:14px;color:#555">Need to change anything? <a href="${manage}" style="color:#5b6500;font-weight:600">Reschedule or cancel →</a></p>`
-          : '<p style="margin:0 0 24px;font-size:14px;color:#555">Reply to this email if you need to reschedule or cancel.</p>'
-      }
-      <p style="margin:32px 0 0;font-size:14px;color:#555">— BusinessDawg<br/><a href="${BOOKING_BASE_URL}" style="color:#5b6500">${BOOKING_BASE_URL.replace(/^https?:\/\//, '')}</a></p>
-    </div>
-  `;
 
   const attachments = b.skipIcs
     ? undefined
@@ -207,153 +168,181 @@ export async function notifyVisitorBookingConfirmed(b: BookingEmailPayload): Pro
         },
       ];
 
-  await t.sendMail({
+  const info = await t.sendMail({
     from: FROM,
     to: b.email,
     subject,
     text,
-    html,
+    html: emailShell({
+      label: '/ Booking Confirmed',
+      tone: 'success',
+      headline: 'Booked. See you then.',
+      body,
+    }),
     attachments,
   });
+  console.log('[email] visitor confirmation sent to', b.email, '| msgId:', info.messageId);
 }
 
+// ─── Admin booking notification ────────────────────────────────────────────────
+
 export async function notifyAdminOfBooking(b: BookingEmailPayload): Promise<void> {
-  const t = transport();
-  if (!t) {
-    console.log('[email] SMTP not configured — skipping admin notify for booking', b.id);
-    return;
-  }
+  const t = getTransport();
+  if (!t) return;
 
-  const ownerWhen = formatTime(b.startUtc, b.ownerTz);
-  const subject = `New booking: ${b.name} — ${ownerWhen}`;
-  const link = `${BOOKING_BASE_URL}/admin/bookings/${b.id}`;
+  const ownerShort = formatShort(b.startUtc, b.ownerTz);
+  const subject = `New booking: ${b.name} — ${ownerShort}`;
+  const adminLink = `${BOOKING_BASE_URL}/admin/bookings/${b.id}`;
 
-  const fieldRows = [
-    ['Name', b.name],
-    ['Email', `<a href="mailto:${escapeHtml(b.email)}">${escapeHtml(b.email)}</a>`],
-    b.company ? ['Company / role', escapeHtml(b.company)] : null,
-    b.phone ? ['Phone', escapeHtml(b.phone)] : null,
-    [
-      'When',
-      `${formatLong(b.startUtc, b.ownerTz)} (visitor: ${formatLong(b.startUtc, b.visitorTz)})`,
-    ],
-    b.source ? ['Source', escapeHtml(b.source)] : null,
+  const rows = [
+    fieldRow('Name', escapeHtml(b.name)),
+    fieldRow(
+      'Email',
+      `<a href="mailto:${escapeHtml(b.email)}" style="color:#5b6500;text-decoration:none">${escapeHtml(b.email)}</a>`,
+    ),
+    b.company ? fieldRow('Company / role', escapeHtml(b.company)) : '',
+    b.phone ? fieldRow('Phone', escapeHtml(b.phone)) : '',
+    fieldRow('When (your tz)', escapeHtml(formatLong(b.startUtc, b.ownerTz))),
+    fieldRow('Visitor tz', escapeHtml(formatLong(b.startUtc, b.visitorTz))),
+    b.source ? fieldRow('Source', escapeHtml(b.source)) : '',
   ]
     .filter(Boolean)
-    .map((row) => row as [string, string]);
+    .join('');
 
-  const html = `
-    <div style="${SHELL_STYLE}">
-      <p style="font-size:14px;letter-spacing:1px;color:#5b6500;text-transform:uppercase;margin:24px 0 8px">/ New booking</p>
-      <h1 style="font-size:24px;font-weight:800;margin:0 0 16px">${escapeHtml(b.name)} booked you</h1>
-      <table cellspacing="0" cellpadding="0" style="border-collapse:collapse;width:100%;margin:0 0 24px">
-        ${fieldRows
-          .map(
-            ([label, value]) =>
-              `<tr>
-                <td style="padding:6px 0;vertical-align:top;width:130px;font-size:13px;color:#777">${escapeHtml(label)}</td>
-                <td style="padding:6px 0;vertical-align:top;font-size:14px">${value}</td>
-              </tr>`,
-          )
-          .join('')}
-      </table>
-      <p style="font-size:13px;color:#777;margin:0 0 6px;text-transform:uppercase;letter-spacing:1px">Intent</p>
-      <div style="background:#f5f5f5;border-radius:12px;padding:14px 16px;margin:0 0 24px;white-space:pre-wrap">${escapeHtml(b.intent)}</div>
-      <p style="margin:24px 0 0"><a href="${link}" style="display:inline-block;padding:12px 20px;background:#C8FF00;color:#0A0A0A;text-decoration:none;border-radius:999px;font-weight:700">View in admin →</a></p>
-    </div>
+  const body = `
+    <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="margin:0 0 20px;border-collapse:collapse">
+      ${rows}
+    </table>
+    <p style="margin:0 0 6px;font-family:'Courier New',Courier,monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888">Intent</p>
+    ${greyCard(escapeHtml(b.intent))}
+    ${ctaButton('View in admin →', adminLink)}
   `;
 
   const text = [
-    `${b.name} booked you for ${ownerWhen} (owner tz).`,
+    `${b.name} booked a call — ${ownerShort}`,
     '',
-    `Email: ${b.email}`,
-    b.phone ? `Phone: ${b.phone}` : '',
-    b.company ? `Company / role: ${b.company}` : '',
+    `Email:  ${b.email}`,
+    b.phone ? `Phone:  ${b.phone}` : '',
+    b.company ? `Co/role: ${b.company}` : '',
     '',
     `Intent: ${b.intent}`,
     '',
-    `Open in admin: ${link}`,
+    `Admin link: ${adminLink}`,
   ]
     .filter(Boolean)
     .join('\n');
 
-  await t.sendMail({
+  const info = await t.sendMail({
     from: FROM,
     to: ADMIN_INBOX,
     replyTo: b.email,
     subject,
     text,
-    html,
+    html: emailShell({
+      label: '/ New Booking',
+      tone: 'info',
+      headline: `${escapeHtml(b.name)} just booked.`,
+      body,
+    }),
   });
+  console.log('[email] admin booking notification sent | msgId:', info.messageId);
 }
 
+// ─── Visitor 24h reminder ──────────────────────────────────────────────────────
+
 export async function notifyVisitorBookingReminder(b: BookingEmailPayload): Promise<void> {
-  const t = transport();
+  const t = getTransport();
   if (!t) return;
+
+  const firstName = b.name.split(' ')[0] || b.name;
   const visitorLong = formatLong(b.startUtc, b.visitorTz);
-  const subject = `Tomorrow: 15-min BusinessDawg call — ${formatTime(b.startUtc, b.visitorTz)}`;
-  const manage = manageUrl(b);
   const hasMeet = !!b.meetUrl;
+  const manage = manageUrl(b);
+  const subject = `Tomorrow: your 15-min BusinessDawg call — ${formatShort(b.startUtc, b.visitorTz)}`;
+
+  const meetSection = hasMeet
+    ? ctaButton('Join Google Meet →', b.meetUrl!)
+    : `<p style="margin:0 0 20px;font-size:14px;color:#555">Your Google Meet link is in the original confirmation email.</p>`;
+
+  const body = `
+    <p style="margin:0 0 16px;font-size:15px;color:#0A0A0A;line-height:1.6">
+      Hey ${escapeHtml(firstName)} — quick heads-up. Your 15-minute BusinessDawg call is tomorrow.
+    </p>
+    ${infoCard(`<p style="margin:0;font-size:16px;font-weight:700;color:#0A0A0A">${escapeHtml(visitorLong)}</p>`)}
+    ${meetSection}
+    ${manage ? `<p style="margin:0;font-size:14px;color:#888">Something come up? <a href="${manage}" style="color:#5b6500;font-weight:600;text-decoration:none">Reschedule or cancel →</a></p>` : ''}
+  `;
+
   const text = [
-    `Heads up, ${b.name.split(' ')[0] || b.name} —`,
+    `Hey ${firstName},`,
     '',
-    `Quick reminder: your 15-minute call is tomorrow.`,
+    `Quick reminder — your 15-minute call is tomorrow: ${visitorLong}`,
     '',
-    `Your time:  ${visitorLong}`,
-    '',
-    hasMeet ? `Join here:  ${b.meetUrl}` : 'A Google Meet link will follow shortly.',
-    manage ? `\nManage:     ${manage}` : '',
+    hasMeet ? `Join here: ${b.meetUrl}` : 'Your Meet link is in the original confirmation email.',
+    manage ? `\nManage: ${manage}` : '',
     '',
     '— BusinessDawg',
   ]
     .filter(Boolean)
     .join('\n');
-  const meetBlock = hasMeet
-    ? `<p style="margin:0 0 24px"><a href="${b.meetUrl}" style="display:inline-block;padding:12px 20px;background:#C8FF00;color:#0A0A0A;text-decoration:none;border-radius:999px;font-weight:700">Join Google Meet →</a></p>`
-    : '<p style="margin:0 0 24px;font-size:14px;color:#555">Your Google Meet link is in the original confirmation email.</p>';
-  const html = `
-    <div style="${SHELL_STYLE}">
-      <p style="font-size:14px;letter-spacing:1px;color:#5b6500;text-transform:uppercase;margin:24px 0 8px">/ Tomorrow's call</p>
-      <h1 style="font-size:24px;font-weight:800;margin:0 0 16px">Quick reminder.</h1>
-      <p style="margin:0 0 20px">Your 15-minute BusinessDawg call is tomorrow at <strong>${escapeHtml(visitorLong)}</strong>.</p>
-      ${meetBlock}
-      ${manage ? `<p style="margin:0 0 20px;font-size:14px;color:#555">Something come up? <a href="${manage}" style="color:#5b6500;font-weight:600">Reschedule or cancel →</a></p>` : ''}
-      <p style="margin:32px 0 0;font-size:14px;color:#555">— BusinessDawg</p>
-    </div>
-  `;
-  await t.sendMail({ from: FROM, to: b.email, subject, text, html });
-}
 
-export async function notifyVisitorBookingCancelled(b: BookingEmailPayload): Promise<void> {
-  const t = transport();
-  if (!t) return;
-  const visitorLong = formatLong(b.startUtc, b.visitorTz);
-  const subject = `Cancelled: 15-min BusinessDawg call — ${formatTime(b.startUtc, b.visitorTz)}`;
-  const text = [
-    `Hey ${b.name.split(' ')[0] || b.name},`,
-    '',
-    `Heads up — your 15-minute call (${visitorLong}) was cancelled.`,
-    '',
-    `If this wasn't intentional, hit reply and we'll get a new slot booked.`,
-    '',
-    '— BusinessDawg',
-  ].join('\n');
-  const html = `
-    <div style="${SHELL_STYLE}">
-      <p style="font-size:14px;letter-spacing:1px;color:#a02020;text-transform:uppercase;margin:24px 0 8px">/ Booking cancelled</p>
-      <h1 style="font-size:24px;font-weight:800;margin:0 0 16px">Your call was cancelled.</h1>
-      <p style="margin:0 0 12px">Hey ${escapeHtml(b.name.split(' ')[0] || b.name)} —</p>
-      <p style="margin:0 0 16px">Your 15-minute call scheduled for <strong>${escapeHtml(visitorLong)}</strong> was cancelled.</p>
-      <p style="margin:0 0 24px;font-size:14px;color:#555">If this wasn't intentional, just reply to this email and we'll rebook.</p>
-      <p style="margin:32px 0 0;font-size:14px;color:#555">— BusinessDawg</p>
-    </div>
-  `;
-  await t.sendMail({
+  const info = await t.sendMail({
     from: FROM,
     to: b.email,
     subject,
     text,
-    html,
+    html: emailShell({
+      label: "/ Tomorrow's Call",
+      tone: 'info',
+      headline: 'Quick reminder.',
+      body,
+    }),
+  });
+  console.log('[email] 24h reminder sent to', b.email, '| msgId:', info.messageId);
+}
+
+// ─── Visitor cancellation ──────────────────────────────────────────────────────
+
+export async function notifyVisitorBookingCancelled(b: BookingEmailPayload): Promise<void> {
+  const t = getTransport();
+  if (!t) return;
+
+  const firstName = b.name.split(' ')[0] || b.name;
+  const visitorLong = formatLong(b.startUtc, b.visitorTz);
+  const subject = `Cancelled: your BusinessDawg call — ${formatShort(b.startUtc, b.visitorTz)}`;
+
+  const body = `
+    <p style="margin:0 0 16px;font-size:15px;color:#0A0A0A;line-height:1.6">
+      Hey ${escapeHtml(firstName)} — your 15-minute call scheduled for
+      <strong>${escapeHtml(visitorLong)}</strong> has been cancelled.
+    </p>
+    <p style="margin:0 0 20px;font-size:14px;color:#555;line-height:1.6">
+      If this wasn't intentional, just reply to this email and we'll get a new slot sorted.
+    </p>
+    ${ctaButton('Book a new slot →', `${BOOKING_BASE_URL}/contact`)}
+  `;
+
+  const text = [
+    `Hey ${firstName},`,
+    '',
+    `Your 15-minute call (${visitorLong}) was cancelled.`,
+    '',
+    "If this wasn't intentional, reply and we'll rebook.",
+    '',
+    '— BusinessDawg',
+  ].join('\n');
+
+  const info = await t.sendMail({
+    from: FROM,
+    to: b.email,
+    subject,
+    text,
+    html: emailShell({
+      label: '/ Booking Cancelled',
+      tone: 'cancel',
+      headline: "Your call's off.",
+      body,
+    }),
     attachments: [
       {
         filename: 'cancel.ics',
@@ -362,4 +351,5 @@ export async function notifyVisitorBookingCancelled(b: BookingEmailPayload): Pro
       },
     ],
   });
+  console.log('[email] cancellation sent to', b.email, '| msgId:', info.messageId);
 }

@@ -255,18 +255,15 @@ export async function POST(req: Request) {
       // two events on their calendar.
       skipIcs: !!meetUrl && googleConfigured,
     };
-    const [visitorResult, adminResult] = await Promise.allSettled([
-      notifyVisitorBookingConfirmed(emailPayload),
-      notifyAdminOfBooking(emailPayload),
-    ]);
-    if (visitorResult.status === 'rejected') {
-      console.error('[/api/booking] visitor email failed', visitorResult.reason);
-    } else {
-      console.log('[/api/booking] visitor email sent to', created.email);
-    }
-    if (adminResult.status === 'rejected') {
-      console.error('[/api/booking] admin email failed', adminResult.reason);
-    }
+    // Fire-and-forget — returns the response immediately so the visitor sees
+    // the success screen fast. Emails complete async on the persistent Node
+    // process. Each function logs its own messageId or error.
+    void notifyVisitorBookingConfirmed(emailPayload).catch((err: Error) =>
+      console.error('[/api/booking] visitor email failed:', err.message),
+    );
+    void notifyAdminOfBooking(emailPayload).catch((err: Error) =>
+      console.error('[/api/booking] admin email failed:', err.message),
+    );
 
     return NextResponse.json({ ok: true, bookingId });
   } catch (err) {

@@ -1,52 +1,15 @@
-import nodemailer from 'nodemailer';
+/**
+ * Admin notification emails (application, subscriber) plus new visitor
+ * auto-reply emails (newsletter welcome, application receipt). All use
+ * emailShell() from template.ts for consistent on-brand layout.
+ */
 
-// Hostinger SMTP. yo@businessdawg.com is set up as a free Business Email
-// mailbox on Hostinger; SMTP creds live in env. 100 emails/day cap is plenty
-// for lead notifications.
-//
-// Required env vars:
-//   SMTP_HOST  e.g. smtp.hostinger.com
-//   SMTP_PORT  465 (SSL) or 587 (STARTTLS)
-//   SMTP_USER  full mailbox address (yo@businessdawg.com)
-//   SMTP_PASS  mailbox password (NOT a personal password — the mailbox's own)
-//   SMTP_FROM  display name + address, e.g. "BusinessDawg <yo@businessdawg.com>"
-//   ADMIN_INBOX  where lead notifications land
+import { getTransport, FROM, ADMIN_INBOX } from './transport';
+import { emailShell, escapeHtml, greyCard, ctaButton, fieldRow } from './template';
 
-let _transport: nodemailer.Transporter | null = null;
-let _missingConfigLogged = false;
-function transport(): nodemailer.Transporter | null {
-  if (_transport) return _transport;
-  const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT || 465);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-  if (!host || !user || !pass) {
-    // Loud failure in production — a misconfigured deploy must NOT silently
-    // swallow lead notifications. Log once at error level so it shows up in
-    // Hostinger / any error tracker; subsequent calls stay quiet.
-    if (!_missingConfigLogged) {
-      _missingConfigLogged = true;
-      const msg =
-        '[email] SMTP not configured (missing SMTP_HOST/SMTP_USER/SMTP_PASS) — lead notifications will not be delivered.';
-      if (process.env.NODE_ENV === 'production') {
-        console.error('[CRITICAL]', msg);
-      } else {
-        console.warn(msg);
-      }
-    }
-    return null;
-  }
-  _transport = nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465, // SSL on 465, STARTTLS on 587
-    auth: { user, pass },
-  });
-  return _transport;
-}
+const BOOKING_BASE_URL = process.env.BOOKING_BASE_URL || 'https://businessdawg.com';
 
-const FROM = process.env.SMTP_FROM || 'BusinessDawg <yo@businessdawg.com>';
-const ADMIN_INBOX = process.env.ADMIN_INBOX || 'yo@businessdawg.com';
+// ─── Admin: new intern application ────────────────────────────────────────────
 
 export type ApplicationEmail = {
   name: string;
@@ -57,60 +20,178 @@ export type ApplicationEmail = {
 };
 
 export async function notifyAdminOfApplication(payload: ApplicationEmail): Promise<void> {
-  const t = transport();
-  if (!t) {
-    console.log(
-      '[email] SMTP not configured — skipping admin notify for application',
-      payload.email,
-    );
-    return;
-  }
+  const t = getTransport();
+  if (!t) return;
 
-  const html = `
-    <h2 style="font-family:system-ui;font-weight:800">New BusinessDawg application</h2>
-    <p><strong>Name:</strong> ${escapeHtml(payload.name)}</p>
-    <p><strong>Email:</strong> <a href="mailto:${escapeHtml(payload.email)}">${escapeHtml(payload.email)}</a></p>
-    ${payload.role ? `<p><strong>Role:</strong> ${escapeHtml(payload.role)}</p>` : ''}
-    ${payload.portfolio ? `<p><strong>Portfolio:</strong> <a href="${escapeHtml(payload.portfolio)}">${escapeHtml(payload.portfolio)}</a></p>` : ''}
-    ${payload.note ? `<p><strong>Note:</strong><br>${escapeHtml(payload.note).replace(/\n/g, '<br>')}</p>` : ''}
+  const rows = [
+    fieldRow('Name', escapeHtml(payload.name)),
+    fieldRow(
+      'Email',
+      `<a href="mailto:${escapeHtml(payload.email)}" style="color:#5b6500;text-decoration:none">${escapeHtml(payload.email)}</a>`,
+    ),
+    payload.role ? fieldRow('Role', escapeHtml(payload.role)) : '',
+    payload.portfolio
+      ? fieldRow(
+          'Portfolio',
+          `<a href="${escapeHtml(payload.portfolio)}" style="color:#5b6500;text-decoration:none;word-break:break-all">${escapeHtml(payload.portfolio)}</a>`,
+        )
+      : '',
+  ]
+    .filter(Boolean)
+    .join('');
+
+  const body = `
+    <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="margin:0 0 20px;border-collapse:collapse">
+      ${rows}
+    </table>
+    ${
+      payload.note
+        ? `<p style="margin:0 0 6px;font-family:'Courier New',Courier,monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888">Note</p>
+         ${greyCard(escapeHtml(payload.note))}`
+        : ''
+    }
   `;
 
-  await t.sendMail({
+  const subject = `New application: ${payload.name}${payload.role ? ` — ${payload.role}` : ''}`;
+
+  const info = await t.sendMail({
     from: FROM,
     to: ADMIN_INBOX,
-    subject: `Join: ${payload.name}${payload.role ? ` — ${payload.role}` : ''}`,
     replyTo: payload.email,
-    html,
+    subject,
+    html: emailShell({
+      label: '/ New Application',
+      tone: 'info',
+      headline: `${escapeHtml(payload.name)} wants in.`,
+      body,
+    }),
+    text: [
+      `${payload.name} just applied${payload.role ? ` for ${payload.role}` : ''}.`,
+      '',
+      `Email: ${payload.email}`,
+      payload.portfolio ? `Portfolio: ${payload.portfolio}` : '',
+      payload.note ? `\nNote:\n${payload.note}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n'),
   });
+  console.log('[email] admin application notification sent | msgId:', info.messageId);
 }
+
+// ─── Admin: new newsletter subscriber ─────────────────────────────────────────
 
 export type SubscriberEmail = { email: string; source: string };
 
 export async function notifyAdminOfSubscriber(payload: SubscriberEmail): Promise<void> {
-  const t = transport();
-  if (!t) {
-    console.log(
-      '[email] SMTP not configured — skipping admin notify for subscriber',
-      payload.email,
-    );
-    return;
-  }
-  // Don't spam the inbox on every signup unless explicitly opted in.
+  const t = getTransport();
+  if (!t) return;
+
+  // Suppressed unless explicitly opted in — avoids inbox spam on every signup.
   if (process.env.NOTIFY_ON_SUBSCRIBE !== 'true') return;
 
-  await t.sendMail({
+  const body = `
+    <p style="margin:0;font-size:15px;color:#0A0A0A;line-height:1.6">
+      <strong>${escapeHtml(payload.email)}</strong> just signed up via
+      <strong>${escapeHtml(payload.source)}</strong>.
+    </p>
+  `;
+
+  const info = await t.sendMail({
     from: FROM,
     to: ADMIN_INBOX,
     subject: `New subscriber: ${payload.email}`,
-    html: `<p>New ${escapeHtml(payload.source)} subscriber: <strong>${escapeHtml(payload.email)}</strong></p>`,
+    html: emailShell({ label: '/ New Subscriber', tone: 'info', headline: '+1 subscriber.', body }),
+    text: `${payload.email} signed up via ${payload.source}.`,
   });
+  console.log('[email] admin subscriber notification sent | msgId:', info.messageId);
 }
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+// ─── Visitor: newsletter welcome ───────────────────────────────────────────────
+
+export async function notifyVisitorSubscribed(email: string): Promise<void> {
+  const t = getTransport();
+  if (!t) return;
+
+  const body = `
+    <p style="margin:0 0 16px;font-size:15px;color:#0A0A0A;line-height:1.6">
+      You're on the BusinessDawg list.
+    </p>
+    <p style="margin:0 0 20px;font-size:15px;color:#555;line-height:1.6">
+      No fluff — just the good stuff on growth, builds, and business systems.
+      We'll drop in when we have something worth saying.
+    </p>
+    ${ctaButton('See what we build →', BOOKING_BASE_URL)}
+  `;
+
+  const info = await t.sendMail({
+    from: FROM,
+    to: email,
+    subject: "You're in — BusinessDawg list",
+    html: emailShell({
+      label: '/ Welcome to the Pack',
+      tone: 'success',
+      headline: "You're in.",
+      body,
+    }),
+    text: [
+      "You're on the BusinessDawg list.",
+      '',
+      "No fluff — just the good stuff on growth, builds, and business systems. We'll drop in when we have something worth saying.",
+      '',
+      `— BusinessDawg`,
+      BOOKING_BASE_URL,
+    ].join('\n'),
+  });
+  console.log('[email] newsletter welcome sent to', email, '| msgId:', info.messageId);
+}
+
+// ─── Visitor: application acknowledgement ─────────────────────────────────────
+
+export type ApplicationReceiptPayload = {
+  name: string;
+  email: string;
+  role?: string | null;
+};
+
+export async function notifyVisitorApplicationReceived(
+  payload: ApplicationReceiptPayload,
+): Promise<void> {
+  const t = getTransport();
+  if (!t) return;
+
+  const firstName = payload.name.split(' ')[0] || payload.name;
+  const roleText = payload.role ? ` for ${payload.role}` : '';
+
+  const body = `
+    <p style="margin:0 0 16px;font-size:15px;color:#0A0A0A;line-height:1.6">
+      Hey ${escapeHtml(firstName)} — we got your application${escapeHtml(roleText)}.
+    </p>
+    <p style="margin:0 0 20px;font-size:15px;color:#555;line-height:1.6">
+      We'll review it and get back to you within a week. In the meantime,
+      check out what we're building.
+    </p>
+    ${ctaButton('businessdawg.com →', BOOKING_BASE_URL)}
+  `;
+
+  const info = await t.sendMail({
+    from: FROM,
+    to: payload.email,
+    subject: `Got your application${roleText} — BusinessDawg`,
+    html: emailShell({
+      label: '/ Application Received',
+      tone: 'success',
+      headline: 'Got it. Talk soon.',
+      body,
+    }),
+    text: [
+      `Hey ${firstName},`,
+      '',
+      `We got your application${roleText}. We'll review it and get back to you within a week.`,
+      '',
+      `Check out what we're building: ${BOOKING_BASE_URL}`,
+      '',
+      '— BusinessDawg',
+    ].join('\n'),
+  });
+  console.log('[email] application receipt sent to', payload.email, '| msgId:', info.messageId);
 }
