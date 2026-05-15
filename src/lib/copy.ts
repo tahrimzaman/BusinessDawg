@@ -93,6 +93,31 @@ export const SYSTEMS: System[] = [
     pricing: { kind: 'custom' },
     accent: '#c8ff00',
     glyph: '◇',
+    whatItIs: [
+      'AI Automation Systems is not a chatbot, a Zapier rewrite, or a model demo. It is the operating layer that wires the boring work your team should not be doing to the smart work models can actually do reliably — and the human owner who keeps it honest after the prompts drift.',
+      'Most AI projects fail because nobody owned the eval loop. We start with the workflow audit — what actually breaks if it stops running — then build the smallest agent or pipeline that can replace it. The agent is the artifact. The eval, the owner, and the fallback behavior are the work.',
+      'It is built for studios, ops teams, and operator-founders who want internal tools that work harder than interns and customer-facing AI features that ship without a research team. If you can name three workflows that should be automated, you are ready for this system.',
+    ],
+    deliverableDetails: [
+      {
+        title: 'Workflow audit + automation roadmap',
+        description:
+          'A map of every recurring workflow worth automating, ranked by impact and risk. We sit with your team for a week, watch the boring stuff happen, and write the audit. The output is a prioritized roadmap with effort estimates — not a deck.',
+        timeline: 'Week 1–2',
+      },
+      {
+        title: 'Agents + internal tools',
+        description:
+          'The actual systems we build from the roadmap: LLM-backed agents, internal tools, and Slack- or email-triggered automations. Each one ships with evals, fallback behavior, observability, and a named owner. No demos that die on Tuesday.',
+        timeline: 'Week 2–6',
+      },
+      {
+        title: 'LLM-backed pipelines',
+        description:
+          'Multi-step pipelines for workflows where one agent is not enough — RAG over your docs, structured extraction, classification, summarization. Instrumented, versioned, and handed off with the prompt-eval discipline that keeps them honest.',
+        timeline: 'Week 4–8',
+      },
+    ],
   },
   {
     slug: 'branding',
@@ -109,6 +134,31 @@ export const SYSTEMS: System[] = [
     pricing: { kind: 'custom' },
     accent: '#c8ff00',
     glyph: '◐',
+    whatItIs: [
+      'Branding Systems is not a logo handover and not a 200-page guidelines PDF nobody opens. It is the design language, voice system, and component library that let the brand keep building itself after we leave — so the company looks and sounds like itself across every channel without us in the room.',
+      'The engagement starts with a positioning audit: who the brand is for, what it has to say, and what consistency would even mean for it. Then we ship the system — mark, type, color, motion, voice, content templates, the rules — as a working set of components, not a static document.',
+      'It is built for founders who want to look like a real company without paying agency rates forever, and for teams who have outgrown a generic template stack and need a brand they can operate. If non-designers on your team will be producing on-brand work, you are ready for this system.',
+    ],
+    deliverableDetails: [
+      {
+        title: 'Logo + identity essentials',
+        description:
+          'Mark, wordmark, supporting variants, and the rationale doc explaining why each decision was made. Built to operate at every size from favicon to billboard. Delivered as a working file set, not a flat PDF.',
+        timeline: 'Week 1–3',
+      },
+      {
+        title: 'Design language (type, color, motion)',
+        description:
+          'The full visual system: type pairing with usage rules, color palette with accessibility ratios, motion guidelines, spacing system, iconography. Codified as design tokens your engineering team can import, not screenshots in a Notion page.',
+        timeline: 'Week 2–5',
+      },
+      {
+        title: 'Content + template system',
+        description:
+          'The components and templates that let non-designers ship on-brand — social, email, presentations, internal docs. Tied to the design language so consistency is the default, not a review process.',
+        timeline: 'Week 4–7',
+      },
+    ],
   },
   {
     slug: 'web-product',
@@ -121,6 +171,31 @@ export const SYSTEMS: System[] = [
     pricing: { kind: 'custom' },
     accent: '#c8ff00',
     glyph: '◼',
+    whatItIs: [
+      'Web & Product Systems is the engagement for shipping sites, MVPs, and web products that look like the future and load like yesterday. We do not build sites that take six weeks to add a section. We build sites in Next.js with motion, performance, and CMS-backed copy so your team can edit without us.',
+      'Every engagement is scoped to a real outcome — leads, signups, demos, transactions — and built backward from that number. The site is the artifact. The performance, the analytics wiring, the editing workflow, and the deployment pipeline are the work.',
+      'It is built for founders shipping their first real site, studios outgrowing template platforms, and operators who want a web product that compounds instead of a brochure that decays. If you have a real outcome the site has to produce, you are ready for this system.',
+    ],
+    deliverableDetails: [
+      {
+        title: 'Landing page or full site',
+        description:
+          'A production Next.js site with motion, brand-correct typography, analytics, SEO baseline (sitemap, structured data, meta), and a CMS-backed content workflow. We ship in weeks, not quarters, and the codebase is yours.',
+        timeline: 'Week 1–4',
+      },
+      {
+        title: 'CMS + content workflow',
+        description:
+          'Sanity (or your choice) wired to the site so your team can edit copy, swap images, and ship updates without us. Schema designed around how the team actually works — not generic block builders. Includes editor training.',
+        timeline: 'Week 2–5',
+      },
+      {
+        title: 'Web product or MVP',
+        description:
+          'Authenticated product surfaces: dashboards, admin panels, embedded tools, full MVPs. Next.js + Postgres + Prisma stack by default, swappable for your existing infra. Shipped with monitoring, error tracking, and a real handoff.',
+        timeline: 'Week 4–10',
+      },
+    ],
   },
   {
     slug: 'marketing-infrastructure',
@@ -133,6 +208,31 @@ export const SYSTEMS: System[] = [
     pricing: { kind: 'custom' },
     accent: '#c8ff00',
     glyph: '⌁',
+    whatItIs: [
+      'Marketing Infrastructure is the plumbing layer that turns marketing inputs into measurable revenue: analytics, attribution, content engines, paid pipes, lifecycle automation. It is the boring system that lets every other marketing dollar know what worked.',
+      'Most teams skip this layer because it is unsexy and ship campaigns on instinct. Then they wonder why the channel mix never matures. We build the instrumentation, the dashboards, and the decision rules first, then plug the channels in — so every dollar after week six is informed.',
+      'It is built for founders running real marketing budgets with no idea what is working, studios scaling past the spreadsheet stage, and operator-led teams who want a marketing stack they can actually operate. If you are spending money on channels and cannot say which is working, you are ready for this system.',
+    ],
+    deliverableDetails: [
+      {
+        title: 'Analytics + attribution',
+        description:
+          'PostHog (or your stack of choice), event taxonomy, attribution model, and the dashboards that turn raw events into decisions. UTMs standardized, first-touch and multi-touch wired, and the documentation so the team reads dashboards the same way.',
+        timeline: 'Week 1–3',
+      },
+      {
+        title: 'Content engine',
+        description:
+          'The publishing system that turns thinking into output reliably: editorial calendar, brief templates, distribution checklist, repurposing pipeline, and the cadence that compounds. Built to ship two pieces a week without burning out the team that writes them.',
+        timeline: 'Week 2–6',
+      },
+      {
+        title: 'Paid + retention pipes',
+        description:
+          'The acquisition and lifecycle plumbing: paid channels wired with attribution and creative-testing rhythm, lifecycle automation (email + in-app), winback flows, and the dashboards that show which dollars came back. Instrumented before scaled.',
+        timeline: 'Week 3–8',
+      },
+    ],
   },
 ];
 
