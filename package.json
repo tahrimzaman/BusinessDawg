@@ -9,6 +9,7 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "og:build": "node scripts/build-og-cards.mjs",
     "prepare": "husky || true"
   },
   "dependencies": {

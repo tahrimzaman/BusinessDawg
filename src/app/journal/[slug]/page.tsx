@@ -17,6 +17,11 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const p = getPostBySlug(slug);
   if (!p) return { title: 'Post' };
   const url = `https://businessdawg.com/journal/${p.slug}`;
+  // Per-post OG card baked at build time by `npm run og:build` and committed
+  // to /public/og/<slug>.png. Static files only — no runtime image generation
+  // (Hostinger Node 22 sandbox + next/og WASM didn't get along; the static
+  // approach is the robust fix).
+  const ogImage = `/og/${p.slug}.png`;
   return {
     title: p.title,
     description: p.excerpt,
@@ -27,11 +32,13 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
       url,
       type: 'article',
       publishedTime: p.publishedAt,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: p.title }],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${p.title} — BusinessDawg`,
       description: p.excerpt,
+      images: [ogImage],
     },
   };
 }
