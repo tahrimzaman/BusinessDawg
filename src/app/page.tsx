@@ -2,13 +2,18 @@ import nextDynamic from 'next/dynamic';
 import Hero from '@/components/sections/Hero';
 import DawgRail from '@/components/motion/DawgRail';
 
-// Force SSR per request. Without this, Next prerenders `/` and emits
-// `cache-control: s-maxage=31536000`, which makes Hostinger's HCDN cache the
-// HTML for up to a year. After a redeploy, the cached HTML still references
-// chunk hashes that no longer exist on disk → CSS/JS 404s and unstyled page.
-// force-dynamic lets our next.config.ts `no-store` header take effect end-to-end.
-export const dynamic = 'force-dynamic';
+// Static prerender. The stale-build risk (Next auto-emitting s-maxage=31536000
+// on prerendered HTML, which Hostinger's HCDN then caches for ~10h past a
+// redeploy) is killed at the cache-header level: next.config.ts headers()
+// forces `Cache-Control: no-store, must-revalidate` on every HTML path. HCDN
+// won't cache anything no-store, so the disk on the server is always the
+// source of truth. Verified with `curl -I` post-deploy — see plan §Verify.
+export const dynamic = 'force-static';
 
+// next/dynamic on below-fold sections keeps them in their own JS chunks
+// (code-split, lazy-fetched on hydration). Under force-static the SSR work
+// is paid once at build time, so ssr:false isn't needed — and isn't allowed
+// from a Server Component anyway.
 const MemeReel = nextDynamic(() => import('@/components/sections/MemeReel'));
 const SystemsStack = nextDynamic(() => import('@/components/sections/SystemsStack'));
 const Chatbot = nextDynamic(() => import('@/components/sections/Chatbot'));

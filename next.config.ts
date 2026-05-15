@@ -5,6 +5,11 @@ const ONE_YEAR = 60 * 60 * 24 * 365;
 const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
+  experimental: {
+    // Next's first-party named-import tree-shake transform. Strips unused
+    // framer-motion / lenis internals (~30–40 KB) from client bundles.
+    optimizePackageImports: ['framer-motion', 'lenis'],
+  },
   images: {
     // Hostinger's Node runtime can't reliably run /_next/image (sharp missing
     // or wrong-arch → 503s). Every WebP in /public is already hand-tuned and
