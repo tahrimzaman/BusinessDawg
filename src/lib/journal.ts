@@ -33,6 +33,115 @@ export type JournalPost = {
 
 export const JOURNAL: JournalPost[] = [
   {
+    slug: 'the-operators-manifesto',
+    title: 'The operator’s manifesto',
+    excerpt:
+      'Operators do not need decks. They need infrastructure. This is the manifesto BusinessDawg is built on — what we are done with, what we are for, and why we build business machines instead of business strategies.',
+    publishedAt: '2026-05-15',
+    readingTime: 9,
+    kicker: 'Manifesto',
+    lede: 'BusinessDawg is built on a single thesis: operators do not need decks, they need infrastructure. This is the manifesto. Read it slow. It is what we are for, what we are done with, and what we are building toward — in that order.',
+    sections: [
+      {
+        heading: 'What an operator is',
+        paragraphs: [
+          'An operator is the person who decides what gets shipped on Tuesday. Not what gets written about. Not what gets celebrated at the all-hands. What ships. Tuesday.',
+          'Operators do not consume strategy. They produce it under the pressure of revenue, the discipline of cadence, and the patience of a thousand boring decisions. The deck is the artifact. The system is the work.',
+          'BusinessDawg is built by operators, for operators. Not for the consultants who sell to them. Not for the agencies who pitch them. For the people who will still be in the building when the engagement is over.',
+        ],
+      },
+      {
+        heading: 'What we are done with',
+        paragraphs: [
+          'We are done with the agency model that confused work with output, output with shipping, and shipping with revenue. Specifically:',
+        ],
+        list: [
+          'Discovery phases that produce a deck and a second invoice. Discovery is fine. Charging for it like it was the work is not.',
+          'Strategy reports that name three priorities and ship none of them. A strategy that does not ship is a strategy that did not happen.',
+          'Retainers named after channels. SEO retainer. Paid retainer. Content retainer. Channels are tactics. Tactics serve theses. If the engagement starts at the channel, it skipped the thesis.',
+          'Logos sold as brands. Brands sold as growth. Growth sold as marketing. Marketing sold as everything. Every word means something. Stop using them like cologne.',
+          'KPIs that cannot fail. "Brand awareness." "Thought leadership." "Engagement." If the metric cannot lose, the work cannot win.',
+          'Pitches that lead with the agency. Lead with the bottleneck or do not lead.',
+          'Agencies that have never shipped a real business. The lesson is the burden. The burden is the qualification.',
+        ],
+      },
+      {
+        heading: 'What we are for',
+        paragraphs: [
+          'We are for the version of this craft that ships things you can still use after we leave. Specifically:',
+        ],
+        list: [
+          'Systems over campaigns. A campaign is a sprint. A system is a season. We build seasons.',
+          'Outcomes over outputs. The deliverable is the artifact. The outcome is the work. The outcome wins every argument.',
+          'Productized first, custom on top. The known shape proves we can ship. The custom shape earns its scope from that.',
+          'Operators in the room. Every engagement has a named owner on your side from day one. Without an owner, every system reverts to a project.',
+          'Brand systems, not logo packages. We hand you the rules and the components, not a PDF. The brand has to keep building itself.',
+          'AI as plumbing, not theater. The agent that runs at 2am every Tuesday and updates the dashboard nobody opens is worth more than the demo that won the offsite.',
+          'Hand-off as part of the engagement. Not a separate phase. Not a negotiation. The day we sign the SOW we are already designing the day we leave.',
+        ],
+      },
+      {
+        heading: 'The machine principle',
+        paragraphs: [
+          'A business machine is the system that runs whether or not the founder is in the room. Brand, funnels, AI workflows, operating cadence, hand-off rituals. Each piece is a part. The whole thing is the machine.',
+          'Campaigns end. Machines compound. The difference is not effort. The difference is design intent. A campaign is designed to peak. A machine is designed to keep going.',
+          'Every BusinessDawg engagement is scoped as a piece of the machine. The Systems Stack is not a service menu. It is the parts catalog. You pick the pieces the business actually needs. We build them. We document them. We hand them off. You run the machine.',
+        ],
+      },
+      {
+        heading: 'The hand-off principle',
+        paragraphs: [
+          'We leave. On purpose. By design.',
+          'The agency engagement that never ends is the engagement that never worked. If the studio cannot operate the system without the studio, the studio did not ship a system. It rented you one.',
+          'Hand-off is the deliverable that matters most. The docs, the dashboards, the decision rules, the runbooks, the playbooks, the one-pager the operator pins above the desk. The artifact that makes the system survive a Tuesday in production without us.',
+          'A real hand-off is the highest compliment the studio can pay the operator. It says: you are ready. The system is yours. Run it.',
+        ],
+      },
+      {
+        heading: 'The studio principle',
+        paragraphs: [
+          'BusinessDawg is a studio, not an agency. The difference is not size. It is shape.',
+          'Studios productize the shape of their work. They run the same engagement many times — with discipline, with hand-off, with a stack you can pick from. They sell systems they have shipped before and can ship again. They charge for the system, not the hours.',
+          'Agencies sell time. Studios sell systems. Time is the agency’s product. The system is the studio’s product. We are a studio.',
+        ],
+      },
+      {
+        heading: 'The Gen Z principle',
+        paragraphs: [
+          'We are Gen Z native because operators are Gen Z native now. The next decade of founders did not grow up reading McKinsey. They grew up reading the timeline. They learned in public. They built in public. They want studios that talk like that.',
+          'This is not a vibe. It is a working assumption about who the buyer is. The buyer wants real over corporate, opinion over hedging, shipping over saying. We write that way because we are that way. The voice is downstream of the operator.',
+          'We do not sell to Gen Z. We are Gen Z, selling to operators of every age who got tired of the old shapes the same time we did.',
+        ],
+      },
+      {
+        heading: 'The AI principle',
+        paragraphs: [
+          'AI is not the product. AI is the plumbing. The product is what AI lets the operator do — the workflows it runs at 2am, the agents it lets you hire for free, the internal tools it lets a team of three operate at the scale of a team of fifteen.',
+          'We build AI automation as one of five systems because AI is one of five disciplines an operator-shaped studio has to run in 2026. Not the headline. Not the gimmick. The plumbing that makes the other four systems compound faster.',
+          'The demo era is over. The operating era started. We are building for the operating era.',
+        ],
+      },
+      {
+        heading: 'The creed',
+        paragraphs: [
+          'We build business machines.',
+          'Operators do not need decks. They need infrastructure.',
+          'A campaign is a sprint. A system is a season. We build seasons.',
+          'We sell systems. We document them. We hand them off. We leave.',
+          'Real over corporate. Opinion over hedging. Shipping over saying.',
+          'Built in public. Shipped on purpose. We build the machine. You run the business.',
+        ],
+      },
+      {
+        heading: 'If this resonated',
+        paragraphs: [
+          'If you read this and recognized your own frustration with the old shapes — book the call. We open every engagement with 15 minutes and no decks. Tell us what is leaking. We will tell you what to do about it.',
+          'If you read this and felt nothing — we are probably not for you. That is fine. There are many fine agencies. Hire one.',
+        ],
+      },
+    ],
+  },
+  {
     slug: 'productized-vs-custom-agency-engagement',
     title: 'Productized vs custom agency engagement: which one are you actually buying',
     excerpt:
