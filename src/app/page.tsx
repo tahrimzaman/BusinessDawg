@@ -1,14 +1,21 @@
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 import Hero from '@/components/sections/Hero';
 import DawgRail from '@/components/motion/DawgRail';
 
-const MemeReel = dynamic(() => import('@/components/sections/MemeReel'));
-const SystemsStack = dynamic(() => import('@/components/sections/SystemsStack'));
-const Chatbot = dynamic(() => import('@/components/sections/Chatbot'));
-const Recruitment = dynamic(() => import('@/components/sections/Recruitment'));
-const Newsletter = dynamic(() => import('@/components/sections/Newsletter'));
-const ClosingCTA = dynamic(() => import('@/components/sections/ClosingCTA'));
-const TweakPanel = dynamic(() => import('@/components/dev/TweakPanel'));
+// Force SSR per request. Without this, Next prerenders `/` and emits
+// `cache-control: s-maxage=31536000`, which makes Hostinger's HCDN cache the
+// HTML for up to a year. After a redeploy, the cached HTML still references
+// chunk hashes that no longer exist on disk → CSS/JS 404s and unstyled page.
+// force-dynamic lets our next.config.ts `no-store` header take effect end-to-end.
+export const dynamic = 'force-dynamic';
+
+const MemeReel = nextDynamic(() => import('@/components/sections/MemeReel'));
+const SystemsStack = nextDynamic(() => import('@/components/sections/SystemsStack'));
+const Chatbot = nextDynamic(() => import('@/components/sections/Chatbot'));
+const Recruitment = nextDynamic(() => import('@/components/sections/Recruitment'));
+const Newsletter = nextDynamic(() => import('@/components/sections/Newsletter'));
+const ClosingCTA = nextDynamic(() => import('@/components/sections/ClosingCTA'));
+const TweakPanel = nextDynamic(() => import('@/components/dev/TweakPanel'));
 
 export default function HomePage() {
   return (
