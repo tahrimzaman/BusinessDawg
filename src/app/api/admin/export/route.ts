@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { isAuthed } from '@/lib/admin/auth';
 import { prisma } from '@/lib/db/prisma';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 
-export async function GET(req: Request) {
+async function handleGET(req: Request) {
   if (!(await isAuthed())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
@@ -70,3 +71,5 @@ function stamp(): string {
   const d = new Date();
   return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
 }
+
+export const GET = withLogging('admin.export', handleGET);

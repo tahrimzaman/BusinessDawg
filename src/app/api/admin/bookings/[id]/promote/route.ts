@@ -9,11 +9,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { isAuthed } from '@/lib/admin/auth';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function POST(
+async function handlePOST(
   _req: Request,
   ctx: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
@@ -54,3 +55,5 @@ export async function POST(
 
   return NextResponse.json({ ok: true, customerId: customer.id });
 }
+
+export const POST = withLogging('admin.bookings.promote', handlePOST);

@@ -9,11 +9,12 @@ import { NextResponse } from 'next/server';
 import { isAuthed } from '@/lib/admin/auth';
 import { prisma } from '@/lib/db/prisma';
 import { getGoogleEnv, exchangeCode } from '@/lib/booking/google';
+import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: Request) {
+async function handleGET(req: Request) {
   if (!(await isAuthed())) {
     return NextResponse.redirect(new URL('/admin/login', req.url));
   }
@@ -65,3 +66,5 @@ export async function GET(req: Request) {
     return NextResponse.redirect(new URL('/admin?google=exchange_failed', req.url));
   }
 }
+
+export const GET = withLogging('admin.google.callback', handleGET);
