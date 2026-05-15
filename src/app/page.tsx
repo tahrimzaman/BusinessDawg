@@ -1,18 +1,18 @@
+import dynamic from 'next/dynamic';
 import Hero from '@/components/sections/Hero';
-import MemeReel from '@/components/sections/MemeReel';
-import SystemsStack from '@/components/sections/SystemsStack';
-import Chatbot from '@/components/sections/Chatbot';
-import Recruitment from '@/components/sections/Recruitment';
-import Newsletter from '@/components/sections/Newsletter';
-import ClosingCTA from '@/components/sections/ClosingCTA';
-import TweakPanel from '@/components/dev/TweakPanel';
 import DawgRail from '@/components/motion/DawgRail';
-import DriftingBlobs from '@/components/motion/DriftingBlobs';
+
+const MemeReel = dynamic(() => import('@/components/sections/MemeReel'));
+const SystemsStack = dynamic(() => import('@/components/sections/SystemsStack'));
+const Chatbot = dynamic(() => import('@/components/sections/Chatbot'));
+const Recruitment = dynamic(() => import('@/components/sections/Recruitment'));
+const Newsletter = dynamic(() => import('@/components/sections/Newsletter'));
+const ClosingCTA = dynamic(() => import('@/components/sections/ClosingCTA'));
+const TweakPanel = dynamic(() => import('@/components/dev/TweakPanel'));
 
 export default function HomePage() {
   return (
     <>
-      <DriftingBlobs />
       <DawgRail />
 
       <div id="hero">

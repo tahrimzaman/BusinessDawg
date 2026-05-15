@@ -29,7 +29,7 @@ export default function BookingSuccess({ slot, visitorTz, email, onDismiss }: Pr
     <div className="grid items-center gap-6 sm:grid-cols-[140px_1fr] md:gap-10">
       <div className="relative aspect-[3/4] w-full max-w-[140px]">
         <Image
-          src="/brand/mascot-pos-4.png"
+          src="/brand/mascot-pos-4.webp"
           alt="BusinessDawg mascot thumbs up"
           fill
           sizes="140px"

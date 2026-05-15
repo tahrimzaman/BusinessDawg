@@ -92,11 +92,13 @@ export default function Hero() {
             className="mb-6 sm:mb-8"
           >
             <Image
-              src="/brand/logo-vertical.png"
+              src="/brand/logo-vertical.webp"
               alt="BusinessDawg — Gen Z business growth studio"
               width={990}
               height={715}
               priority
+              fetchPriority="high"
+              sizes="(min-width: 1024px) 192px, (min-width: 768px) 176px, (min-width: 640px) 160px, 128px"
               className="h-auto w-32 sm:w-40 md:w-44 lg:w-48"
             />
           </motion.div>
@@ -168,12 +170,12 @@ export default function Hero() {
               className="relative h-full w-full"
             >
               <Image
-                src="/brand/mascot-pos-1.png"
+                src="/brand/mascot-pos-1.webp"
                 alt="BusinessDawg mascot — bulldog with lime sunglasses"
                 fill
                 sizes="(min-width: 1024px) 50vw, 80vw"
                 className="object-contain object-bottom"
-                priority
+                loading="eager"
               />
             </motion.div>
           </motion.div>

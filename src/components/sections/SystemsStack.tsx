@@ -114,7 +114,7 @@ export default function SystemsStack() {
                   }}
                 />
                 <Image
-                  src="/brand/mascot-pos-2.png"
+                  src="/brand/mascot-pos-2.webp"
                   alt="BusinessDawg mascot — arms crossed"
                   fill
                   sizes="(min-width: 1024px) 30vw, 80vw"

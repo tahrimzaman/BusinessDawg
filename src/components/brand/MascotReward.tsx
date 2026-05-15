@@ -41,7 +41,7 @@ export default function MascotReward({
         >
           <div className="relative aspect-[3/4] w-full">
             <Image
-              src="/brand/mascot-pos-4.png"
+              src="/brand/mascot-pos-4.webp"
               alt="BusinessDawg mascot thumbs up"
               fill
               sizes="(min-width: 768px) 40vw, 80vw"
@@ -78,7 +78,7 @@ export default function MascotReward({
     >
       <div className="relative aspect-[3/4] w-full max-w-[160px]">
         <Image
-          src="/brand/mascot-pos-4.png"
+          src="/brand/mascot-pos-4.webp"
           alt="BusinessDawg mascot thumbs up"
           fill
           sizes="160px"

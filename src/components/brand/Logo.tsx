@@ -22,7 +22,7 @@ export default function Logo({ className = '', compact = false, markOnly = false
   if (markOnly) {
     return (
       <Image
-        src="/brand/logo-mark.png"
+        src="/brand/logo-mark.webp"
         alt="BusinessDawg"
         width={256}
         height={256}
@@ -39,7 +39,7 @@ export default function Logo({ className = '', compact = false, markOnly = false
         aria-label="BusinessDawg"
       >
         <Image
-          src="/brand/logo-mark.png"
+          src="/brand/logo-mark.webp"
           alt="BusinessDawg"
           width={64}
           height={64}
@@ -56,7 +56,7 @@ export default function Logo({ className = '', compact = false, markOnly = false
       aria-label="BusinessDawg"
     >
       <Image
-        src="/brand/logo-horizontal.png"
+        src="/brand/logo-horizontal.webp"
         alt="BusinessDawg"
         width={1564}
         height={400}

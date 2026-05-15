@@ -301,7 +301,7 @@ export default function Chatbot() {
             <div className="relative h-[420px] w-full lg:col-span-5 lg:h-auto">
               <div className="relative h-full min-h-[420px] w-full">
                 <Image
-                  src="/brand/mascot-talk.png"
+                  src="/brand/mascot-talk.webp"
                   alt="BusinessDawg mascot — talking"
                   fill
                   sizes="(min-width: 1024px) 40vw, 80vw"

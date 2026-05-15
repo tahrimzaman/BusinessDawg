@@ -30,7 +30,7 @@ export default function About() {
       <section className="mx-auto max-w-4xl px-6 pt-40 pb-20">
         <Reveal>
           <Image
-            src="/brand/logo-vertical.png"
+            src="/brand/logo-vertical.webp"
             alt="BusinessDawg — wordmark"
             width={990}
             height={715}
@@ -93,7 +93,7 @@ export default function About() {
             <div className="relative mx-auto w-[260px] -translate-y-10">
               <div className="relative aspect-[499/898]">
                 <Image
-                  src="/founder-portrait.png"
+                  src="/founder-portrait.webp"
                   alt={`${FOUNDER.name}, founder of BusinessDawg`}
                   fill
                   sizes="260px"

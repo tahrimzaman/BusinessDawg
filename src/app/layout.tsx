@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import LenisProvider from '@/components/motion/LenisProvider';
-import Constellation from '@/components/motion/Constellation';
 import WoofListener from '@/components/motion/WoofListener';
 import Navbar from '@/components/sections/Navbar';
 import Footer from '@/components/sections/Footer';
@@ -71,7 +70,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <PostHogProvider>
           <LenisProvider>
-            <Constellation />
             <Navbar />
             <main className="relative">{children}</main>
             <Footer />
