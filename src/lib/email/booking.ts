@@ -9,7 +9,7 @@ import { getTransport, FROM, ADMIN_INBOX } from './transport';
 import { emailShell, escapeHtml, infoCard, greyCard, ctaButton, fieldRow } from './template';
 import { signManageToken } from '@/lib/booking/tokens';
 
-const BOOKING_BASE_URL = process.env.BOOKING_BASE_URL || 'http://localhost:3000';
+const BOOKING_BASE_URL = process.env.BOOKING_BASE_URL || 'https://businessdawg.com';
 
 export type BookingEmailPayload = {
   id: string;
