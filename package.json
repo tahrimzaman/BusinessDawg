@@ -13,20 +13,14 @@
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
-    "@sanity/client": "^6.22.1",
-    "@sanity/image-url": "^1.0.2",
-    "@sanity/vision": "^3.60.0",
     "framer-motion": "^11.11.10",
     "googleapis": "^171.4.0",
     "lenis": "^1.1.13",
     "next": "16.2.6",
-    "next-sanity": "^9.8.18",
     "nodemailer": "^8.0.7",
     "posthog-js": "^1.373.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "sanity": "^3.60.0",
-    "styled-components": "^6.4.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
