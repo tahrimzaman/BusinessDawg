@@ -39,13 +39,6 @@ export const metadata: Metadata = {
     type: 'website',
   },
   twitter: { card: 'summary_large_image' },
-  icons: {
-    icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/brand/logo-mark.png', type: 'image/png' },
-    ],
-    apple: '/brand/logo-mark.png',
-  },
 };
 
 export const viewport: Viewport = {
