@@ -9,6 +9,7 @@ import { SITE } from '@/lib/copy';
 const COL_PRODUCT = [
   { href: '/systems', label: 'Systems' },
   { href: '/journal', label: 'Journal' },
+  { href: '/pricing', label: 'Pricing' },
 ];
 const COL_STUDIO = [
   { href: '/about', label: 'About' },
