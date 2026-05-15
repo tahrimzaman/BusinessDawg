@@ -33,6 +33,82 @@ export type JournalPost = {
 
 export const JOURNAL: JournalPost[] = [
   {
+    slug: 'when-to-hire-an-ai-automation-agency-vs-build-in-house',
+    title: 'When to hire an AI automation agency vs build in-house',
+    excerpt:
+      'AI automation is the cheapest hire most teams will ever make and the most expensive mistake most teams will ever ship. Here is how to decide which side of that you are on.',
+    publishedAt: '2026-05-15',
+    readingTime: 7,
+    kicker: 'Field notes / AI Automation',
+    lede: 'AI automation is the cheapest hire most teams will ever make and the most expensive mistake most teams will ever ship. The decision is not "agency or in-house" — it is "do you have the operating shape to absorb either one yet." Here is the operator-level frame.',
+    sections: [
+      {
+        heading: 'The actual question (it is not the one you think)',
+        paragraphs: [
+          'Founders ask "should we hire an AI agency or build in-house?" The real question is "do we have a workflow worth automating, and a person who will own it after the model gets dumber next quarter?" Both answers are yes or both are no. Almost never one of each.',
+          'AI automation projects do not fail because of model choice. They fail because nobody owns the eval loop, the prompts drift, the upstream data shifts, and six months later the team is back to the spreadsheet they were trying to leave. Agency or in-house, you need the same operating shape underneath.',
+        ],
+      },
+      {
+        heading: 'When to hire an agency',
+        paragraphs: [
+          'Hire an agency when the work is concentrated, the deadline is real, and the team will inherit a system, not a black box. The agency is bringing pattern-matching from N other clients and a delivery cadence you have not built yet. That is the value. Not the model. Not the prompt.',
+        ],
+        list: [
+          'You have 1–3 specific workflows in mind, not "use AI more". Specific = "categorize 800 support tickets a week", not "improve support".',
+          'There is a person on your team who will own the output the day after handoff. Not "we will figure it out". A named person, with calendar time, who already runs adjacent ops.',
+          'You need to move in weeks, not quarters. Agencies amortize delivery infrastructure across clients — they are faster on cold starts than your first hire will be.',
+          'The work is wide (multiple integrations, multiple models, prompt-eval discipline) but not deep (you do not need a six-month research bet).',
+        ],
+      },
+      {
+        heading: 'When to hire in-house',
+        paragraphs: [
+          'Hire in-house when AI is going to be inside the product, not bolted onto ops. Or when the work is so deep that a quarter of ramp pays for itself in the second quarter. Or when no agency on earth understands your domain well enough to ship without you re-explaining the business every Tuesday.',
+        ],
+        list: [
+          'AI is a customer-facing feature, not an internal tool. Features need iteration, telemetry, support, and product instinct. Agencies can prototype features; teams ship them.',
+          'Your domain is so specific that the prompt has to encode tribal knowledge no outsider can absorb in a 6-week engagement.',
+          'You are already running enough volume that one full-time hire is cheaper than an agency retainer at the same scope. Math, not vibes.',
+          'You expect to be doing this work for two-plus years. Anything shorter, the agency was the right call.',
+        ],
+      },
+      {
+        heading: 'The hybrid play (the one most teams should actually run)',
+        paragraphs: [
+          'The under-discussed answer is "agency first, internal second." You bring in an agency to build the first system, ship it, and document the operating cadence — channels, evals, prompt versioning, fallback behavior, owner. Then you hire one person whose first month is shadowing that handoff. By month three, the agency is gone, the internal hire owns the system, and you skipped the cold-start tax both options charge separately.',
+          'This works because agency-built systems plus a real internal owner are dramatically cheaper than either path alone. The agency does not stay forever, and the internal hire does not start from a blank Jira board.',
+        ],
+      },
+      {
+        heading: 'Red flags either way',
+        paragraphs: [
+          'Three patterns mean the engagement is going to leak no matter which side you pick. Same three for agency or in-house.',
+        ],
+        list: [
+          'No eval loop. If the only quality signal is "the team thinks it looks fine", you are not running an AI system, you are running an AI demo. Demos do not survive a Tuesday in production.',
+          'No fallback behavior. What happens when the model returns garbage, the API rate-limits, or the upstream changes a field name? If the answer is "we have not thought about that", the system has not been shipped yet, only built.',
+          'No owner after launch. Every AI automation needs a human who notices when output quality drifts. Without an owner, the drift is invisible until the customer complains.',
+        ],
+      },
+      {
+        heading: 'The 90-day decision frame',
+        paragraphs: [
+          'If you can name the workflow, name the owner, name the deadline, and name the success metric in one sentence each — hire the agency. You will save three months of ramp.',
+          'If you can do all of that AND you are betting on AI as a long-term internal capability inside the product — hire both. Agency for sprint one, internal hire shadowing from week three, full handoff by week twelve.',
+          'If you cannot name those four things — do not hire anyone yet. Spend a week scoping. The scoping is the work.',
+        ],
+      },
+      {
+        heading: 'How BusinessDawg runs AI automation engagements',
+        paragraphs: [
+          'We open every engagement by asking the four questions above. If you can answer them, we scope a system. If you cannot, we tell you that scoping is the next step — not buying the engagement. Either way, the call is 15 minutes and we do not pitch with decks.',
+          'If you are trying to figure out whether AI automation belongs in your studio yet, book the call. We will frame it honestly, or tell you why nobody can.',
+        ],
+      },
+    ],
+  },
+  {
     slug: 'how-to-scope-a-growth-system',
     title: 'How to scope a growth system',
     excerpt:
