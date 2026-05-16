@@ -8,6 +8,7 @@
  */
 
 import { NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
 import { rateLimit, clientIp } from '@/lib/security/ratelimit';
@@ -49,6 +50,7 @@ const Schema = z.object({
 
 class SlotContestedError extends Error {}
 class SlotTakenError extends Error {}
+class DuplicateBookingError extends Error {}
 
 async function handlePOST(req: Request) {
   const raw = await req.json().catch(() => null);
@@ -126,6 +128,61 @@ async function handlePOST(req: Request) {
         select: { id: true },
       });
       if (conflict) throw new SlotTakenError();
+
+      // Smart rebook path: the schema's unique(startUtc, email) means a
+      // user can't end up with two rows for the same slot. If they previously
+      // cancelled this exact slot, we re-confirm that row instead of inserting
+      // a new one (avoids P2002 on the .create below). If they have any other
+      // status on this slot, treat it as a duplicate booking attempt.
+      const existing = await tx.booking.findUnique({
+        where: { startUtc_email: { startUtc, email: data.email } },
+      });
+      if (existing) {
+        if (existing.status !== 'CANCELLED') throw new DuplicateBookingError();
+        const rebooked = await tx.booking.update({
+          where: { id: existing.id },
+          data: {
+            status: 'CONFIRMED',
+            name: data.name,
+            company: data.company || null,
+            role: data.role || null,
+            phone: data.phone || null,
+            intent: data.intent,
+            source: data.source || null,
+            endUtc,
+            visitorTz: data.visitorTz,
+            needsMeetLink: true,
+            // Force a new token version so any stale manage-link from the
+            // cancelled run can't be used to cancel the new booking.
+            tokenVersion: { increment: 1 },
+            meetUrl: null,
+            gcalEventId: null,
+            reminder24Sent: null,
+            ipHash: hashIp(ip),
+            userAgent,
+            utmSource: data.utmSource || null,
+            utmMedium: data.utmMedium || null,
+            utmCampaign: data.utmCampaign || null,
+            utmTerm: data.utmTerm || null,
+            utmContent: data.utmContent || null,
+            referrer: data.referrer || null,
+            landingPage: data.landingPage || null,
+            approxLocation,
+          },
+        });
+        await tx.bookingEvent.create({
+          data: {
+            bookingId: rebooked.id,
+            type: 'rebooked',
+            payload: {
+              slot: { startUtc: startUtc.toISOString(), endUtc: endUtc.toISOString() },
+              source: data.source || null,
+              previousStatus: existing.status,
+            },
+          },
+        });
+        return rebooked;
+      }
 
       const booking = await tx.booking.create({
         data: {
@@ -287,6 +344,30 @@ async function handlePOST(req: Request) {
   } catch (err) {
     if (err instanceof SlotContestedError || err instanceof SlotTakenError) {
       return NextResponse.json({ error: 'slot just taken', code: 'slot_taken' }, { status: 409 });
+    }
+    if (err instanceof DuplicateBookingError) {
+      return NextResponse.json(
+        {
+          error:
+            "You've already booked this slot with this email. Check your inbox for the confirmation.",
+          code: 'duplicate_booking',
+        },
+        { status: 409 },
+      );
+    }
+    // Belt to the in-tx pre-check's suspenders: if a race somehow slips a
+    // unique violation past us, surface it as the same friendly 409 instead
+    // of a generic 500. The advisory lock makes this nearly impossible, but
+    // Prisma's P2002 is the right signal to handle here.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      return NextResponse.json(
+        {
+          error:
+            "You've already booked this slot with this email. Check your inbox for the confirmation.",
+          code: 'duplicate_booking',
+        },
+        { status: 409 },
+      );
     }
     console.error('[/api/booking] error', err);
     return NextResponse.json({ error: 'persistence failed' }, { status: 500 });

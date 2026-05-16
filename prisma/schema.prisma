@@ -90,6 +90,13 @@ model Booking {
   @@index([startUtc])
   @@index([status])
   @@index([email])
+  // Belt to the advisory lock + overlap check's suspenders: hard-stops the
+  // same email from ending up with two rows for the exact same slot if a
+  // user double-clicks Submit, retries on a flaky network, or hits a race
+  // around cancel-then-rebook. Route handler catches P2002 and either
+  // re-confirms a CANCELLED row (legitimate rebook) or returns a friendly
+  // "already booked" message.
+  @@unique([startUtc, email])
 }
 
 // Promoted booking → ongoing service engagement. Owned by Tahrim's CRM
