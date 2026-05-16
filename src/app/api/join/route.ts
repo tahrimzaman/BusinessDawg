@@ -6,6 +6,7 @@ import { isLikelyBot, HONEYPOT_FIELD, TIMESTAMP_FIELD } from '@/lib/security/hon
 import { hashIp } from '@/lib/security/hash';
 import { notifyAdminOfApplication, notifyVisitorApplicationReceived } from '@/lib/email/send';
 import { withLogging } from '@/lib/log/route';
+import { capture } from '@/lib/analytics/posthog-server';
 
 export const runtime = 'nodejs';
 
@@ -74,6 +75,12 @@ async function handlePOST(req: Request) {
   void notifyVisitorApplicationReceived({ name, email, role }).catch((err: Error) =>
     console.error('[/api/join] visitor receipt email error:', err.message),
   );
+
+  capture('application_submitted', email, {
+    role: role || null,
+    hasPortfolio: !!portfolio,
+    hasNote: !!note,
+  });
 
   return NextResponse.json({ ok: true });
 }

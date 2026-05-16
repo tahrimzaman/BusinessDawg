@@ -13,8 +13,10 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { rateLimit, clientIp } from '@/lib/security/ratelimit';
+import { hashIp } from '@/lib/security/hash';
 import { SITE, SYSTEMS, FOUNDER } from '@/lib/copy';
 import { withLogging } from '@/lib/log/route';
+import { capture } from '@/lib/analytics/posthog-server';
 
 export const runtime = 'nodejs';
 
@@ -115,6 +117,18 @@ async function handlePOST(req: Request) {
     );
   }
   const messages = [{ role: 'system' as const, content: buildSystemPrompt() }, ...history];
+
+  // One event per turn (not per token). Distinct ID is the hashed IP because
+  // chat has no user identity — keeps server events stable across a session
+  // without exposing raw IPs. Fire BEFORE the upstream call so we capture
+  // intent even if Gemini errors out — pairs with `chat_upstream_failed`
+  // and `chat_upstream_rate_limited` for funnel analysis.
+  const lastUserMsg = history[history.length - 1];
+  capture('chat_turn', hashIp(ip), {
+    turn: history.length,
+    totalChars,
+    lastMessageChars: lastUserMsg?.content.length ?? 0,
+  });
 
   const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;
 
