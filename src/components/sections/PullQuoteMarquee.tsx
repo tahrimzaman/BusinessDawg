@@ -1,4 +1,7 @@
-'use client';
+// Server component. The marquee scroll uses pure CSS keyframes (bd-marquee
+// in globals.css) and the pause-on-hover is `group-hover` — no React state,
+// effects, or event listeners needed. Keeping this server-rendered so the
+// (static) quote text never ships to the client as React.
 
 type Props = { quotes: string[]; durationSec?: number };
 
