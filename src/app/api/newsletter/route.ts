@@ -7,6 +7,7 @@ import { isLikelyBot, HONEYPOT_FIELD, TIMESTAMP_FIELD } from '@/lib/security/hon
 import { hashIp } from '@/lib/security/hash';
 import { notifyAdminOfSubscriber, notifyVisitorSubscribed } from '@/lib/email/send';
 import { withLogging } from '@/lib/log/route';
+import { capture } from '@/lib/analytics/posthog-server';
 
 export const runtime = 'nodejs';
 
@@ -66,6 +67,10 @@ async function handlePOST(req: Request) {
   void notifyVisitorSubscribed(email).catch((err: Error) =>
     console.error('[/api/newsletter] visitor welcome email error:', err.message),
   );
+
+  // Server-side funnel event. Skipped in the dedup path above so re-submits
+  // don't inflate the conversion count.
+  capture('newsletter_signup', email, { source: source || 'newsletter' });
 
   return NextResponse.json({ ok: true });
 }

@@ -20,7 +20,7 @@ These are settled. Do not re-debate without explicit approval from Tahrim.
 
 | Area | Decision |
 |---|---|
-| Stack | Next.js (App Router) + TypeScript + Tailwind CSS + Framer Motion + React Three Fiber + Lenis (smooth scroll) |
+| Stack | Next.js (App Router) + TypeScript + Tailwind CSS + Framer Motion + Lenis (smooth scroll). **No R3F / Three.js in v1** — the cinematic feel is delivered entirely via Framer Motion + Lenis + curated SVG/WebP. Revisit only if a hero scene genuinely needs WebGL. |
 | Hosting | Vercel free tier |
 | Domain | `businessdawg.com` (or similar) — owned by Tahrim |
 | CMS | Sanity (free tier, headless) |
@@ -33,7 +33,7 @@ These are settled. Do not re-debate without explicit approval from Tahrim.
 | Color palette | **LOCKED — derived from logo.** Black base (#0A0A0A), white primary text (#FAFAFA), lime accent (#C8FF00 approx). Full system in `PLAN.md` Section 1.3. |
 | Light vs dark | **Dark mode dominant.** Black base, white text, lime accents. The logo is built for a dark environment and the site matches it. Light mode optional post-v1. |
 | Easter eggs | BusinessDawg cursor (dog cursor on hover-y elements) + 3 others, picked by Tahrim from a proposed list |
-| Scope for v1 | Full vision — every section, all motion, all 3D |
+| Scope for v1 | Full vision — every section, all motion. (3D dropped from v1; see Stack row.) |
 | Animation intensity | 9/10 — push it |
 
 ---
@@ -44,7 +44,7 @@ Claude Code **must pause and ask** before doing any of the following:
 
 1. ~~**Wiring the AI chatbot.**~~ **RESOLVED 2026-05-14.** Provider: **Google Gemini 2.5 Flash Lite** via the OpenAI-compatible endpoint. Free tier (1M TPM / 15 RPM / 1500 RPD) covers expected traffic. The earlier Groq attempt was reverted because Groq's 12k-TPM free cap broke under real use. Chatbot is live on the home page with an inline preview + full-bleed cinematic overlay; system prompt and guardrails in [src/app/api/chat/route.ts](src/app/api/chat/route.ts) — never quote prices, 1–3 sentence Gen Z voice, "I don't know" → Book a Call / WhatsApp punt.
 2. **Picking the final 3 easter eggs.** Propose ~6, let Tahrim pick.
-3. **Spending money on anything** (paid Sanity tier, paid fonts, premium 3D assets, etc.). Default is always free tier.
+3. **Spending money on anything** (paid Sanity tier, paid fonts, premium assets, etc.). Default is always free tier.
 4. **Generating additional mascot poses.** The base mascot exists in the logo. New poses (running, sleeping, waving, thinking) should match the existing style — sample 2–3 directions for Tahrim to approve before producing a full set.
 
 ~~Picking the final color palette~~ — RESOLVED. Palette is derived from the logo and locked. See `PLAN.md` Section 1.3.
@@ -104,7 +104,7 @@ Geography: global / internet-native. Not region-locked.
 
 - **Dark mode dominant.** Black base, white text, lime accents. Matches the logo's native environment. Light mode is optional v2.
 - Explosive, energetic, cinematic — but legible.
-- UI mix: dark glassmorphism (frosted black on lime-glow) + subtle brutalist accents + floating UI + lime gradient transitions + 3D/particles.
+- UI mix: dark glassmorphism (frosted black on lime-glow) + subtle brutalist accents + floating UI + lime gradient transitions + animated SVG/particles (no WebGL/3D in v1).
 - Lime is the accent, not the background. Use it for CTAs, key headlines, hover states, the mascot's signature, and one or two large kinetic moments per page. Don't carpet the site in it.
 - Type leads. Imagery supports. Motion glues.
 
@@ -121,7 +121,6 @@ The site must feel alive. Required:
 - Hover micro-interactions on every interactive element.
 - Parallax depth layers in hero and section transitions.
 - Page transition animations.
-- Interactive 3D in hero (R3F).
 - Animated typography (kinetic type on key headlines).
 - Funny loading microcopy.
 - Hidden easter eggs (see Approval Gate #3).
@@ -180,4 +179,4 @@ Tracked in `PLAN.md` Section 14. Includes: founder photo, founder bio, brand soc
 
 ---
 
-*Last updated: 2026-05-15 — Prior founder-venture references and `/built` route plans removed from the site, code, and project docs. No public portfolio until Tahrim has client work to display. System slugs renamed to multi-word for long-tail SEO (`ai-automation`, `web-product`, `marketing-infrastructure`). SEO refresh: home canonical, full-name titles on system pages, JobPosting JSON-LD on /join, BreadcrumbList on /about, /join, /contact, FAQ JSON-LD deduplicated to /faq only, /booking added to robots disallow, descriptive image alts. Backend Phase 1+2 in progress: Neon Postgres + Prisma + Resend lead capture, custom /admin viewer, PostHog analytics, all pricing hidden behind "Book a Call", custom email yo@businessdawg.com, 404 mini-game easter egg.*
+*Last updated: 2026-05-16 — Doc reconciled with shipped reality after a full site audit. R3F / React Three Fiber removed from the locked stack (§2), v1 scope (§2), approval gates (§3), design direction (§8), and motion system (§9); the site ships Framer Motion + Lenis + curated SVG/WebP only. Prior 2026-05-15 update notes preserved in git history: founder-venture references and `/built` route plans removed; no public portfolio until Tahrim has client work to display; system slugs renamed to multi-word for long-tail SEO (`ai-automation`, `web-product`, `marketing-infrastructure`); SEO refresh (home canonical, full-name titles on system pages, JobPosting JSON-LD on /join, BreadcrumbList on /about, /join, /contact, FAQ JSON-LD deduplicated to /faq only, /booking added to robots disallow, descriptive image alts); Backend Phase 1+2 in progress (Neon Postgres + Prisma + Resend lead capture, custom /admin viewer, PostHog analytics, all pricing hidden behind "Book a Call", custom email yo@businessdawg.com, 404 mini-game easter egg).*

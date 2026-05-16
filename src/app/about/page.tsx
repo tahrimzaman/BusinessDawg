@@ -1,4 +1,7 @@
-'use client';
+// Server component. All interactivity comes from the imported client islands
+// (Reveal, KineticText, MagneticButton, PullQuoteMarquee, TalkersVsShippers).
+// Keeping the page shell server-rendered means the static text in the hero,
+// founder bio, and motto sections never ships to the client as React.
 
 import Image from 'next/image';
 import Reveal from '@/components/motion/Reveal';

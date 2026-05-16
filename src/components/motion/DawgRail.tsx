@@ -9,6 +9,13 @@ import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-mot
  * the user scrolls. The chapter name inside the bar is rendered as a white
  * stroked outline plus an onyx-solid copy clipped to the fill, so the name
  * visually inverts in lockstep with the fill. Clickable. Lg+ only.
+ *
+ * A11y: each bar is a real <button aria-label="Jump to {label}"> nested in
+ * an <aside aria-label="Chapter progress">. The outer aside uses
+ * `pointer-events-none` so the empty space between bars never blocks page
+ * clicks; each <FillBar> button restores `pointer-events-auto` so the bars
+ * remain mouse-clickable AND keyboard-focusable (Tab order, Enter/Space).
+ * If you change the aside's pointer-events policy, preserve this pattern.
  */
 
 const SECTIONS = [
