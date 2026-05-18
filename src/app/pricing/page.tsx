@@ -80,8 +80,8 @@ export default function PricingPage() {
               </p>
               <p>
                 We also do not run a productized retainer model where the price is the same every
-                month regardless of what shipped. That model is fine for some studios. It is not
-                ours. Our engagements end. The hand-off ends them.
+                month no matter what we ship. That model is fine for some studios. It is not ours.
+                Our engagements end. The hand-off ends them.
               </p>
               <p>
                 Hiding the number is not a sales tactic. It is an accuracy tactic. The number we

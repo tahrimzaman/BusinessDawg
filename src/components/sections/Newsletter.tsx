@@ -40,7 +40,7 @@ export default function Newsletter() {
         </Reveal>
         <Reveal delay={0.05}>
           <h2 className="font-display mt-3 text-4xl leading-[1.05] font-bold tracking-tight italic sm:text-5xl">
-            Get the playbook in your inbox.
+            Ship smarter. Get the playbook.
           </h2>
         </Reveal>
         <Reveal delay={0.1}>
