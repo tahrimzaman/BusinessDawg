@@ -29,7 +29,7 @@ export default function Newsletter() {
   }
 
   return (
-    <section className="relative overflow-hidden py-16 md:py-24">
+    <section className="relative overflow-hidden py-10 md:py-14">
       <div className="bd-section-glow" />
       <div className="relative mx-auto max-w-3xl px-6 text-center lg:px-16">
         <Reveal>

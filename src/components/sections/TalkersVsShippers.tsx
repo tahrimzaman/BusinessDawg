@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
-import MagneticButton from '@/components/motion/MagneticButton';
 import DecksVsV1s from '@/components/illustrations/DecksVsV1s';
 import RoadmapsVsReleases from '@/components/illustrations/RoadmapsVsReleases';
 import ReportsVsWorkflows from '@/components/illustrations/ReportsVsWorkflows';
@@ -102,7 +101,7 @@ function StackedReel() {
   return (
     <section className="relative">
       {PANELS.map((p, i) => (
-        <div key={i} className="relative flex min-h-screen items-center justify-center px-6 py-24">
+        <div key={i} className="relative flex min-h-[80vh] items-center justify-center px-6 py-14">
           <PanelContent panel={p} index={i} stacked />
         </div>
       ))}
@@ -120,7 +119,7 @@ function MobileCarouselReel() {
         {PANELS.map((p, i) => (
           <div
             key={i}
-            className="flex min-h-screen w-screen shrink-0 snap-center snap-always items-center px-6 py-20"
+            className="flex min-h-[80vh] w-screen shrink-0 snap-center snap-always items-center px-6 py-14"
           >
             <PanelContent panel={p} index={i} stacked />
           </div>
@@ -150,7 +149,7 @@ function HorizontalReel() {
   const x = useTransform(scrollYProgress, [0, 1], ['0%', `-${endPct}%`]);
 
   return (
-    <section ref={ref} className="relative" style={{ height: `${TOTAL * 100}vh` }}>
+    <section ref={ref} className="relative" style={{ height: `${TOTAL * 70}vh` }}>
       <div className="sticky top-0 h-screen overflow-hidden">
         <div
           aria-hidden
@@ -215,8 +214,8 @@ function PanelContent({
       <motion.div
         initial={stacked ? false : { opacity: 0, x: -40 }}
         whileInView={stacked ? undefined : { opacity: 1, x: 0 }}
-        viewport={stacked ? undefined : { once: true, margin: '-20%' }}
-        transition={{ duration: 0.8, ease: EASE }}
+        viewport={stacked ? undefined : { once: true, margin: '0px' }}
+        transition={{ duration: 0.5, ease: EASE }}
         className="relative mx-auto w-full max-w-[480px] lg:col-span-5"
       >
         <div className="relative aspect-square w-full">
@@ -227,7 +226,7 @@ function PanelContent({
               alt={panel.image.alt}
               fill
               sizes="(min-width: 1024px) 35vw, 80vw"
-              className="scale-[1.3] object-contain object-bottom"
+              className="object-contain object-bottom lg:scale-[1.3]"
               style={{ transformOrigin: 'bottom center' }}
             />
           )}
@@ -247,8 +246,8 @@ function PanelContent({
         <motion.p
           initial={stacked ? false : { opacity: 0, y: 12 }}
           whileInView={stacked ? undefined : { opacity: 1, y: 0 }}
-          viewport={stacked ? undefined : { once: true, margin: '-20%' }}
-          transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
+          viewport={stacked ? undefined : { once: true, margin: '0px' }}
+          transition={{ duration: 0.4, delay: 0.05, ease: EASE }}
           className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase"
         >
           {panel.eyebrow}
@@ -258,8 +257,8 @@ function PanelContent({
           <motion.h2
             initial={stacked ? false : { opacity: 0, y: 16 }}
             whileInView={stacked ? undefined : { opacity: 1, y: 0 }}
-            viewport={stacked ? undefined : { once: true, margin: '-20%' }}
-            transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
+            viewport={stacked ? undefined : { once: true, margin: '0px' }}
+            transition={{ duration: 0.5, delay: 0.12, ease: EASE }}
             className="font-display mt-4 text-3xl leading-[1.05] font-bold tracking-tight italic sm:text-4xl md:text-5xl lg:text-6xl"
           >
             <span className="block text-[color:var(--bd-bone)]/45 line-through decoration-[color:var(--bd-bone)]/30">
@@ -271,8 +270,8 @@ function PanelContent({
           <motion.h2
             initial={stacked ? false : { opacity: 0, y: 16 }}
             whileInView={stacked ? undefined : { opacity: 1, y: 0 }}
-            viewport={stacked ? undefined : { once: true, margin: '-20%' }}
-            transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
+            viewport={stacked ? undefined : { once: true, margin: '0px' }}
+            transition={{ duration: 0.5, delay: 0.12, ease: EASE }}
             className="font-display mt-4 text-3xl leading-[1.02] font-bold tracking-tight text-[color:var(--bd-bone)] italic sm:text-4xl md:text-5xl lg:text-6xl"
           >
             {panel.headline}
@@ -284,33 +283,18 @@ function PanelContent({
         <motion.p
           initial={stacked ? false : { opacity: 0, y: 16 }}
           whileInView={stacked ? undefined : { opacity: 1, y: 0 }}
-          viewport={stacked ? undefined : { once: true, margin: '-20%' }}
-          transition={{ duration: 0.7, delay: 0.4, ease: EASE }}
+          viewport={stacked ? undefined : { once: true, margin: '0px' }}
+          transition={{ duration: 0.45, delay: 0.22, ease: EASE }}
           className="mt-6 max-w-xl text-base text-[color:var(--bd-bone)]/70 sm:text-lg md:text-xl"
         >
           {panel.body}
         </motion.p>
 
-        {panel.kind === 'punch' && (
-          <motion.div
-            initial={stacked ? false : { opacity: 0, y: 16 }}
-            whileInView={stacked ? undefined : { opacity: 1, y: 0 }}
-            viewport={stacked ? undefined : { once: true, margin: '-20%' }}
-            transition={{ duration: 0.7, delay: 0.6, ease: EASE }}
-            className="mt-10 flex flex-wrap items-center gap-4"
-          >
-            <MagneticButton href="/contact">Book a Call →</MagneticButton>
-            <span className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
-              30 min · straight talk
-            </span>
-          </motion.div>
-        )}
-
         <motion.div
           initial={stacked ? false : { opacity: 0 }}
           whileInView={stacked ? undefined : { opacity: 1 }}
-          viewport={stacked ? undefined : { once: true, margin: '-20%' }}
-          transition={{ duration: 0.6, delay: 0.7 }}
+          viewport={stacked ? undefined : { once: true, margin: '0px' }}
+          transition={{ duration: 0.4, delay: 0.38 }}
           className="mt-12 flex items-center gap-3"
         >
           <span aria-hidden className="inline-block h-px w-12 bg-[color:var(--bd-lime)]" />

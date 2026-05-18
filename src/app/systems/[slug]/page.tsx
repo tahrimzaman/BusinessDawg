@@ -61,14 +61,14 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
           { name: system.name, url },
         ]}
       />
-      <div className="mx-auto max-w-6xl px-6 pt-40 pb-24">
+      <div className="mx-auto max-w-6xl px-6 pt-28 pb-16">
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
             / {system.shortName} system
           </p>
         </Reveal>
         <Reveal delay={0.05}>
-          <h1 className="font-display mt-4 max-w-4xl text-5xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
+          <h1 className="font-display mt-4 max-w-4xl text-4xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
             {system.name}.
           </h1>
         </Reveal>
@@ -79,7 +79,7 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
         {/* What it is — long-form when whatItIs is set, otherwise the short tagline-only fallback */}
         {system.whatItIs && system.whatItIs.length > 0 ? (
           <Reveal>
-            <section className="mt-20 max-w-3xl">
+            <section className="mt-14 max-w-3xl">
               <h2 className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
                 What it is
               </h2>
@@ -92,7 +92,7 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
           </Reveal>
         ) : (
           <Reveal>
-            <section className="mt-20 max-w-2xl">
+            <section className="mt-14 max-w-2xl">
               <h2 className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
                 What it is
               </h2>
@@ -128,7 +128,7 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
           </Reveal>
         ) : (
           <Reveal delay={0.06}>
-            <section className="mt-16 max-w-2xl">
+            <section className="mt-12 max-w-2xl">
               <h2 className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
                 What you get
               </h2>
@@ -148,7 +148,7 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
         )}
 
         <Reveal>
-          <div className="mt-20 grid gap-6 md:grid-cols-3">
+          <div className="mt-14 grid gap-6 md:grid-cols-3">
             {[
               {
                 n: '01',
@@ -179,7 +179,7 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
         </Reveal>
 
         <Reveal>
-          <div className="mt-20 flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-[color:var(--bd-lime)]/30 bg-[color:var(--bd-lime)]/5 p-8">
+          <div className="mt-14 flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-[color:var(--bd-lime)]/30 bg-[color:var(--bd-lime)]/5 p-8">
             <div>
               <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
                 Scoped on a call
@@ -191,7 +191,7 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
         </Reveal>
 
         <Reveal>
-          <div className="mt-20 border-t border-white/8 pt-10">
+          <div className="mt-14 border-t border-white/8 pt-10">
             <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
               Next system
             </p>

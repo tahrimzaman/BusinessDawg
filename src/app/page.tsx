@@ -20,12 +20,6 @@ const Chatbot = nextDynamic(() => import('@/components/sections/Chatbot'));
 const Recruitment = nextDynamic(() => import('@/components/sections/Recruitment'));
 const Newsletter = nextDynamic(() => import('@/components/sections/Newsletter'));
 const ClosingCTA = nextDynamic(() => import('@/components/sections/ClosingCTA'));
-// TweakPanel ships only outside production. In prod the import resolves to a
-// no-op component, so the panel's JS chunk never lands in the client bundle.
-const TweakPanel =
-  process.env.NODE_ENV === 'production'
-    ? () => null
-    : nextDynamic(() => import('@/components/dev/TweakPanel'));
 
 export default function HomePage() {
   return (
@@ -51,8 +45,6 @@ export default function HomePage() {
       <div id="ship">
         <ClosingCTA />
       </div>
-
-      <TweakPanel />
     </>
   );
 }

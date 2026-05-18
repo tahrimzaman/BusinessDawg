@@ -3,7 +3,7 @@ import MagneticButton from '@/components/motion/MagneticButton';
 
 export default function Recruitment() {
   return (
-    <section className="relative overflow-hidden py-20 md:py-32">
+    <section className="relative overflow-hidden py-14 md:py-20">
       <div className="bd-section-glow" />
       <div className="relative mx-auto max-w-7xl px-6 lg:px-16">
         <div className="grid gap-5 md:grid-cols-2">

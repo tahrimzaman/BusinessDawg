@@ -31,7 +31,7 @@ function useClientEnabled() {
  */
 export default function TweakPanel() {
   const enabled = useClientEnabled();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const t = useTweaks();
 
   if (!enabled) return null;

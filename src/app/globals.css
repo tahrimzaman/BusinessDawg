@@ -204,7 +204,7 @@ body {
   .bd-punchline {
     display: inline-block;
     transform-origin: left center;
-    animation: bd-punch 0.55s ease-out 1.4s 1 both;
+    animation: bd-punch 0.4s ease-out 0.8s 1 both;
   }
 }
 

@@ -22,7 +22,7 @@ export default function KineticText({
           <motion.span
             initial={{ y: '110%', rotate: 6 }}
             animate={{ y: '0%', rotate: 0 }}
-            transition={{ duration: 0.85, delay: delay + i * 0.07, ease: EASE }}
+            transition={{ duration: 0.5, delay: delay + i * 0.04, ease: EASE }}
           >
             {w}
           </motion.span>

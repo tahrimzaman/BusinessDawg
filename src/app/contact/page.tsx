@@ -53,7 +53,7 @@ export default async function Contact() {
   const { slots, ownerTz } = await fetchSlots();
 
   return (
-    <div className="mx-auto max-w-6xl px-6 pt-40 pb-24">
+    <div className="mx-auto max-w-6xl px-6 pt-28 pb-16">
       <BreadcrumbJsonLd
         items={[
           { name: 'Home', url: 'https://businessdawg.com' },
@@ -66,7 +66,7 @@ export default async function Contact() {
         </p>
       </Reveal>
       <Reveal delay={0.05}>
-        <h1 className="font-display mt-3 text-5xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
+        <h1 className="font-display mt-3 text-4xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
           Book the dawg.
         </h1>
       </Reveal>
@@ -76,7 +76,7 @@ export default async function Contact() {
         </p>
       </Reveal>
 
-      <div className="mt-16 grid gap-8 md:grid-cols-12">
+      <div className="mt-12 grid gap-8 md:grid-cols-12">
         <Reveal className="md:col-span-8">
           {slots.length === 0 ? (
             <div className="rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-8 text-center text-sm text-[color:var(--bd-bone)]/70">

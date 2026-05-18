@@ -75,6 +75,16 @@ export function useTweaks(): TweaksState {
 export function isTweaksEnabled(): boolean {
   if (process.env.NEXT_PUBLIC_TWEAKS === '1') return true;
   if (typeof window === 'undefined') return false;
+  // Auto-on in local dev — localhost / 127.0.0.1 / *.local.
+  const host = window.location.hostname;
+  if (
+    host === 'localhost' ||
+    host === '127.0.0.1' ||
+    host === '0.0.0.0' ||
+    host.endsWith('.local')
+  ) {
+    return true;
+  }
   const params = new URLSearchParams(window.location.search);
   return params.get('tweaks') === '1';
 }

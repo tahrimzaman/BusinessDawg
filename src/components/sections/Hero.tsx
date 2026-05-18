@@ -52,7 +52,7 @@ export default function Hero() {
   const layout = tweaks.heroComp;
 
   return (
-    <section className="relative isolate flex min-h-[100svh] items-start overflow-hidden pt-28 sm:pt-32">
+    <section className="relative isolate flex min-h-[100svh] items-start overflow-hidden pt-24 sm:pt-32">
       {/* Lime radial glow */}
       <div
         aria-hidden
@@ -114,7 +114,7 @@ export default function Hero() {
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: reduced ? 0 : 1.1, duration: dur * 0.7, ease: EASE }}
+            transition={{ delay: reduced ? 0 : 0.65, duration: dur * 0.7, ease: EASE }}
             className="mt-8 max-w-xl text-lg text-[color:var(--bd-bone)]/70 sm:text-xl"
           >
             Branding, AI, web, and growth systems for founders who actually ship.
@@ -123,7 +123,7 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: reduced ? 0 : 1.35, duration: dur * 0.7, ease: EASE }}
+            transition={{ delay: reduced ? 0 : 0.8, duration: dur * 0.7, ease: EASE }}
             className="mt-10 flex flex-wrap items-center gap-4"
           >
             <MagneticButton href="/contact">Book a Call →</MagneticButton>
@@ -135,7 +135,7 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: reduced ? 0 : 1.9, duration: 0.6 }}
+            transition={{ delay: reduced ? 0 : 1.15, duration: 0.4 }}
             className="mt-16 hidden font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase sm:block"
           >
             scroll ↓
@@ -155,14 +155,14 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: reduced ? 0 : 0.3, duration: dur, ease: EASE }}
+            transition={{ delay: reduced ? 0 : 0.18, duration: dur, ease: EASE }}
             style={{
               rotateX: tiltX,
               rotateY: tiltY,
               x: translateX,
               transformPerspective: 1400,
             }}
-            className={`relative mx-auto h-[50vh] w-full max-w-[600px] sm:h-[70vh] lg:mr-0 lg:ml-auto ${mascotHeight}`}
+            className={`relative mx-auto h-[38vh] w-full max-w-[600px] sm:h-[70vh] lg:mr-0 lg:ml-auto ${mascotHeight}`}
           >
             <motion.div
               animate={reduced ? undefined : { y: [0, -8, 0] }}

@@ -21,7 +21,7 @@ export default function ClosingCTA() {
   const dur = (reduced ? 0.2 : TIMING.revealLate) * (reduced ? 1 : tweaks.pace);
 
   return (
-    <section className="relative isolate flex min-h-[70vh] items-center overflow-hidden pt-24 md:min-h-[80vh]">
+    <section className="relative isolate flex min-h-[60vh] items-center overflow-hidden pt-16 md:min-h-[68vh] md:pt-20">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -70,7 +70,7 @@ export default function ClosingCTA() {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-15%' }}
+          viewport={{ once: true, margin: '0px 0px -5% 0px' }}
           transition={{ duration: dur, ease: EASE }}
           className="relative h-[50vh] w-full lg:col-span-6 lg:h-[65vh]"
         >

@@ -35,7 +35,7 @@ export default function JournalIndex() {
   );
 
   return (
-    <div className="mx-auto max-w-7xl px-6 pt-40 pb-24">
+    <div className="mx-auto max-w-7xl px-6 pt-28 pb-16">
       <BreadcrumbJsonLd
         items={[
           { name: 'Home', url: 'https://businessdawg.com' },
@@ -48,7 +48,7 @@ export default function JournalIndex() {
         </p>
       </Reveal>
       <Reveal delay={0.05}>
-        <h1 className="font-display mt-3 max-w-4xl text-5xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
+        <h1 className="font-display mt-3 max-w-4xl text-4xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
           Field notes from building business machines.
         </h1>
       </Reveal>
@@ -58,7 +58,7 @@ export default function JournalIndex() {
           shipping. Written by Tahrim, founder of BusinessDawg.
         </p>
       </Reveal>
-      <div className="mt-16 grid gap-5">
+      <div className="mt-12 grid gap-5">
         {posts.map((p, i) => (
           <Reveal key={p.slug} delay={i * 0.04}>
             <Link
@@ -71,7 +71,7 @@ export default function JournalIndex() {
                   <span aria-hidden>·</span>
                   <span>{p.readingTime} min read</span>
                 </div>
-                <h2 className="font-display mt-3 text-3xl font-bold italic md:text-4xl">
+                <h2 className="font-display mt-3 text-2xl font-bold italic md:text-4xl">
                   {p.title}
                 </h2>
                 <p className="mt-3 max-w-2xl text-[color:var(--bd-bone)]/70">{p.excerpt}</p>

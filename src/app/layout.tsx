@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import nextDynamic from 'next/dynamic';
 import './globals.css';
 import LenisProvider from '@/components/motion/LenisProvider';
 import WoofListener from '@/components/motion/WoofListener';
@@ -7,6 +8,13 @@ import Navbar from '@/components/sections/Navbar';
 import Footer from '@/components/sections/Footer';
 import PostHogProvider from '@/components/analytics/PostHogProvider';
 import JsonLd from '@/components/seo/JsonLd';
+
+// TweakPanel ships only outside production. In prod the import resolves to a
+// no-op component, so the panel's JS chunk never lands in the client bundle.
+const TweakPanel =
+  process.env.NODE_ENV === 'production'
+    ? () => null
+    : nextDynamic(() => import('@/components/dev/TweakPanel'));
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -82,6 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <WoofListener />
           </LenisProvider>
         </PostHogProvider>
+        <TweakPanel />
         <JsonLd />
       </body>
     </html>

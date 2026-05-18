@@ -56,7 +56,7 @@ export default function Join() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 pt-40 pb-24">
+    <div className="mx-auto max-w-4xl px-6 pt-28 pb-16">
       <BreadcrumbJsonLd
         items={[
           { name: 'Home', url: 'https://businessdawg.com' },
@@ -77,7 +77,7 @@ export default function Join() {
         </p>
       </Reveal>
       <Reveal delay={0.05}>
-        <h1 className="font-display mt-3 text-5xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
+        <h1 className="font-display mt-3 text-4xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
           We hire weirdos with taste.
         </h1>
       </Reveal>
@@ -88,7 +88,7 @@ export default function Join() {
       </Reveal>
 
       <Reveal>
-        <div className="mt-16 grid gap-3">
+        <div className="mt-12 grid gap-3">
           {ROLES.map((r) => (
             <div
               key={r.title}
@@ -111,7 +111,7 @@ export default function Join() {
       <Reveal>
         <form
           onSubmit={onSubmit}
-          className="relative mt-20 grid gap-4 rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-8"
+          className="relative mt-14 grid gap-4 rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-8"
         >
           <h2 className="font-display text-2xl font-bold italic">Apply / pitch us</h2>
           <Honeypot />

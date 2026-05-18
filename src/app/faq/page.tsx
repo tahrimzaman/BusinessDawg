@@ -30,14 +30,14 @@ export default function FaqPage() {
           { name: 'FAQ', url: 'https://businessdawg.com/faq' },
         ]}
       />
-      <div className="mx-auto max-w-5xl px-6 pt-40 pb-12">
+      <div className="mx-auto max-w-5xl px-6 pt-28 pb-12">
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
             / FAQ
           </p>
         </Reveal>
         <Reveal delay={0.05}>
-          <h1 className="font-display mt-3 text-5xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
+          <h1 className="font-display mt-3 text-4xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
             Stuff people keep asking.
           </h1>
         </Reveal>
@@ -52,7 +52,7 @@ export default function FaqPage() {
         eyebrow="/ Everything we get asked"
         heading="The questions we keep getting."
       />
-      <section className="mx-auto max-w-5xl px-6 pb-32">
+      <section className="mx-auto max-w-5xl px-6 pb-20">
         <div className="flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-[color:var(--bd-lime)]/30 bg-[color:var(--bd-lime)]/5 p-8">
           <div>
             <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">

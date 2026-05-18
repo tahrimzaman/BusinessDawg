@@ -30,7 +30,7 @@ export default function About() {
         ]}
       />
       {/* 1 — Hero / intro */}
-      <section className="mx-auto max-w-4xl px-6 pt-40 pb-20">
+      <section className="mx-auto max-w-4xl px-6 pt-28 pb-14">
         <Reveal>
           <Image
             src="/brand/logo-vertical.webp"
@@ -69,13 +69,96 @@ export default function About() {
             </p>
           </div>
         </Reveal>
+
+        <Reveal delay={0.55} pace="late">
+          <div className="mt-14 border-t border-dashed border-[color:var(--bd-lime)]/30 pt-10">
+            <p className="font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
+              / What we believe
+            </p>
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
+              {[
+                {
+                  n: '01',
+                  title: 'We don’t consult. We build.',
+                  body: 'No 80-page decks. We get hired to ship.',
+                },
+                {
+                  n: '02',
+                  title: 'AI is the new factory floor.',
+                  body: 'We wire AI into how a business operates.',
+                },
+                {
+                  n: '03',
+                  title: 'Operators first.',
+                  body: 'Built by someone who runs real businesses.',
+                },
+              ].map((p) => (
+                <div
+                  key={p.n}
+                  className="rounded-2xl border border-white/8 bg-[color:var(--bd-smoke)] p-5 transition-colors duration-300 hover:border-[color:var(--bd-lime)]/60"
+                >
+                  <p className="font-mono text-[11px] tracking-widest text-[color:var(--bd-lime)] uppercase">
+                    / {p.n}
+                  </p>
+                  <p className="font-display mt-3 text-lg leading-tight font-bold tracking-tight text-[color:var(--bd-bone)] italic">
+                    {p.title}
+                  </p>
+                  <p className="mt-2 text-sm leading-snug text-[color:var(--bd-bone)]/70">
+                    {p.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
       </section>
+
+      {/* Low-opacity mono ticker — atmospheric motion between hero and the
+          Talkers vs Shippers pin. No content load, just energy. */}
+      <div
+        className="group relative -mt-2 overflow-hidden border-y border-white/5 py-3"
+        aria-hidden
+      >
+        <div
+          className="pointer-events-none absolute inset-0 z-10"
+          style={{
+            background:
+              'linear-gradient(to right, var(--bd-ink) 0%, transparent 8%, transparent 92%, var(--bd-ink) 100%)',
+          }}
+        />
+        <div
+          className="flex w-max items-center gap-10 whitespace-nowrap will-change-transform group-hover:[animation-play-state:paused]"
+          style={{ animation: 'bd-marquee 55s linear infinite' }}
+        >
+          {[
+            ...Array(2).fill([
+              'operators first',
+              'ship the system',
+              'branding that doesn’t apologize',
+              'we build the machine',
+              'AI is the new factory floor',
+              'built in public',
+              'shipped on purpose',
+              'no decks, just infrastructure',
+            ]),
+          ]
+            .flat()
+            .map((phrase, i) => (
+              <span key={i} className="flex items-center gap-10">
+                <span className="font-mono text-xs tracking-[0.25em] text-[color:var(--bd-bone)]/45 uppercase">
+                  {phrase}
+                </span>
+                <span className="text-xs text-[color:var(--bd-lime)]/60">/</span>
+              </span>
+            ))}
+        </div>
+      </div>
 
       {/* 2 — Talkers vs Shippers (Roast-style scroll-scrub reel) */}
       <TalkersVsShippers />
 
       {/* 3 — Pull-quote marquee */}
-      <section className="pb-24">
+      <section className="pb-16">
         <div className="mx-auto max-w-5xl px-6">
           <Reveal>
             <Eyebrow label="/ Loud thoughts" />
@@ -87,7 +170,7 @@ export default function About() {
       </section>
 
       {/* 4 — Meet the Dawg (compact card) */}
-      <section className="mx-auto max-w-4xl px-6 pb-24">
+      <section className="mx-auto max-w-4xl px-6 pb-16">
         <Reveal>
           <Eyebrow label="/ Meet the Dawg" />
         </Reveal>
@@ -159,7 +242,7 @@ export default function About() {
       </section>
 
       {/* 5 — Closing mantra */}
-      <section className="mx-auto max-w-6xl px-6 pb-32 text-center">
+      <section className="mx-auto max-w-6xl px-6 pb-20 text-center">
         <Reveal pace="late">
           <Eyebrow label="/ The motto" />
         </Reveal>

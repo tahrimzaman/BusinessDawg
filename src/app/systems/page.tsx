@@ -24,18 +24,18 @@ export const metadata = {
 
 export default function SystemsIndex() {
   return (
-    <div className="mx-auto max-w-7xl px-6 pt-40 pb-24">
+    <div className="mx-auto max-w-7xl px-6 pt-28 pb-16">
       <Reveal>
         <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
           / The Systems Stack
         </p>
       </Reveal>
       <Reveal delay={0.05}>
-        <h1 className="font-display mt-3 max-w-4xl text-5xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
+        <h1 className="font-display mt-3 max-w-4xl text-4xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
           Five systems. Stack the ones you need.
         </h1>
       </Reveal>
-      <div className="mt-16 grid gap-5">
+      <div className="mt-12 grid gap-5">
         {SYSTEMS.map((s, i) => (
           <Reveal key={s.slug} delay={i * 0.04}>
             <Link

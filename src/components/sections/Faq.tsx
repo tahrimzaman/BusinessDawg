@@ -18,7 +18,7 @@ export default function Faq({
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section className="relative py-24 md:py-32">
+    <section className="relative py-12 md:py-32">
       <div className="mx-auto max-w-5xl px-6">
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">

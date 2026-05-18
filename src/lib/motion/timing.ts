@@ -4,14 +4,14 @@
  * responds to the dev TweakPanel's pacing multiplier.
  */
 export const TIMING = {
-  reveal: 1.3,
-  revealLate: 1.5,
-  hero: 1.4,
-  microFast: 0.25,
-  microSlow: 0.6,
+  reveal: 0.8,
+  revealLate: 0.9,
+  hero: 0.85,
+  microFast: 0.18,
+  microSlow: 0.4,
 } as const;
 
-export const STAGGER_SLOW = 0.15;
+export const STAGGER_SLOW = 0.09;
 
 export type Pace = 'normal' | 'late' | 'hero';
 

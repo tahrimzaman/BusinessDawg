@@ -50,24 +50,41 @@ export default function DawgRail() {
       });
       setRanges(next);
     }
-    compute();
-    // Trailing-edge debounce: only recompute 250 ms after the last resize
-    // event. Rapid window drags (or mobile keyboard show/hide on viewport
-    // resize) used to fire compute() per pixel — now we wait until things
-    // settle. Also reschedule the initial late-compute on the same handle so
-    // it can't fire concurrently with a resize-triggered recompute.
-    let resizeId: number | null = null;
-    const onResize = () => {
-      if (resizeId !== null) window.clearTimeout(resizeId);
-      resizeId = window.setTimeout(compute, 250);
+
+    // Debounced scheduler. Multiple triggers (resize, body resize, font ready,
+    // late initial) all funnel through this so we never compute more than
+    // once per ~150 ms.
+    let debounceId: number | null = null;
+    const scheduleCompute = () => {
+      if (debounceId !== null) window.clearTimeout(debounceId);
+      debounceId = window.setTimeout(compute, 150);
     };
-    window.addEventListener('resize', onResize);
-    // Late initial compute — fonts/images settling can shift section tops
-    // after first paint.
+
+    compute();
+
+    // ResizeObserver on <body> catches every height change — dynamic imports
+    // hydrating below the fold, Reveal animations expanding content, lazy
+    // images loading, the Roast carousel snapping. Without this the rail
+    // boundaries can stay stuck at first-paint positions and the fills land
+    // on the wrong section as the user scrolls.
+    const ro = new ResizeObserver(scheduleCompute);
+    ro.observe(document.body);
+
+    window.addEventListener('resize', scheduleCompute);
+
+    // Font swap also shifts vertical rhythm. Recompute once fonts are ready.
+    if (typeof document !== 'undefined' && 'fonts' in document) {
+      document.fonts.ready.then(scheduleCompute).catch(() => {});
+    }
+
+    // Late initial compute — belt + suspenders alongside the ResizeObserver
+    // in case the body height settled before RO was attached.
     const lateId = window.setTimeout(compute, 400);
+
     return () => {
-      window.removeEventListener('resize', onResize);
-      if (resizeId !== null) window.clearTimeout(resizeId);
+      ro.disconnect();
+      window.removeEventListener('resize', scheduleCompute);
+      if (debounceId !== null) window.clearTimeout(debounceId);
       window.clearTimeout(lateId);
     };
   }, []);

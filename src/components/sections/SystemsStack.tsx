@@ -43,7 +43,7 @@ const PRINCIPLES = [
 
 export default function SystemsStack() {
   return (
-    <section className="relative overflow-hidden py-20 md:py-32 lg:py-48">
+    <section className="relative overflow-hidden py-14 md:py-20 lg:py-28">
       <div className="bd-section-glow" />
       <div className="relative mx-auto max-w-7xl px-6">
         <Reveal>
@@ -57,11 +57,11 @@ export default function SystemsStack() {
             <KineticText
               text="Built for founders who actually ship."
               className="bd-punchline block text-[color:var(--bd-lime)]"
-              delay={0.55}
+              delay={0.32}
             />
           </h2>
         </Reveal>
-        <Reveal delay={1.0}>
+        <Reveal delay={0.5}>
           <p className="font-display mt-6 text-xl leading-tight font-bold tracking-tight text-[color:var(--bd-bone)]/80 italic sm:text-2xl">
             Built by operators.{' '}
             <span className="text-[color:var(--bd-lime)]">Wired for shippers.</span>
@@ -70,7 +70,7 @@ export default function SystemsStack() {
 
         <div className="mt-14 grid gap-6 md:mt-16 md:grid-cols-3 md:gap-7">
           {PRINCIPLES.map((p, i) => (
-            <Reveal key={p.n} delay={1.1 + i * 0.08}>
+            <Reveal key={p.n} delay={0.6 + i * 0.05}>
               <PrincipleFlipCard principle={p} />
             </Reveal>
           ))}
@@ -80,7 +80,7 @@ export default function SystemsStack() {
             two acts. */}
         <div
           aria-hidden
-          className="my-20 h-px w-full border-t border-dashed border-[color:var(--bd-lime)]/30 md:my-28"
+          className="my-12 h-px w-full border-t border-dashed border-[color:var(--bd-lime)]/30 md:my-16"
         />
 
         <Reveal>
@@ -153,13 +153,27 @@ export default function SystemsStack() {
 
 function PrincipleFlipCard({ principle }: { principle: (typeof PRINCIPLES)[number] }) {
   const { Icon } = principle;
+  // Mobile (and keyboard) tap-to-flip. Desktop hover keeps working via the
+  // existing group-hover class — both paths converge on the same rotateY.
+  const [flipped, setFlipped] = useState(false);
   return (
     <div
       tabIndex={0}
+      role="button"
       aria-label={`${principle.title} — ${principle.body}`}
-      className="group block w-full [perspective:1200px] focus-visible:outline-none"
+      aria-pressed={flipped}
+      onClick={() => setFlipped((f) => !f)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setFlipped((f) => !f);
+        }
+      }}
+      className="group block w-full cursor-pointer [perspective:1200px] focus-visible:outline-none"
     >
-      <div className="relative aspect-[4/5] w-full transition-transform duration-700 ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] group-focus-visible:[transform:rotateY(180deg)]">
+      <div
+        className={`relative aspect-[4/5] w-full transition-transform duration-700 ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] group-focus-visible:[transform:rotateY(180deg)] ${flipped ? '[transform:rotateY(180deg)]' : ''}`}
+      >
         {/* FRONT */}
         <div className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-3xl border border-white/8 bg-[color:var(--bd-smoke)] p-7 transition-[border-color,box-shadow] duration-300 [backface-visibility:hidden] group-hover:border-[color:var(--bd-lime)]/60 group-hover:shadow-[0_0_36px_rgba(200,255,0,0.18)] group-focus-visible:border-[color:var(--bd-lime)]/60 group-focus-visible:shadow-[0_0_36px_rgba(200,255,0,0.18)] md:p-8">
           {/* Header row — eyebrow LEFT, title RIGHT */}
@@ -187,7 +201,8 @@ function PrincipleFlipCard({ principle }: { principle: (typeof PRINCIPLES)[numbe
           </div>
 
           <p className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
-            hover to read →
+            <span className="lg:hidden">tap to flip ↻</span>
+            <span className="hidden lg:inline">hover to read →</span>
           </p>
         </div>
 
@@ -258,6 +273,11 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
   const reduced = useReducedMotion();
   const tweaks = useTweaks();
   const [hover, setHover] = useState(false);
+  // Mobile tap-toggle (chevron). Desktop uses hover via pointerEnter/Leave.
+  // We open the deliverables list when EITHER is true — hover stays mouse-only,
+  // tapped only triggers from the explicit mobile chevron button.
+  const [tapped, setTapped] = useState(false);
+  const open = hover || tapped;
   const dur = (reduced ? 0.2 : TIMING.reveal) * (reduced ? 1 : tweaks.pace);
 
   // Cursor-following spotlight
@@ -284,10 +304,14 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
       ref={cardRef}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-10%' }}
+      viewport={{ once: true, margin: '0px 0px -5% 0px' }}
       transition={{ duration: dur, delay: index * STAGGER_SLOW, ease: EASE }}
-      onPointerEnter={() => setHover(true)}
-      onPointerLeave={() => setHover(false)}
+      onPointerEnter={(e) => {
+        if (e.pointerType === 'mouse') setHover(true);
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType === 'mouse') setHover(false);
+      }}
       onPointerMove={handlePointerMove}
       style={
         {
@@ -325,7 +349,7 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
         <div className="md:col-span-7">
           <div className="flex items-center gap-3">
             <span className="text-3xl text-[color:var(--bd-lime)]">{system.glyph}</span>
-            <h3 className="font-display text-3xl font-bold tracking-tight italic md:text-4xl">
+            <h3 className="font-display text-2xl font-bold tracking-tight italic md:text-4xl">
               {system.name}
             </h3>
           </div>
@@ -333,7 +357,7 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
 
           <motion.div
             initial={false}
-            animate={{ height: hover ? 'auto' : 0, opacity: hover ? 1 : 0 }}
+            animate={{ height: open ? 'auto' : 0, opacity: open ? 1 : 0 }}
             transition={{ duration: 0.5, ease: EASE }}
             className="overflow-hidden"
           >
@@ -346,6 +370,25 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
               ))}
             </ul>
           </motion.div>
+
+          {/* Mobile-only tap-to-expand chevron. preventDefault stops the
+              wrapping <Link> from navigating when the chevron is tapped. */}
+          <button
+            type="button"
+            aria-expanded={tapped}
+            aria-label={tapped ? 'Hide deliverables' : 'Show deliverables'}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setTapped((t) => !t);
+            }}
+            className="mt-4 inline-flex items-center gap-2 font-mono text-[11px] tracking-widest text-[color:var(--bd-lime)] uppercase lg:hidden"
+          >
+            <span>{tapped ? 'hide' : "what's included"}</span>
+            <span className={`transition-transform duration-300 ${tapped ? 'rotate-180' : ''}`}>
+              ↓
+            </span>
+          </button>
         </div>
 
         <div className="md:col-span-4 md:text-right">

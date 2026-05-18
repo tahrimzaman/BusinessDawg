@@ -74,7 +74,7 @@ export default async function JournalPost({ params }: { params: Promise<Params> 
           { name: post.title, url },
         ]}
       />
-      <article className="mx-auto max-w-3xl px-6 pt-40 pb-24">
+      <article className="mx-auto max-w-3xl px-6 pt-28 pb-16">
         <Reveal>
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
             / {post.kicker}
@@ -99,7 +99,7 @@ export default async function JournalPost({ params }: { params: Promise<Params> 
             {post.lede}
           </p>
         </Reveal>
-        <div className="mt-16 space-y-14">
+        <div className="mt-12 space-y-14">
           {post.sections.map((s, i) => (
             <Reveal key={i} delay={0.05}>
               <section>
@@ -129,7 +129,7 @@ export default async function JournalPost({ params }: { params: Promise<Params> 
           ))}
         </div>
         <Reveal delay={0.05}>
-          <div className="mt-20 rounded-3xl border border-white/8 bg-[color:var(--bd-smoke)] p-8 md:p-10">
+          <div className="mt-14 rounded-3xl border border-white/8 bg-[color:var(--bd-smoke)] p-8 md:p-10">
             <p className="font-display text-2xl font-bold italic md:text-3xl">
               Got a growth system to scope?
             </p>
@@ -144,7 +144,7 @@ export default async function JournalPost({ params }: { params: Promise<Params> 
         </Reveal>
         {(prev || next) && (
           <Reveal delay={0.05}>
-            <div className="mt-16 grid gap-4 md:grid-cols-2">
+            <div className="mt-12 grid gap-4 md:grid-cols-2">
               {prev ? (
                 <Link
                   href={`/journal/${prev.slug}`}

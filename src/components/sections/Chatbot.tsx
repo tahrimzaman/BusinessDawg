@@ -216,7 +216,7 @@ export default function Chatbot() {
 
   return (
     <>
-      <section className="relative py-20 md:py-32">
+      <section className="relative py-14 md:py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-16">
           <Reveal>
             <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
