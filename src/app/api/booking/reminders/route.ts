@@ -65,7 +65,7 @@ async function handleGET(req: Request) {
 
   for (const b of due) {
     try {
-      await notifyVisitorBookingReminder({
+      const result = await notifyVisitorBookingReminder({
         id: b.id,
         name: b.name,
         email: b.email,
@@ -82,6 +82,17 @@ async function handleGET(req: Request) {
         meetUrl: b.meetUrl,
         tokenVersion: b.tokenVersion,
       });
+      // Only flip reminder24Sent on a real successful send. sendWithRetry
+      // returns {ok: false} on exhausted retries (and has already written to
+      // EmailOutbox for manual replay). If we flipped the flag on failure,
+      // tomorrow's cron would skip this booking and the visitor would never
+      // get a reminder. The outbox row is the dead-letter; admin can replay
+      // from there. Until they do, we leave the flag null so the next cron
+      // tick re-attempts.
+      if (!result.ok) {
+        failed++;
+        continue;
+      }
       await prisma.$transaction([
         prisma.booking.update({
           where: { id: b.id },

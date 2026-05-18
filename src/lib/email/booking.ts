@@ -6,7 +6,7 @@
  */
 
 import { FROM, ADMIN_INBOX } from './transport';
-import { sendWithRetry } from './sendWithRetry';
+import { sendWithRetry, type SendResult } from './sendWithRetry';
 import { emailShell, escapeHtml, infoCard, greyCard, ctaButton, fieldRow } from './template';
 import { signManageToken } from '@/lib/booking/tokens';
 
@@ -249,7 +249,7 @@ export async function notifyAdminOfBooking(b: BookingEmailPayload): Promise<void
 
 // ─── Visitor 24h reminder ──────────────────────────────────────────────────────
 
-export async function notifyVisitorBookingReminder(b: BookingEmailPayload): Promise<void> {
+export async function notifyVisitorBookingReminder(b: BookingEmailPayload): Promise<SendResult> {
   const firstName = b.name.split(' ')[0] || b.name;
   const visitorLong = formatLong(b.startUtc, b.visitorTz);
   const hasMeet = !!b.meetUrl;
@@ -282,7 +282,7 @@ export async function notifyVisitorBookingReminder(b: BookingEmailPayload): Prom
     .filter(Boolean)
     .join('\n');
 
-  await sendWithRetry(
+  return sendWithRetry(
     {
       from: FROM,
       to: b.email,

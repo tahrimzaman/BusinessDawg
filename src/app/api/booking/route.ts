@@ -282,23 +282,32 @@ async function handlePOST(req: Request) {
     }
 
     if (meetUrl || gcalEventId) {
-      await prisma.booking.update({
-        where: { id: created.id },
-        data: {
-          meetUrl,
-          gcalEventId,
-          needsMeetLink: false,
-        },
-      });
-      prisma.bookingEvent
-        .create({
-          data: {
-            bookingId: created.id,
-            type: 'meet_linked',
-            payload: { meetUrl, gcalEventId },
-          },
-        })
-        .catch(() => {});
+      // Atomic: booking-flag flip and the audit-trail event row commit
+      // together, so we can never end up with `needsMeetLink: false` and no
+      // corresponding 'meet_linked' event (or vice versa). Errors here are
+      // logged but don't fail the booking — the visitor's confirmation
+      // already went out and the slot is locked.
+      try {
+        await prisma.$transaction([
+          prisma.booking.update({
+            where: { id: created.id },
+            data: { meetUrl, gcalEventId, needsMeetLink: false },
+          }),
+          prisma.bookingEvent.create({
+            data: {
+              bookingId: created.id,
+              type: 'meet_linked',
+              payload: { meetUrl, gcalEventId },
+            },
+          }),
+        ]);
+      } catch (err) {
+        console.error('[/api/booking] meet_linked persist failed', err);
+        capture('meet_linked_persist_failed', created.email, {
+          bookingId: created.id,
+          errorMessage: (err as Error)?.message,
+        });
+      }
     }
 
     // Await both emails so errors surface in logs and Node doesn't move on
