@@ -134,7 +134,7 @@ export async function notifyVisitorBookingConfirmed(b: BookingEmailPayload): Pro
 
   const body = `
     <p style="margin:0 0 20px;font-size:15px;color:#0A0A0A;line-height:1.6">
-      Hey ${escapeHtml(firstName)} — your 15-minute call with BusinessDawg is locked in.
+      Hey ${escapeHtml(firstName)} — your 30-minute call with BusinessDawg is locked in.
     </p>
     ${timeCard}
     ${meetSection}
@@ -144,7 +144,7 @@ export async function notifyVisitorBookingConfirmed(b: BookingEmailPayload): Pro
   const text = [
     `Hey ${firstName},`,
     '',
-    'Your 15-minute call with BusinessDawg is confirmed.',
+    'Your 30-minute call with BusinessDawg is confirmed.',
     '',
     `Your time:  ${visitorLong}`,
     `Our time:   ${ownerLong}`,
@@ -254,7 +254,7 @@ export async function notifyVisitorBookingReminder(b: BookingEmailPayload): Prom
   const visitorLong = formatLong(b.startUtc, b.visitorTz);
   const hasMeet = !!b.meetUrl;
   const manage = manageUrl(b);
-  const subject = `Tomorrow: your 15-min BusinessDawg call — ${formatShort(b.startUtc, b.visitorTz)}`;
+  const subject = `Tomorrow: your 30-min BusinessDawg call — ${formatShort(b.startUtc, b.visitorTz)}`;
 
   const meetSection = hasMeet
     ? ctaButton('Join Google Meet →', b.meetUrl!)
@@ -262,7 +262,7 @@ export async function notifyVisitorBookingReminder(b: BookingEmailPayload): Prom
 
   const body = `
     <p style="margin:0 0 16px;font-size:15px;color:#0A0A0A;line-height:1.6">
-      Hey ${escapeHtml(firstName)} — quick heads-up. Your 15-minute BusinessDawg call is tomorrow.
+      Hey ${escapeHtml(firstName)} — quick heads-up. Your 30-minute BusinessDawg call is tomorrow.
     </p>
     ${infoCard(`<p style="margin:0;font-size:16px;font-weight:700;color:#0A0A0A">${escapeHtml(visitorLong)}</p>`)}
     ${meetSection}
@@ -272,7 +272,7 @@ export async function notifyVisitorBookingReminder(b: BookingEmailPayload): Prom
   const text = [
     `Hey ${firstName},`,
     '',
-    `Quick reminder — your 15-minute call is tomorrow: ${visitorLong}`,
+    `Quick reminder — your 30-minute call is tomorrow: ${visitorLong}`,
     '',
     hasMeet ? `Join here: ${b.meetUrl}` : 'Your Meet link is in the original confirmation email.',
     manage ? `\nManage: ${manage}` : '',
@@ -308,7 +308,7 @@ export async function notifyVisitorBookingCancelled(b: BookingEmailPayload): Pro
 
   const body = `
     <p style="margin:0 0 16px;font-size:15px;color:#0A0A0A;line-height:1.6">
-      Hey ${escapeHtml(firstName)} — your 15-minute call scheduled for
+      Hey ${escapeHtml(firstName)} — your 30-minute call scheduled for
       <strong>${escapeHtml(visitorLong)}</strong> has been cancelled.
     </p>
     <p style="margin:0 0 20px;font-size:14px;color:#555;line-height:1.6">
@@ -320,7 +320,7 @@ export async function notifyVisitorBookingCancelled(b: BookingEmailPayload): Pro
   const text = [
     `Hey ${firstName},`,
     '',
-    `Your 15-minute call (${visitorLong}) was cancelled.`,
+    `Your 30-minute call (${visitorLong}) was cancelled.`,
     '',
     "If this wasn't intentional, reply and we'll rebook.",
     '',

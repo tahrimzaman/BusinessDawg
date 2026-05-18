@@ -3,7 +3,7 @@ import MagneticButton from '@/components/motion/MagneticButton';
 import { BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 
 const description =
-  'BusinessDawg engagements are custom-scoped on a 15-minute call. We don’t publish prices because every system is sized to its outcome — here is how we actually quote, what affects the scope, and what you will know before you sign.';
+  'BusinessDawg engagements are custom-scoped on a 30-minute call. We don’t publish prices because every system is sized to its outcome — here is how we actually quote, what affects the scope, and what you will know before you sign.';
 
 export const metadata = {
   title: 'Pricing',
@@ -44,7 +44,7 @@ export default function PricingPage() {
         </Reveal>
         <Reveal delay={0.1}>
           <p className="mt-8 text-xl leading-relaxed text-[color:var(--bd-bone)]/85">
-            BusinessDawg engagements are custom-scoped on a 15-minute call. We don&rsquo;t publish
+            BusinessDawg engagements are custom-scoped on a 30-minute call. We don&rsquo;t publish
             numbers because the cheapest engagement and the biggest one share zero ingredients —
             quoting either would lie about the other. What we can publish is how we actually quote,
             what affects the scope, and exactly what you will know before you sign.
@@ -87,7 +87,7 @@ export default function PricingPage() {
           <Reveal delay={0.05}>
             <div className="mt-5 space-y-5 text-lg leading-relaxed text-[color:var(--bd-bone)]/80">
               <p>
-                Every engagement starts with a 15-minute call. No decks. We ask for the outcome you
+                Every engagement starts with a 30-minute call. No decks. We ask for the outcome you
                 need, the timeline you have, and the bottleneck you think the engagement is pointing
                 at. By the end of that call we either tell you which system from the Systems Stack
                 fits, propose a custom scope built on one or two systems as the anchor, or tell you
@@ -196,7 +196,7 @@ export default function PricingPage() {
               Find out what your system would actually cost.
             </p>
             <p className="mt-3 max-w-xl text-[color:var(--bd-bone)]/70">
-              15 minutes. No decks. You leave the call with a clear sense of scope, timeline, and
+              30 minutes. No decks. You leave the call with a clear sense of scope, timeline, and
               whether the engagement is worth booking. The call itself is free.
             </p>
             <div className="mt-6">

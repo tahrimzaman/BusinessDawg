@@ -57,7 +57,7 @@ export default function ClockPreview({ slot, visitorTz }: Props) {
   return (
     <div
       className={
-        'flex items-center gap-4 rounded-2xl border bg-[color:var(--bd-ink)] p-4 ' +
+        'flex flex-col items-center gap-3 rounded-2xl border bg-[color:var(--bd-ink)] p-4 text-center ' +
         (placeholder ? 'border-white/10' : 'border-[color:var(--bd-lime)]/25')
       }
     >
@@ -77,15 +77,15 @@ export default function ClockPreview({ slot, visitorTz }: Props) {
           / Preview
         </p>
         {placeholder ? (
-          <p className="font-display mt-1 text-lg font-bold text-[color:var(--bd-bone)]/50 italic">
+          <p className="font-display mt-1 text-base font-bold text-[color:var(--bd-bone)]/50 italic">
             Pick a time →
           </p>
         ) : (
           <>
-            <p className="font-display mt-1 truncate text-xl font-bold text-[color:var(--bd-bone)] italic sm:text-2xl">
+            <p className="font-display mt-1 text-xl font-bold text-[color:var(--bd-bone)] italic">
               {timeLabel}
             </p>
-            <p className="truncate text-xs text-[color:var(--bd-bone)]/65 sm:text-sm">{tzLabel}</p>
+            <p className="mt-0.5 text-[11px] text-[color:var(--bd-bone)]/65">{tzLabel}</p>
           </>
         )}
       </div>
@@ -122,16 +122,20 @@ function ClockSvg({
         strokeWidth="1.5"
         opacity={opacity}
       />
-      {/* Tick marks */}
+      {/* Tick marks. Coords are rounded to 2 decimals so SSR and client
+          serialize identical numeric strings (the unrounded floats produced
+          tiny precision drift between server and browser that React flagged
+          as a hydration mismatch). */}
       {Array.from({ length: 12 }).map((_, i) => {
         const angle = (i * 30 * Math.PI) / 180;
         const isMajor = i % 3 === 0;
         const inner = isMajor ? 33 : 36;
         const outer = 41;
-        const x1 = 48 + inner * Math.sin(angle);
-        const y1 = 48 - inner * Math.cos(angle);
-        const x2 = 48 + outer * Math.sin(angle);
-        const y2 = 48 - outer * Math.cos(angle);
+        const round = (n: number) => Math.round(n * 100) / 100;
+        const x1 = round(48 + inner * Math.sin(angle));
+        const y1 = round(48 - inner * Math.cos(angle));
+        const x2 = round(48 + outer * Math.sin(angle));
+        const y2 = round(48 - outer * Math.cos(angle));
         return (
           <line
             key={i}

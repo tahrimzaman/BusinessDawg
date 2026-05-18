@@ -1,5 +1,5 @@
 /**
- * /contact — book a 15-min call. Self-hosted booking flow as of Phase 6;
+ * /contact — book a 30-min call. Self-hosted booking flow as of Phase 6;
  * the old Cal.com iframe has been retired in favor of /api/booking +
  * /admin/availability. The flow fetches live slots server-side so the
  * page renders fully populated on first paint and degrades to a "no
@@ -16,7 +16,7 @@ import { SITE } from '@/lib/copy';
 import { BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 
 const description =
-  'Book a 15-minute call with BusinessDawg. No decks — tell us what’s leaking and we’ll tell you what to do about it. WhatsApp, email, and instant calendar booking all open.';
+  'Book a free 30-minute call with BusinessDawg. No decks — tell us what’s leaking and we’ll tell you what to do about it. WhatsApp, email, and instant calendar booking all open.';
 
 export const metadata = {
   title: 'Contact',
@@ -72,12 +72,12 @@ export default async function Contact() {
       </Reveal>
       <Reveal delay={0.1}>
         <p className="mt-6 max-w-2xl text-lg text-[color:var(--bd-bone)]/70">
-          15 minutes. No decks. Tell us what’s leaking and we’ll tell you what to do about it.
+          30 minutes. Free. No decks. Tell us what’s leaking and we’ll tell you what to do about it.
         </p>
       </Reveal>
 
       <div className="mt-12 grid gap-8 md:grid-cols-12">
-        <Reveal className="md:col-span-8">
+        <Reveal className="min-w-0 md:col-span-8">
           {slots.length === 0 ? (
             <div className="rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-8 text-center text-sm text-[color:var(--bd-bone)]/70">
               No slots available right now. Hit WhatsApp or email and we’ll find a time.

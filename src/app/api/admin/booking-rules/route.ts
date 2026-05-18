@@ -1,7 +1,8 @@
 /**
  * Admin-gated booking-rules singleton. GET reads (and upserts default on
- * first read via getBookingRule). POST updates configurable fields.
- * durationMin is locked to 15 in v1 — visitors only see 15-min slots.
+ * first read via getBookingRule). POST updates configurable fields,
+ * including durationMin (intro calls default to 30 min but can be
+ * adjusted to 15 / 30 / 45 / 60 via the admin panel).
  */
 
 import { NextResponse } from 'next/server';
@@ -15,6 +16,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const RulePayload = z.object({
+  durationMin: z.union([z.literal(15), z.literal(30), z.literal(45), z.literal(60)]),
   minNoticeMin: z
     .number()
     .int()
@@ -65,7 +67,7 @@ async function handlePOST(req: Request) {
 
   const updated = await prisma.bookingRule.upsert({
     where: { id: 'singleton' },
-    create: { id: 'singleton', durationMin: 15, ...parsed.data },
+    create: { id: 'singleton', ...parsed.data },
     update: parsed.data,
   });
 

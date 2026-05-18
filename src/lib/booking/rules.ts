@@ -10,13 +10,13 @@
 import { prisma } from '@/lib/db/prisma';
 
 export const DEFAULT_RULE = {
-  durationMin: 15,
+  durationMin: 30,
   minNoticeMin: 240,
   maxHorizonDays: 21,
   bufferMin: 15,
   maxPerDay: 4,
   ownerTz: 'Asia/Dhaka',
-  meetingTitle: 'BusinessDawg discovery — 15 min',
+  meetingTitle: 'BusinessDawg discovery — 30 min',
 };
 
 export async function getBookingRule() {

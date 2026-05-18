@@ -17,7 +17,7 @@ export default function Recruitment() {
                   Have a business to build?
                 </h3>
                 <p className="mt-4 max-w-md text-[color:var(--bd-bone)]/70">
-                  15 minutes. No decks. Tell us what’s leaking and we’ll tell you what to do about
+                  30 minutes. No decks. Tell us what’s leaking and we’ll tell you what to do about
                   it.
                 </p>
               </div>

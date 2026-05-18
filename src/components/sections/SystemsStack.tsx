@@ -10,6 +10,7 @@ import {
   useSpring,
 } from 'framer-motion';
 import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { SYSTEMS } from '@/lib/copy';
 import Reveal from '@/components/motion/Reveal';
 import KineticText from '@/components/motion/KineticText';
@@ -68,7 +69,15 @@ export default function SystemsStack() {
           </p>
         </Reveal>
 
-        <div className="mt-14 grid gap-6 md:mt-16 md:grid-cols-3 md:gap-7">
+        {/* Mobile: compact accordion. Desktop (md+): tall flip cards. */}
+        <div className="mt-10 flex flex-col gap-2 md:hidden">
+          {PRINCIPLES.map((p, i) => (
+            <Reveal key={p.n} delay={0.4 + i * 0.05}>
+              <PrincipleAccordion principle={p} />
+            </Reveal>
+          ))}
+        </div>
+        <div className="mt-14 hidden gap-6 md:mt-16 md:grid md:grid-cols-3 md:gap-7">
           {PRINCIPLES.map((p, i) => (
             <Reveal key={p.n} delay={0.6 + i * 0.05}>
               <PrincipleFlipCard principle={p} />
@@ -140,7 +149,7 @@ export default function SystemsStack() {
           </div>
 
           {/* Cards */}
-          <div className="grid gap-5 lg:col-span-8">
+          <div className="grid gap-3 lg:col-span-8 lg:gap-5">
             {SYSTEMS.map((s, i) => (
               <SystemCard key={s.slug} system={s} index={i} />
             ))}
@@ -148,6 +157,62 @@ export default function SystemsStack() {
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Mobile-only accordion variant of a principle. Compact header row
+ * (index + icon + title + chevron); body slides open on tap. Mirrors the
+ * SystemCard tap-toggle pattern so the whole Studio section reads as one
+ * consistent interaction on phones.
+ */
+function PrincipleAccordion({ principle }: { principle: (typeof PRINCIPLES)[number] }) {
+  const { Icon } = principle;
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="bd-card relative overflow-hidden">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center gap-3 p-4 text-left"
+      >
+        <span className="font-mono text-[10px] tracking-widest text-[color:var(--bd-lime)] uppercase">
+          / {principle.n}
+        </span>
+        <div className="relative h-7 w-7 shrink-0">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(ellipse 80% 80% at 50% 50%, color-mix(in srgb, var(--bd-lime) 28%, transparent), transparent 70%)',
+              filter: 'blur(4px)',
+            }}
+          />
+          <Icon className="relative h-full w-full" />
+        </div>
+        <h3 className="font-display flex-1 text-sm leading-tight font-bold tracking-tight text-[color:var(--bd-bone)] italic">
+          {principle.title}
+        </h3>
+        <span
+          aria-hidden
+          className={`font-mono text-base text-[color:var(--bd-lime)] transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
+        >
+          ↓
+        </span>
+      </button>
+      <motion.div
+        initial={false}
+        animate={{ height: open ? 'auto' : 0, opacity: open ? 1 : 0 }}
+        transition={{ duration: 0.4, ease: EASE }}
+        className="overflow-hidden"
+      >
+        <p className="px-4 pb-4 text-sm leading-relaxed text-[color:var(--bd-bone)]/80">
+          {principle.body}
+        </p>
+      </motion.div>
+    </div>
   );
 }
 
@@ -272,6 +337,7 @@ function CustomBuildCard() {
 function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index: number }) {
   const reduced = useReducedMotion();
   const tweaks = useTweaks();
+  const router = useRouter();
   const [hover, setHover] = useState(false);
   // Mobile tap-toggle (chevron). Desktop uses hover via pointerEnter/Leave.
   // We open the deliverables list when EITHER is true — hover stays mouse-only,
@@ -319,7 +385,7 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
           '--my': myPct,
         } as React.CSSProperties
       }
-      className="bd-card group relative p-8 md:p-10"
+      className="bd-card group relative p-4 md:p-10"
     >
       <motion.div
         aria-hidden
@@ -336,24 +402,60 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
         className="pointer-events-none absolute bottom-0 left-0 h-[2px] w-0 bg-[color:var(--bd-lime)] transition-[width] duration-500 ease-out group-hover:w-full"
       />
 
-      <Link
-        href={`/systems/${system.slug}`}
-        className="relative grid items-start gap-6 md:grid-cols-12"
+      {/* Mobile: whole card is a toggle (tap to open/close the deliverables).
+          Desktop (lg+): clicking navigates via router.push. Not a Link because
+          we already have a nested Link (the mobile "Explore" CTA) and nesting
+          <a> tags is invalid HTML. */}
+      <div
+        role="link"
+        tabIndex={0}
+        aria-label={`${system.name} — ${system.tagline}`}
+        aria-expanded={tapped}
+        onClick={() => {
+          if (
+            typeof window !== 'undefined' &&
+            window.matchMedia('(max-width: 1023.99px)').matches
+          ) {
+            setTapped((t) => !t);
+          } else {
+            router.push(`/systems/${system.slug}`);
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            router.push(`/systems/${system.slug}`);
+          }
+        }}
+        className="relative grid cursor-pointer items-start gap-2 md:grid-cols-12 md:gap-6"
       >
-        <div className="md:col-span-1">
+        <div className="hidden md:col-span-1 md:block">
           <span className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
             0{index + 1}
           </span>
         </div>
 
         <div className="md:col-span-7">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl text-[color:var(--bd-lime)]">{system.glyph}</span>
-            <h3 className="font-display text-2xl font-bold tracking-tight italic md:text-4xl">
+          {/* Mobile header row: index + glyph + title + chevron all on one line */}
+          <div className="flex items-center gap-2 md:gap-3">
+            <span className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/55 uppercase md:hidden">
+              0{index + 1}
+            </span>
+            <span className="text-xl text-[color:var(--bd-lime)] md:text-3xl">{system.glyph}</span>
+            <h3 className="font-display flex-1 text-lg leading-tight font-bold tracking-tight italic md:text-4xl">
               {system.name}
             </h3>
+            {/* Mobile chevron — purely visual; the parent Link toggles. */}
+            <span
+              aria-hidden
+              className={`font-mono text-base text-[color:var(--bd-lime)] transition-transform duration-300 lg:hidden ${tapped ? 'rotate-180' : ''}`}
+            >
+              ↓
+            </span>
           </div>
-          <p className="mt-3 max-w-xl text-base text-[color:var(--bd-bone)]/70">{system.tagline}</p>
+          <p className="mt-1.5 max-w-xl text-xs leading-snug text-[color:var(--bd-bone)]/65 md:mt-3 md:text-base md:leading-normal">
+            {system.tagline}
+          </p>
 
           <motion.div
             initial={false}
@@ -361,7 +463,19 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
             transition={{ duration: 0.5, ease: EASE }}
             className="overflow-hidden"
           >
-            <ul className="mt-5 space-y-1.5 text-sm text-[color:var(--bd-bone)]/80">
+            {/* Mobile: chip grid. Desktop: bullet list. */}
+            <div className="mt-3 flex flex-wrap gap-1.5 md:hidden">
+              {system.deliverables.map((d) => (
+                <span
+                  key={d}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--bd-lime)]/35 bg-[color:var(--bd-lime)]/8 px-2.5 py-1 text-[11px] text-[color:var(--bd-bone)]/90"
+                >
+                  <span className="inline-block h-1 w-1 rounded-full bg-[color:var(--bd-lime)]" />
+                  {d}
+                </span>
+              ))}
+            </div>
+            <ul className="mt-5 hidden space-y-1.5 text-sm text-[color:var(--bd-bone)]/80 md:block">
               {system.deliverables.map((d) => (
                 <li key={d} className="flex items-start gap-2">
                   <span className="mt-2 inline-block h-1 w-3 bg-[color:var(--bd-lime)]" />
@@ -369,29 +483,19 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
                 </li>
               ))}
             </ul>
+            {/* Mobile explicit "Explore" CTA inside the open panel, since the
+                whole card now toggles instead of navigating on mobile. */}
+            <Link
+              href={`/systems/${system.slug}`}
+              onClick={(e) => e.stopPropagation()}
+              className="mt-3 inline-flex items-center gap-2 font-mono text-[11px] tracking-widest text-[color:var(--bd-lime)] uppercase lg:hidden"
+            >
+              Explore the system →
+            </Link>
           </motion.div>
-
-          {/* Mobile-only tap-to-expand chevron. preventDefault stops the
-              wrapping <Link> from navigating when the chevron is tapped. */}
-          <button
-            type="button"
-            aria-expanded={tapped}
-            aria-label={tapped ? 'Hide deliverables' : 'Show deliverables'}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setTapped((t) => !t);
-            }}
-            className="mt-4 inline-flex items-center gap-2 font-mono text-[11px] tracking-widest text-[color:var(--bd-lime)] uppercase lg:hidden"
-          >
-            <span>{tapped ? 'hide' : "what's included"}</span>
-            <span className={`transition-transform duration-300 ${tapped ? 'rotate-180' : ''}`}>
-              ↓
-            </span>
-          </button>
         </div>
 
-        <div className="md:col-span-4 md:text-right">
+        <div className="hidden md:col-span-4 md:block md:text-right">
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
             Scoped on a call
           </p>
@@ -399,7 +503,7 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
             Explore →
           </p>
         </div>
-      </Link>
+      </div>
     </motion.div>
   );
 }

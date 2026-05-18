@@ -118,6 +118,7 @@ export default function AdminAvailabilityPanel({
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
+            durationMin: rule.durationMin,
             minNoticeMin: rule.minNoticeMin,
             maxHorizonDays: rule.maxHorizonDays,
             bufferMin: rule.bufferMin,
@@ -196,9 +197,29 @@ export default function AdminAvailabilityPanel({
       {/* Booking rules */}
       <Section
         eyebrow="Booking rules"
-        sub="Duration is locked to 15 min in v1. The rest tune the booking window itself."
+        sub="Pick the call length. The rest tune the booking window itself."
       >
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <label className="block">
+            <span className="mb-1.5 block font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/70 uppercase">
+              Call duration
+            </span>
+            <select
+              value={rule.durationMin}
+              onChange={(e) => setRule((r) => ({ ...r, durationMin: Number(e.target.value) }))}
+              className="h-11 w-full rounded-2xl border border-white/10 bg-[color:var(--bd-ink)] px-4 text-sm text-[color:var(--bd-bone)] focus:border-[color:var(--bd-lime)] focus:outline-none"
+            >
+              {[15, 30, 45, 60].map((d) => (
+                <option
+                  key={d}
+                  value={d}
+                  className="bg-[color:var(--bd-ink)] text-[color:var(--bd-bone)]"
+                >
+                  {d} minutes
+                </option>
+              ))}
+            </select>
+          </label>
           <NumberField
             label="Min notice (minutes)"
             value={rule.minNoticeMin}

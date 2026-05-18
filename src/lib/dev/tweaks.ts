@@ -21,7 +21,7 @@ export type TweaksState = {
 };
 
 const DEFAULTS: TweaksState = {
-  mascotScale: 'hero',
+  mascotScale: 'editorial',
   pace: 1,
   heroComp: 'split',
 };

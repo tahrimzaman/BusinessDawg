@@ -16,14 +16,17 @@ function clearHovers(
   setHoveredDate(null);
   setHoveredSlot(null);
 }
-import Calendar from './Calendar';
+import DateStrip from './DateStrip';
 import SlotList, { type Slot } from './SlotList';
 import BookingForm, { type BookingFormData } from './BookingForm';
 import BookingSuccess from './BookingSuccess';
-import DatePreview from './DatePreview';
 import ClockPreview from './ClockPreview';
+import TimeWheel from './TimeWheel';
 
-type Step = 'pick-date' | 'pick-time' | 'form' | 'done';
+// Two visible steps now: pick-slot (date strip + time chips + clock on one
+// screen) → form → done. We keep the older 'pick-date' name internally for
+// the slot-pick step so existing back-nav logic doesn't have to change.
+type Step = 'pick-slot' | 'form' | 'done';
 
 type Props = {
   slots: Slot[];
@@ -91,23 +94,37 @@ function friendlyError(status: number, code?: string): string {
 }
 
 export default function BookingFlow({ slots, ownerTz = 'Asia/Dhaka' }: Props) {
-  const [step, setStep] = useState<Step>('pick-date');
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [step, setStep] = useState<Step>('pick-slot');
+  // Auto-pick the first available date on initial mount via lazy state init —
+  // not a useEffect (React 19 warns on setState-in-effect cascades). `slots`
+  // is a prop set once from the server-rendered page, so this initializer
+  // runs with the real list already in hand.
+  const visitorTz = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', []);
+  const [selectedDate, setSelectedDate] = useState<string | null>(() => {
+    if (slots.length === 0) return null;
+    const dates = new Set(slots.map((s) => ymdInTz(new Date(s.startUtc), visitorTz)));
+    return Array.from(dates).sort()[0] ?? null;
+  });
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
-  const [hoveredDate, setHoveredDate] = useState<string | null>(null);
+  // hoveredDate's value is only used by DateStrip's own hover affordance
+  // (lime border). We pass the setter down but never read the state here.
+  const [, setHoveredDate] = useState<string | null>(null);
   const [hoveredSlot, setHoveredSlot] = useState<Slot | null>(null);
+  // Mobile time-wheel's currently-centered slot (null while the wheel sits
+  // on a combo that doesn't map to a bookable time). Drives the animated
+  // ClockPreview and the Confirm button's enabled state on mobile.
+  const [wheelSlot, setWheelSlot] = useState<Slot | null>(null);
   const [submittedData, setSubmittedData] = useState<BookingFormData | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const holdIdRef = useRef<string | null>(null);
 
-  const previewDate = hoveredDate ?? selectedDate;
-  const previewSlot = hoveredSlot ?? selectedSlot;
+  // hoveredSlot wins on desktop (mouse hover), then wheelSlot on mobile,
+  // then the explicit selectedSlot.
+  const previewSlot = hoveredSlot ?? wheelSlot ?? selectedSlot;
 
   // Hover state is reset inside the navigation handlers below instead of via
   // an effect, so we don't trigger React 19's setState-in-effect warning.
-
-  const visitorTz = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', []);
 
   const slotsByDate = useMemo(() => {
     const map = new Map<string, Slot[]>();
@@ -154,7 +171,8 @@ export default function BookingFlow({ slots, ownerTz = 'Asia/Dhaka' }: Props) {
     setSelectedDate(date);
     setSelectedSlot(null);
     clearHovers(setHoveredDate, setHoveredSlot);
-    setStep('pick-time');
+    // Stay on the same combined slot-picker screen — date and time live
+    // together now, so we don't advance step here.
   }
 
   async function pickSlot(slot: Slot) {
@@ -181,8 +199,7 @@ export default function BookingFlow({ slots, ownerTz = 'Asia/Dhaka' }: Props) {
   function back() {
     setError(null);
     clearHovers(setHoveredDate, setHoveredSlot);
-    if (step === 'form') setStep('pick-time');
-    else if (step === 'pick-time') setStep('pick-date');
+    if (step === 'form') setStep('pick-slot');
   }
 
   async function handleSubmit(data: BookingFormData) {
@@ -218,7 +235,7 @@ export default function BookingFlow({ slots, ownerTz = 'Asia/Dhaka' }: Props) {
   }
 
   function reset() {
-    setStep('pick-date');
+    setStep('pick-slot');
     setSelectedDate(null);
     setSelectedSlot(null);
     setSubmittedData(null);
@@ -228,19 +245,19 @@ export default function BookingFlow({ slots, ownerTz = 'Asia/Dhaka' }: Props) {
   }
 
   const HEADERS: Record<Step, { label: string; index: number }> = {
-    'pick-date': { label: 'Pick a day', index: 1 },
-    'pick-time': { label: 'Pick a time', index: 2 },
-    form: { label: 'Your details', index: 3 },
-    done: { label: 'Done', index: 3 },
+    'pick-slot': { label: 'Pick a slot', index: 1 },
+    form: { label: 'Your details', index: 2 },
+    done: { label: 'Done', index: 2 },
   };
 
-  const showBack = step === 'pick-time' || step === 'form';
+  const TOTAL_STEPS = 2;
+  const showBack = step === 'form';
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-6 md:p-8">
+    <div className="w-full max-w-full min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-6 md:p-8">
       <header className="mb-6 flex items-center justify-between">
         <p className="font-mono text-[11px] tracking-widest text-[color:var(--bd-lime)] uppercase">
-          Step {HEADERS[step].index} / 3 — {HEADERS[step].label}
+          Step {HEADERS[step].index} / {TOTAL_STEPS} — {HEADERS[step].label}
         </p>
         {showBack ? (
           <button
@@ -252,39 +269,75 @@ export default function BookingFlow({ slots, ownerTz = 'Asia/Dhaka' }: Props) {
           </button>
         ) : (
           <span className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/40 uppercase">
-            15 min · free
+            30 min · free
           </span>
         )}
       </header>
 
       <div className="relative min-h-[420px]">
-        {step === 'pick-date' && (
-          <>
-            <Calendar
+        {step === 'pick-slot' && (
+          <div className="space-y-6">
+            <DateStrip
               availableDates={availableDates}
               selectedDate={selectedDate}
               onSelect={pickDate}
               onHover={setHoveredDate}
               visitorTz={visitorTz}
             />
-            <div className="mt-6">
-              <DatePreview date={previewDate} />
+
+            {/* MOBILE — clock + 3-column scroll wheel + Confirm button.
+                Wheel only renders once a date is picked so there are slots
+                to look against. */}
+            <div className="space-y-4 lg:hidden">
+              <div className="mx-auto max-w-[260px]">
+                <ClockPreview slot={previewSlot} visitorTz={visitorTz} />
+              </div>
+              {selectedDate ? (
+                <>
+                  <TimeWheel
+                    slots={slotsForSelectedDate}
+                    selectedSlot={selectedSlot}
+                    onChange={setWheelSlot}
+                    visitorTz={visitorTz}
+                  />
+                  <button
+                    type="button"
+                    disabled={!wheelSlot}
+                    onClick={() => wheelSlot && pickSlot(wheelSlot)}
+                    className="focus-bd inline-flex h-12 w-full items-center justify-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-opacity disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-[color:var(--bd-bone)]/40"
+                  >
+                    {wheelSlot ? 'Confirm time →' : 'No slot at this time'}
+                  </button>
+                </>
+              ) : (
+                <p className="py-12 text-center text-sm text-[color:var(--bd-bone)]/60">
+                  Pick a day to see times.
+                </p>
+              )}
             </div>
-          </>
-        )}
-        {step === 'pick-time' && (
-          <>
-            <SlotList
-              slots={slotsForSelectedDate}
-              selectedSlot={selectedSlot}
-              onSelect={pickSlot}
-              onHover={setHoveredSlot}
-              visitorTz={visitorTz}
-            />
-            <div className="mt-6">
-              <ClockPreview slot={previewSlot} visitorTz={visitorTz} />
+
+            {/* DESKTOP — clock on the left, time pill grid on the right. */}
+            <div className="hidden items-start gap-5 lg:grid lg:grid-cols-[180px_1fr]">
+              <div className="lg:sticky lg:top-4">
+                <ClockPreview slot={previewSlot} visitorTz={visitorTz} />
+              </div>
+              <div>
+                {selectedDate ? (
+                  <SlotList
+                    slots={slotsForSelectedDate}
+                    selectedSlot={selectedSlot}
+                    onSelect={pickSlot}
+                    onHover={setHoveredSlot}
+                    visitorTz={visitorTz}
+                  />
+                ) : (
+                  <p className="py-12 text-center text-sm text-[color:var(--bd-bone)]/60">
+                    Pick a day to see times.
+                  </p>
+                )}
+              </div>
             </div>
-          </>
+          </div>
         )}
         {step === 'form' && selectedSlot && (
           <BookingForm

@@ -134,7 +134,7 @@ export default async function JournalPost({ params }: { params: Promise<Params> 
               Got a growth system to scope?
             </p>
             <p className="mt-3 max-w-xl text-[color:var(--bd-bone)]/70">
-              15 minutes, no decks. Tell us what&rsquo;s leaking and we&rsquo;ll tell you what to do
+              30 minutes, no decks. Tell us what&rsquo;s leaking and we&rsquo;ll tell you what to do
               about it.
             </p>
             <div className="mt-6">

@@ -16,6 +16,19 @@ type Props = {
 };
 
 export default function BookingSuccess({ slot, visitorTz, email, onDismiss }: Props) {
+  // Year is normally omitted (bookings are inside a 21-day horizon, so
+  // showing the year is just noise). Only include it when the booking is
+  // actually in a different calendar year than "right now".
+  const slotDate = new Date(slot.startUtc);
+  const visitorYear = new Intl.DateTimeFormat('en-US', {
+    timeZone: visitorTz,
+    year: 'numeric',
+  }).format(slotDate);
+  const nowYear = new Intl.DateTimeFormat('en-US', {
+    timeZone: visitorTz,
+    year: 'numeric',
+  }).format(new Date());
+  const showYear = visitorYear !== nowYear;
   const when = new Intl.DateTimeFormat('en-US', {
     timeZone: visitorTz,
     weekday: 'long',
@@ -23,7 +36,8 @@ export default function BookingSuccess({ slot, visitorTz, email, onDismiss }: Pr
     day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
-  }).format(new Date(slot.startUtc));
+    ...(showYear ? { year: 'numeric' as const } : {}),
+  }).format(slotDate);
 
   return (
     <div className="grid items-center gap-6 sm:grid-cols-[140px_1fr] md:gap-10">

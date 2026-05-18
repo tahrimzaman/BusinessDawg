@@ -292,7 +292,7 @@ export default function BookingDetailClient({
       </div>
 
       <h1 className="font-display mt-4 text-3xl leading-[1.1] font-extrabold tracking-tight italic sm:text-4xl">
-        15-min call with <span className="text-[color:var(--bd-lime)]">{booking.name}</span>
+        30-min call with <span className="text-[color:var(--bd-lime)]">{booking.name}</span>
       </h1>
       <p className="mt-2 text-[color:var(--bd-bone)]/70">
         {visitorWhen}

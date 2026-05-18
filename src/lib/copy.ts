@@ -288,7 +288,7 @@ export const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'How much does it cost?',
-    a: 'Every engagement is custom and scoped on a 15-minute intro call. We don’t publish prices because the cheapest engagement and the biggest one share zero ingredients — quoting either would lie about the other. Book the call.',
+    a: 'Every engagement is custom and scoped on a 30-minute intro call. We don’t publish prices because the cheapest engagement and the biggest one share zero ingredients — quoting either would lie about the other. Book the call.',
   },
   {
     q: 'Do you work with pre-revenue startups?',

@@ -121,7 +121,7 @@ function MobileCarouselReel() {
             key={i}
             className="flex min-h-[80vh] w-screen shrink-0 snap-center snap-always items-center px-6 py-14"
           >
-            <PanelContent panel={p} index={i} stacked />
+            <PanelContent panel={p} index={i} stacked swipeHint={i < PANELS.length - 1} />
           </div>
         ))}
       </div>
@@ -202,10 +202,12 @@ function PanelContent({
   panel,
   index,
   stacked = false,
+  swipeHint = false,
 }: {
   panel: Panel;
   index: number;
   stacked?: boolean;
+  swipeHint?: boolean;
 }) {
   const idx = `0${index + 1}`;
   return (
@@ -301,6 +303,22 @@ function PanelContent({
           <span className="font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
             {idx} / 0{TOTAL}
           </span>
+          {swipeHint && (
+            <span
+              aria-hidden
+              className="flex items-center gap-1.5 font-mono text-[11px] tracking-widest text-[color:var(--bd-lime)] uppercase lg:hidden"
+            >
+              <span className="text-[color:var(--bd-bone)]/30">·</span>
+              <span>swipe</span>
+              <motion.span
+                animate={{ x: [-2, 2, -2] }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+                className="inline-block"
+              >
+                →
+              </motion.span>
+            </span>
+          )}
         </motion.div>
       </div>
     </div>

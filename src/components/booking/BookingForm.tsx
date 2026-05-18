@@ -122,7 +122,7 @@ export default function BookingForm({
           / Your booking
         </p>
         <p className="font-display mt-1 text-lg font-bold text-[color:var(--bd-bone)]">
-          15-min call · {visitorWhen}
+          30-min call · {visitorWhen}
         </p>
         <p className="mt-1 text-xs text-[color:var(--bd-bone)]/65">
           {ownerTz.replace(/_/g, ' ')}: {ownerWhen}

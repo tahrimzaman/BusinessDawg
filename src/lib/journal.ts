@@ -135,7 +135,7 @@ export const JOURNAL: JournalPost[] = [
       {
         heading: 'If this resonated',
         paragraphs: [
-          'If you read this and recognized your own frustration with the old shapes — book the call. We open every engagement with 15 minutes and no decks. Tell us what is leaking. We will tell you what to do about it.',
+          'If you read this and recognized your own frustration with the old shapes — book the call. We open every engagement with 30 minutes and no decks. Tell us what is leaking. We will tell you what to do about it.',
           'If you read this and felt nothing — we are probably not for you. That is fine. There are many fine agencies. Hire one.',
         ],
       },
@@ -227,7 +227,7 @@ export const JOURNAL: JournalPost[] = [
         paragraphs: [
           'BusinessDawg sells productized systems. Five of them. Each one has a fixed scope, a fixed shape, and a hand-off package. We will write the SOW before you sign, not after. We name the deliverable and the cadence on the intro call.',
           'When the work is genuinely custom — multiple systems in one engagement, real depth required, hybrid that pulls from three of the five — we scope that custom build on top of one or two productized systems as the anchor. The custom work earns its scope. The productized work proves it can ship.',
-          'If you are trying to decide whether what you need is productized or custom, book the 15-minute call. We will tell you honestly.',
+          'If you are trying to decide whether what you need is productized or custom, book the 30-minute call. We will tell you honestly.',
         ],
       },
     ],
@@ -304,7 +304,7 @@ export const JOURNAL: JournalPost[] = [
         heading: 'How BusinessDawg sits on this map',
         paragraphs: [
           'BusinessDawg is a growth studio that ships branding as one of five systems, not the other way around. Branding Systems is in the stack because brand is upstream of growth and we cannot ship the system below it if the brand layer is broken. But the engagement is always scoped to a revenue outcome, not a logo deliverable.',
-          'If you are deciding between hiring a brand studio and hiring a growth studio, the honest first step is naming the layer the business is actually stuck at. Book the call. We will name it with you in 15 minutes, or tell you which kind of studio you actually need (even if it is not us).',
+          'If you are deciding between hiring a brand studio and hiring a growth studio, the honest first step is naming the layer the business is actually stuck at. Book the call. We will name it with you in 30 minutes, or tell you which kind of studio you actually need (even if it is not us).',
         ],
       },
     ],
@@ -379,7 +379,7 @@ export const JOURNAL: JournalPost[] = [
       {
         heading: 'How BusinessDawg runs AI automation engagements',
         paragraphs: [
-          'We open every engagement by asking the four questions above. If you can answer them, we scope a system. If you cannot, we tell you that scoping is the next step — not buying the engagement. Either way, the call is 15 minutes and we do not pitch with decks.',
+          'We open every engagement by asking the four questions above. If you can answer them, we scope a system. If you cannot, we tell you that scoping is the next step — not buying the engagement. Either way, the call is 30 minutes and we do not pitch with decks.',
           'If you are trying to figure out whether AI automation belongs in your studio yet, book the call. We will frame it honestly, or tell you why nobody can.',
         ],
       },
@@ -447,7 +447,7 @@ export const JOURNAL: JournalPost[] = [
       {
         heading: 'How BusinessDawg scopes a growth system',
         paragraphs: [
-          'We open every engagement with a 15-minute call. No deck. We name the outcome, the bottleneck thesis, and the cadence in that call, or we tell you the engagement is not ready yet. We charge the same way: outcome, scope, ship.',
+          'We open every engagement with a 30-minute call. No deck. We name the outcome, the bottleneck thesis, and the cadence in that call, or we tell you the engagement is not ready yet. We charge the same way: outcome, scope, ship.',
           'If your growth feels like it should be working and is not — book the call. We will scope it honestly, or tell you why nobody can.',
         ],
       },
