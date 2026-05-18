@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { setAdminCookie, verifyPassword } from '@/lib/admin/auth';
 import { rateLimit, clientIp } from '@/lib/security/ratelimit';
 import { hashIp } from '@/lib/security/hash';
@@ -7,6 +8,13 @@ import { capture } from '@/lib/analytics/posthog-server';
 import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
+
+// Cap the submitted password length so a malicious POST can't make us run a
+// timing-safe compare against a 10MB string. Real admin passwords fit well
+// under 200 chars; anything bigger is abuse.
+const LoginPayload = z.object({
+  password: z.string().min(1).max(256),
+});
 
 async function recordAttempt(
   req: Request,
@@ -37,8 +45,13 @@ async function handlePOST(req: Request) {
     return NextResponse.json({ error: 'too many attempts' }, { status: 429 });
   }
 
-  const { password } = (await req.json().catch(() => ({}))) as { password?: string };
-  if (!password || !verifyPassword(password)) {
+  const raw = await req.json().catch(() => null);
+  const parsed = LoginPayload.safeParse(raw);
+  if (!parsed.success) {
+    await recordAttempt(req, ip, 'login_failure');
+    return NextResponse.json({ error: 'invalid payload' }, { status: 400 });
+  }
+  if (!verifyPassword(parsed.data.password)) {
     await recordAttempt(req, ip, 'login_failure');
     return NextResponse.json({ error: 'invalid password' }, { status: 401 });
   }
