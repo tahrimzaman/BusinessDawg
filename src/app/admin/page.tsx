@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db/prisma';
 import { getBookingRule } from '@/lib/booking/rules';
 import { getGoogleEnv } from '@/lib/booking/google';
 import { getDashboardStats } from '@/lib/admin/stats';
+import { getTrafficData } from '@/lib/admin/traffic';
 import AdminClient from './AdminClient';
 import type { GoogleConnectionState } from './AdminGoogleConnection';
 
@@ -25,6 +26,7 @@ export default async function AdminPage() {
     buildLog,
     stats,
     chatLogs,
+    traffic,
   ] = await Promise.all([
     prisma.subscriber.findMany({ orderBy: { createdAt: 'desc' }, take: 500 }),
     prisma.application.findMany({ orderBy: { createdAt: 'desc' }, take: 500 }),
@@ -66,6 +68,7 @@ export default async function AdminPage() {
     }),
     getDashboardStats(30),
     prisma.chatLog.findMany({ orderBy: { createdAt: 'desc' }, take: 200 }),
+    getTrafficData('30d'),
   ]);
 
   const env = getGoogleEnv();
@@ -161,6 +164,7 @@ export default async function AdminPage() {
         updatedAt: e.updatedAt.toISOString(),
       }))}
       stats={stats}
+      traffic={traffic}
       chatLogs={chatLogs.map((c) => ({
         id: c.id,
         ipHash: c.ipHash,

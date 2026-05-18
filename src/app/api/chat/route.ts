@@ -14,10 +14,12 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { rateLimit, clientIp } from '@/lib/security/ratelimit';
 import { hashIp } from '@/lib/security/hash';
+import { lookupGeo, formatApproxLocation } from '@/lib/security/geoip';
 import { SITE, SYSTEMS, FOUNDER } from '@/lib/copy';
 import { withLogging } from '@/lib/log/route';
 import { capture } from '@/lib/analytics/posthog-server';
 import { prisma } from '@/lib/db/prisma';
+import { offlineStat } from '@/lib/chatbot/offline-stat';
 import * as Sentry from '@sentry/nextjs';
 
 export const runtime = 'nodejs';
@@ -143,17 +145,24 @@ async function handlePOST(req: Request) {
   // are visitors actually asking?"). Fire-and-forget — chat must never block
   // on the audit write. Truncate the message text defensively so a single row
   // can't blow up the table.
-  prisma.chatLog
-    .create({
-      data: {
-        ipHash: hashIp(ip),
-        userAgent,
-        model,
-        historyLen: history.length,
-        totalChars,
-        lastUserMessage: (lastUserMsg?.content || '').slice(0, 2000),
-      },
-    })
+  // Fire-and-forget geo lookup + chatlog write. The geo lookup runs first
+  // so the row includes location, but errors fall back to null fields and
+  // the row still writes.
+  lookupGeo(ip)
+    .then((geo) =>
+      prisma.chatLog.create({
+        data: {
+          ipHash: hashIp(ip),
+          userAgent,
+          approxLocation: formatApproxLocation(geo),
+          country: geo.countryCode,
+          model,
+          historyLen: history.length,
+          totalChars,
+          lastUserMessage: (lastUserMsg?.content || '').slice(0, 2000),
+        },
+      }),
+    )
     .catch((err) => console.error('[/api/chat] chatlog write failed', err));
 
   let upstream: Response;
@@ -183,7 +192,21 @@ async function handlePOST(req: Request) {
     console.error('[/api/chat] upstream', upstream.status, text.slice(0, 500));
     // Surface 429 separately so the client can show a friendlier message.
     if (upstream.status === 429) {
-      return NextResponse.json({ error: 'upstream rate limited' }, { status: 429 });
+      // Gemini's daily-quota / global rate-limit. Distinct from our per-IP
+      // limiter (handled in middleware before we ever reach this code path).
+      // The `offline: true` flag tells the client to switch into offline mode
+      // and use the canned reply (with `stat` substituted into the copy) for
+      // every subsequent send in the session, instead of mashing the API.
+      let stat = 50 + Math.floor(Math.random() * 200);
+      try {
+        stat = await offlineStat();
+      } catch (err) {
+        console.error('[/api/chat] offlineStat failed', err);
+      }
+      return NextResponse.json(
+        { error: 'upstream rate limited', offline: true, stat },
+        { status: 429 },
+      );
     }
     // Generic message — don't leak the upstream status code in the response.
     // Full detail is already in the server log line above + the route's

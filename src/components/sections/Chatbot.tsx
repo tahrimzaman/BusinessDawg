@@ -20,13 +20,19 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Mascot from '@/components/brand/Mascot';
 import Reveal from '@/components/motion/Reveal';
 import { useFocusTrap } from '@/components/motion/useFocusTrap';
+import { CHATBOT, SITE } from '@/lib/copy';
 import { EASE } from '@/lib/motion/easing';
 
 type Msg = { role: 'assistant' | 'user'; content: string };
 
 const GREETING: Msg = {
   role: 'assistant',
-  content: 'I’m the Dawg. Ask me anything — what we build, how we ship, or how to book Tahrim.',
+  content: CHATBOT.greeting,
+};
+
+const OFFLINE_MSG: Msg = {
+  role: 'assistant',
+  content: CHATBOT.offline,
 };
 
 const QUICK_PILLS = [
@@ -60,6 +66,12 @@ export default function Chatbot() {
   const [messages, setMessages] = useState<Msg[]>([GREETING]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
+  // `offline` flips true when Gemini's daily quota is exhausted (server returns
+  // 429 with `offline: true`). The input stays open — every send while offline
+  // streams the canned `offlineReplyTemplate` (with `stat` substituted) instead
+  // of hitting /api/chat. Sticky for the session; refresh clears it.
+  const [offline, setOffline] = useState(false);
+  const [offlineStat, setOfflineStat] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -126,11 +138,11 @@ export default function Chatbot() {
         });
       };
 
-      // Short-circuit hardcoded replies before hitting the API. Fake the
-      // streaming feel so it doesn't break the rhythm of the conversation.
-      const canned = hardcodedReplyFor(text);
-      if (canned) {
-        await new Promise<void>((resolve) => {
+      // Fake a streaming feel by typing out a pre-canned string two chars at
+      // a time. Used for hardcoded replies and the offline canned reply so
+      // the rhythm of the conversation stays consistent with the real stream.
+      const fakeStream = (canned: string) =>
+        new Promise<void>((resolve) => {
           let i = 0;
           const step = () => {
             if (i >= canned.length) {
@@ -143,6 +155,21 @@ export default function Chatbot() {
           };
           step();
         });
+
+      // Offline mode: skip the API entirely, stream the canned "ran out of
+      // credits today" reply with the brag stat substituted. The stat was
+      // captured from the 429 response that flipped us into offline mode.
+      if (offline) {
+        const reply = CHATBOT.offlineReplyTemplate.replace('{stat}', String(offlineStat ?? 100));
+        await fakeStream(reply);
+        setIsStreaming(false);
+        return;
+      }
+
+      // Short-circuit hardcoded replies before hitting the API.
+      const canned = hardcodedReplyFor(text);
+      if (canned) {
+        await fakeStream(canned);
         setIsStreaming(false);
         return;
       }
@@ -155,12 +182,35 @@ export default function Chatbot() {
         });
 
         if (!res.ok || !res.body) {
+          // Peek the body for `offline: true` — Gemini quota exhaustion is
+          // distinct from our per-IP transient 429 (the latter still says
+          // "slow down, try again"). Body-parse can fail on non-JSON; that's
+          // fine, just treat as the generic transient case.
+          let payloadOffline = false;
+          let payloadStat: number | null = null;
+          try {
+            const body = (await res.clone().json()) as { offline?: boolean; stat?: number };
+            payloadOffline = body?.offline === true;
+            if (typeof body?.stat === 'number') payloadStat = body.stat;
+          } catch {
+            // non-JSON response — keep payloadOffline false
+          }
+          if (res.status === 429 && payloadOffline) {
+            setOffline(true);
+            const stat = payloadStat ?? 100;
+            setOfflineStat(stat);
+            // Stream the canned reply right now so this very turn delivers
+            // the explanation, not a generic "slow down" line.
+            const reply = CHATBOT.offlineReplyTemplate.replace('{stat}', String(stat));
+            await fakeStream(reply);
+            return;
+          }
           const fallback =
             res.status === 429
               ? 'Slow down dawg — getting hammered. Try again in a sec, or hit the Book a Call button.'
               : res.status === 503
-                ? 'My brain isn’t plugged in yet. Hit the Book a Call button and Tahrim will sort you out.'
-                : 'Something broke on my end. Hit the Book a Call button or WhatsApp Tahrim — he’ll get you sorted.';
+                ? 'My brain isn’t plugged in yet. Hit the Book a Call button — we’ll sort you out.'
+                : 'Something broke on my end. Hit the Book a Call button or WhatsApp us — we’ll sort you out.';
           setLastAssistant(fallback);
           return;
         }
@@ -176,19 +226,19 @@ export default function Chatbot() {
         }
         if (!acc) {
           setLastAssistant(
-            'Honestly dawg, I don’t have a clean answer for that one. Hit the Book a Call button or WhatsApp Tahrim — he’ll get you sorted.',
+            'Honestly dawg, I don’t have a clean answer for that one. Hit the Book a Call button or WhatsApp us — we’ll sort you out.',
           );
         }
       } catch (err) {
         console.error('[Chatbot] stream error', err);
         setLastAssistant(
-          'Network hiccup on my end. Hit the Book a Call button or WhatsApp Tahrim — he’ll get you sorted.',
+          'Network hiccup on my end. Hit the Book a Call button or WhatsApp us — we’ll sort you out.',
         );
       } finally {
         setIsStreaming(false);
       }
     },
-    [isStreaming, messages],
+    [isStreaming, messages, offline, offlineStat],
   );
 
   // Inline preview pill click → open overlay AND send immediately.
@@ -252,9 +302,15 @@ export default function Chatbot() {
                     </p>
                   </div>
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="inline-block h-2 w-2 rounded-full bg-[color:var(--bd-lime)] shadow-[0_0_8px_var(--bd-lime)]" />
+                    <span
+                      className={`inline-block h-2 w-2 rounded-full ${
+                        offline
+                          ? 'bg-amber-400 shadow-[0_0_8px_rgb(251_191_36)]'
+                          : 'bg-[color:var(--bd-lime)] shadow-[0_0_8px_var(--bd-lime)]'
+                      }`}
+                    />
                     <span className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
-                      Online
+                      {offline ? 'Offline' : 'Online'}
                     </span>
                   </span>
                 </div>
@@ -267,22 +323,24 @@ export default function Chatbot() {
                     className="flex justify-start"
                   >
                     <div className="max-w-[80%] rounded-2xl bg-white/5 px-4 py-3 text-sm text-[color:var(--bd-bone)]">
-                      {GREETING.content}
+                      {offline ? OFFLINE_MSG.content : GREETING.content}
                     </div>
                   </motion.div>
                 </div>
 
-                <div className="flex flex-wrap gap-2 border-t border-white/8 px-6 py-4">
-                  {INLINE_PILLS.map((q) => (
-                    <button
-                      key={q}
-                      onClick={() => launchAndAsk(q)}
-                      className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-[color:var(--bd-bone)]/80 transition-colors hover:border-[color:var(--bd-lime)]/60 hover:text-[color:var(--bd-lime)]"
-                    >
-                      {q}
-                    </button>
-                  ))}
-                </div>
+                {offline ? null : (
+                  <div className="flex flex-wrap gap-2 border-t border-white/8 px-6 py-4">
+                    {INLINE_PILLS.map((q) => (
+                      <button
+                        key={q}
+                        onClick={() => launchAndAsk(q)}
+                        className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-[color:var(--bd-bone)]/80 transition-colors hover:border-[color:var(--bd-lime)]/60 hover:text-[color:var(--bd-lime)]"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 <div className="border-t border-white/8 px-6 py-5">
                   <button
@@ -320,6 +378,7 @@ export default function Chatbot() {
             messages={messages}
             input={input}
             isStreaming={isStreaming}
+            offline={offline}
             scrollRef={scrollRef}
             inputRef={inputRef}
             onClose={() => setOpen(false)}
@@ -342,6 +401,7 @@ type OverlayProps = {
   messages: Msg[];
   input: string;
   isStreaming: boolean;
+  offline: boolean;
   scrollRef: React.RefObject<HTMLDivElement | null>;
   inputRef: React.RefObject<HTMLTextAreaElement | null>;
   onClose: () => void;
@@ -355,6 +415,7 @@ function CinematicOverlay({
   messages,
   input,
   isStreaming,
+  offline,
   scrollRef,
   inputRef,
   onClose,
@@ -423,19 +484,25 @@ function CinematicOverlay({
               Dawg
             </p>
             <p className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
-              {isStreaming ? 'Thinking…' : 'Live · ready when you are'}
+              {offline
+                ? CHATBOT.offlineStatus
+                : isStreaming
+                  ? 'Thinking…'
+                  : 'Live · ready when you are'}
             </p>
           </div>
           <span className="hidden items-center gap-1.5 sm:inline-flex">
             <span
               className={`inline-block h-2 w-2 rounded-full ${
-                isStreaming
-                  ? 'animate-pulse bg-[color:var(--bd-lime)] shadow-[0_0_10px_var(--bd-lime)]'
-                  : 'bg-[color:var(--bd-lime)] shadow-[0_0_8px_var(--bd-lime)]'
+                offline
+                  ? 'bg-amber-400 shadow-[0_0_8px_rgb(251_191_36)]'
+                  : isStreaming
+                    ? 'animate-pulse bg-[color:var(--bd-lime)] shadow-[0_0_10px_var(--bd-lime)]'
+                    : 'bg-[color:var(--bd-lime)] shadow-[0_0_8px_var(--bd-lime)]'
               }`}
             />
             <span className="font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
-              {isStreaming ? 'Streaming' : 'Online'}
+              {offline ? 'Offline' : isStreaming ? 'Streaming' : 'Online'}
             </span>
           </span>
           <button
@@ -471,7 +538,7 @@ function CinematicOverlay({
           ))}
         </div>
 
-        {/* Quick-pick pills */}
+        {/* Quick-pick pills — still useful when offline (canned reply works) */}
         <div className="flex flex-wrap gap-2 border-t border-white/8 px-5 py-3">
           {QUICK_PILLS.map((q) => (
             <button
@@ -485,7 +552,30 @@ function CinematicOverlay({
           ))}
         </div>
 
-        {/* Input row */}
+        {/* Offline CTA row — surfaces Book a Call + WhatsApp above the input
+            so the user has a faster path forward than retyping. */}
+        {offline ? (
+          <div className="flex flex-wrap items-center gap-3 border-t border-white/8 px-5 py-4">
+            <Link
+              href="/contact"
+              onClick={onClose}
+              className="inline-flex h-11 items-center rounded-full bg-[color:var(--bd-lime)] px-5 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)]"
+            >
+              Book a Call →
+            </Link>
+            <a
+              href={`https://wa.me/${SITE.whatsapp}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-11 items-center rounded-full border border-white/15 px-5 text-sm font-semibold text-[color:var(--bd-bone)] transition-colors hover:border-[color:var(--bd-lime)]/60 hover:text-[color:var(--bd-lime)]"
+            >
+              WhatsApp
+            </a>
+          </div>
+        ) : null}
+
+        {/* Input row — stays interactive even when offline. Sends route
+            through the canned-reply path in send(); see Chatbot.send. */}
         <div className="border-t border-white/8 px-5 py-4">
           <label htmlFor="chatbot-input" className="sr-only">
             Ask the dawg a question

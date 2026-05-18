@@ -18,6 +18,21 @@ export const SITE = {
   },
 };
 
+// Chatbot copy lives here so the strings are tweakable without touching the
+// component. `offline` fires when Gemini returns 429 (daily quota burned through);
+// the per-IP transient 429 keeps the inline "slow down dawg" message in Chatbot.tsx.
+export const CHATBOT = {
+  greeting: "Yo. I'm the dawg. Ask me what we build, how we ship, or how to book a call.",
+  offline:
+    "Yo — the dawg's getting hammered today. Too many people talking at once, brain's cooked. Catch me tomorrow, or just hit Book a Call / WhatsApp and skip the line.",
+  offlineStatus: 'Sleeping it off · back soon',
+  // `{stat}` is replaced client-side with the brag number returned in the
+  // /api/chat 429 offline body. Kept punchy because the user can keep
+  // typing — the canned reply needs to land in one read.
+  offlineReplyTemplate:
+    "Brain's fried, dawg. {stat} people already hammered me today and the free-tier credits tapped out. Reset's overnight — Book a Call or WhatsApp if you can't wait. Honestly faster that way.",
+};
+
 export type System = {
   slug: string;
   name: string;

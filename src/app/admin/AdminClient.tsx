@@ -9,6 +9,7 @@ import AdminChatTab, { type ChatLogRow } from './AdminChatTab';
 import AdminCustomersTable from './AdminCustomersTable';
 import AdminGoogleConnection, { type GoogleConnectionState } from './AdminGoogleConnection';
 import AdminOverview from './AdminOverview';
+import AdminTrafficTab, { type TrafficData } from './AdminTrafficTab';
 import type { DashboardStats } from '@/lib/admin/stats';
 
 type Subscriber = { id: string; email: string; source: string; createdAt: string };
@@ -71,6 +72,7 @@ type CustomerRow = {
 
 type Tab =
   | 'overview'
+  | 'traffic'
   | 'bookings'
   | 'chat'
   | 'customers'
@@ -90,6 +92,7 @@ export default function AdminClient({
   google,
   buildLog,
   stats,
+  traffic,
   chatLogs,
 }: {
   subscribers: Subscriber[];
@@ -102,6 +105,7 @@ export default function AdminClient({
   google: GoogleConnectionState;
   buildLog: BuildLogRow[];
   stats: DashboardStats;
+  traffic: TrafficData;
   chatLogs: ChatLogRow[];
 }) {
   const router = useRouter();
@@ -178,6 +182,9 @@ export default function AdminClient({
           >
             Overview
           </TabButton>
+          <TabButton active={tab === 'traffic'} glyph="◉" onClick={() => setTab('traffic')}>
+            Traffic
+          </TabButton>
           <TabButton active={tab === 'bookings'} glyph="▦" onClick={() => setTab('bookings')}>
             Bookings · {bookings.length}
           </TabButton>
@@ -237,6 +244,7 @@ export default function AdminClient({
 
       <div className="mt-6">
         {tab === 'overview' && <AdminOverview stats={stats} />}
+        {tab === 'traffic' && <AdminTrafficTab initial={traffic} />}
         {tab === 'chat' && <AdminChatTab rows={chatLogs} />}
         {tab === 'bookings' && (
           <AdminBookingsTable bookings={bookings} ownerTz={bookingRule.ownerTz} />

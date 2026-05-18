@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db/prisma';
 import { rateLimit, clientIp } from '@/lib/security/ratelimit';
 import { isLikelyBot, HONEYPOT_FIELD, TIMESTAMP_FIELD } from '@/lib/security/honeypot';
 import { hashIp } from '@/lib/security/hash';
+import { lookupGeo, formatApproxLocation } from '@/lib/security/geoip';
 import { notifyAdminOfApplication, notifyVisitorApplicationReceived } from '@/lib/email/send';
 import { withLogging } from '@/lib/log/route';
 import { capture } from '@/lib/analytics/posthog-server';
@@ -51,6 +52,8 @@ async function handlePOST(req: Request) {
 
   const { name, email, role, portfolio, note } = parsed.data;
   const userAgent = req.headers.get('user-agent')?.slice(0, 500) || null;
+  // Inline geo lookup — same rationale as newsletter route (one-off form).
+  const geo = await lookupGeo(ip);
 
   try {
     await prisma.application.create({
@@ -62,6 +65,8 @@ async function handlePOST(req: Request) {
         note: note || null,
         ipHash: hashIp(ip),
         userAgent,
+        approxLocation: formatApproxLocation(geo),
+        country: geo.countryCode,
       },
     });
   } catch (err) {

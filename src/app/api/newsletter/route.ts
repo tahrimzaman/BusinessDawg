@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db/prisma';
 import { rateLimit, clientIp } from '@/lib/security/ratelimit';
 import { isLikelyBot, HONEYPOT_FIELD, TIMESTAMP_FIELD } from '@/lib/security/honeypot';
 import { hashIp } from '@/lib/security/hash';
+import { lookupGeo, formatApproxLocation } from '@/lib/security/geoip';
 import { notifyAdminOfSubscriber, notifyVisitorSubscribed } from '@/lib/email/send';
 import { withLogging } from '@/lib/log/route';
 import { capture } from '@/lib/analytics/posthog-server';
@@ -42,6 +43,9 @@ async function handlePOST(req: Request) {
 
   const { email, source } = parsed.data;
   const userAgent = req.headers.get('user-agent')?.slice(0, 500) || null;
+  // Inline geo lookup (capped at 2s in geoip.ts). Newsletter signup is a
+  // one-off form post, not a hot path — the small added latency is fine.
+  const geo = await lookupGeo(ip);
 
   try {
     await prisma.subscriber.create({
@@ -50,6 +54,8 @@ async function handlePOST(req: Request) {
         source: source || 'newsletter',
         ipHash: hashIp(ip),
         userAgent,
+        approxLocation: formatApproxLocation(geo),
+        country: geo.countryCode,
       },
     });
   } catch (err) {
