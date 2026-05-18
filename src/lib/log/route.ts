@@ -24,6 +24,7 @@
  * both ends.
  */
 
+import * as Sentry from '@sentry/nextjs';
 import { log, withRequest, type LogContext } from './logger';
 
 type Handler<TCtx> = (req: Request, ctx: TCtx) => Promise<Response> | Response;
@@ -58,6 +59,13 @@ export function withLogging<TCtx>(routeName: string, handler: Handler<TCtx>): Ha
         durationMs,
         errorMessage: error?.message ?? String(err),
         errorName: error?.name ?? 'Error',
+      });
+      // Report to Sentry tagged with the route name + request id so we can
+      // jump from a Sentry issue back to the corresponding structured log
+      // line in Hostinger. No-op when SENTRY_DSN isn't set.
+      Sentry.captureException(err, {
+        tags: { route: routeName, requestId },
+        contexts: { request: { method: req.method, durationMs } },
       });
       throw err;
     }
