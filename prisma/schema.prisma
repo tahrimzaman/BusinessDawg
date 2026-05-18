@@ -256,6 +256,28 @@ model ChatLog {
   @@index([ipHash, createdAt])
 }
 
+// Public build log — short shipped-it journal entries at /built. Created via
+// the admin panel. Markdown body, optional pasted image URL (no upload infra
+// in v1; Tahrim drops images on imgur/imgbb and pastes the URL), optional
+// Loom embed URL. `published` toggles visibility on /built without deleting
+// the row, so drafts can sit in admin until ready.
+model BuildLogEntry {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  date      DateTime
+  body      String   @db.Text
+  imageUrl  String?
+  imageAlt  String?
+  loomUrl   String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Drives the public list query — `WHERE published = true ORDER BY date DESC`.
+  @@index([published, date])
+}
+
 // Audit trail for security-relevant admin actions. Right now: login attempts
 // (success + failure). Future: booking cancels by admin, customer edits, etc.
 model AdminAudit {

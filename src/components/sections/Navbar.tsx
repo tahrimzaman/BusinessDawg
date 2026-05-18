@@ -7,6 +7,7 @@ import MagneticButton from '@/components/motion/MagneticButton';
 
 const LINKS = [
   { href: '/systems', label: 'Systems' },
+  { href: '/built', label: 'Built' },
   { href: '/journal', label: 'Journal' },
   { href: '/about', label: 'About' },
   { href: '/faq', label: 'FAQ' },

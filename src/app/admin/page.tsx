@@ -3,6 +3,7 @@ import { isAuthed } from '@/lib/admin/auth';
 import { prisma } from '@/lib/db/prisma';
 import { getBookingRule } from '@/lib/booking/rules';
 import { getGoogleEnv } from '@/lib/booking/google';
+import { getDashboardStats } from '@/lib/admin/stats';
 import AdminClient from './AdminClient';
 import type { GoogleConnectionState } from './AdminGoogleConnection';
 
@@ -12,43 +13,60 @@ export const metadata = { title: 'Admin' };
 export default async function AdminPage() {
   if (!(await isAuthed())) redirect('/admin/login');
 
-  const [subscribers, applications, bookings, customers, windows, exceptions, rule, googleToken] =
-    await Promise.all([
-      prisma.subscriber.findMany({ orderBy: { createdAt: 'desc' }, take: 500 }),
-      prisma.application.findMany({ orderBy: { createdAt: 'desc' }, take: 500 }),
-      prisma.booking.findMany({
-        orderBy: { startUtc: 'desc' },
-        take: 500,
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          intent: true,
-          status: true,
-          startUtc: true,
-          visitorTz: true,
-          needsMeetLink: true,
-        },
-      }),
-      prisma.customer.findMany({
-        orderBy: [{ stage: 'asc' }, { desiredDeadline: 'asc' }, { updatedAt: 'desc' }],
-        take: 500,
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          company: true,
-          stage: true,
-          desiredDeadline: true,
-          promotedAt: true,
-          updatedAt: true,
-        },
-      }),
-      prisma.availabilityWindow.findMany({ orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }] }),
-      prisma.availabilityException.findMany({ orderBy: { date: 'asc' } }),
-      getBookingRule(),
-      prisma.googleToken.findUnique({ where: { id: 'singleton' } }),
-    ]);
+  const [
+    subscribers,
+    applications,
+    bookings,
+    customers,
+    windows,
+    exceptions,
+    rule,
+    googleToken,
+    buildLog,
+    stats,
+    chatLogs,
+  ] = await Promise.all([
+    prisma.subscriber.findMany({ orderBy: { createdAt: 'desc' }, take: 500 }),
+    prisma.application.findMany({ orderBy: { createdAt: 'desc' }, take: 500 }),
+    prisma.booking.findMany({
+      orderBy: { startUtc: 'desc' },
+      take: 500,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        intent: true,
+        status: true,
+        startUtc: true,
+        visitorTz: true,
+        needsMeetLink: true,
+      },
+    }),
+    prisma.customer.findMany({
+      orderBy: [{ stage: 'asc' }, { desiredDeadline: 'asc' }, { updatedAt: 'desc' }],
+      take: 500,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        company: true,
+        stage: true,
+        desiredDeadline: true,
+        promotedAt: true,
+        updatedAt: true,
+      },
+    }),
+    prisma.availabilityWindow.findMany({ orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }] }),
+    prisma.availabilityException.findMany({ orderBy: { date: 'asc' } }),
+    getBookingRule(),
+    prisma.googleToken.findUnique({ where: { id: 'singleton' } }),
+    prisma.buildLogEntry.findMany({
+      orderBy: [{ date: 'desc' }, { createdAt: 'desc' }],
+      take: 500,
+    }),
+    getDashboardStats(30),
+    prisma.chatLog.findMany({ orderBy: { createdAt: 'desc' }, take: 200 }),
+  ]);
 
   const env = getGoogleEnv();
   let google: GoogleConnectionState;
@@ -129,6 +147,29 @@ export default async function AdminPage() {
         meetingTitle: rule.meetingTitle,
       }}
       google={google}
+      buildLog={buildLog.map((e) => ({
+        id: e.id,
+        slug: e.slug,
+        title: e.title,
+        date: e.date.toISOString(),
+        body: e.body,
+        imageUrl: e.imageUrl,
+        imageAlt: e.imageAlt,
+        loomUrl: e.loomUrl,
+        published: e.published,
+        createdAt: e.createdAt.toISOString(),
+        updatedAt: e.updatedAt.toISOString(),
+      }))}
+      stats={stats}
+      chatLogs={chatLogs.map((c) => ({
+        id: c.id,
+        ipHash: c.ipHash,
+        model: c.model,
+        historyLen: c.historyLen,
+        totalChars: c.totalChars,
+        lastUserMessage: c.lastUserMessage,
+        createdAt: c.createdAt.toISOString(),
+      }))}
     />
   );
 }
