@@ -296,7 +296,7 @@ export const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'Can I hire BusinessDawg for one system only?',
-    a: 'Yes. The Systems Stack is designed so you can take exactly what you need. Branding-only, AI-only, web-only — all valid starting points. We’ll tell you on the call if we think you need more.',
+    a: 'Yes. The Systems Stack is designed so you can take exactly what you need. Branding-only, AI-only, web-only — all valid starting points. On the call we’ll tell you straight whether you need more.',
   },
   {
     q: 'What’s the difference between BusinessDawg and a traditional agency?',
