@@ -4,8 +4,12 @@ import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminAvailabilityPanel from './AdminAvailabilityPanel';
 import AdminBookingsTable from './AdminBookingsTable';
+import AdminBuildLogTable, { type BuildLogRow } from './AdminBuildLogTable';
+import AdminChatTab, { type ChatLogRow } from './AdminChatTab';
 import AdminCustomersTable from './AdminCustomersTable';
 import AdminGoogleConnection, { type GoogleConnectionState } from './AdminGoogleConnection';
+import AdminOverview from './AdminOverview';
+import type { DashboardStats } from '@/lib/admin/stats';
 
 type Subscriber = { id: string; email: string; source: string; createdAt: string };
 type Application = {
@@ -65,7 +69,15 @@ type CustomerRow = {
   updatedAt: string;
 };
 
-type Tab = 'applications' | 'subscribers' | 'bookings' | 'customers' | 'availability';
+type Tab =
+  | 'overview'
+  | 'bookings'
+  | 'chat'
+  | 'customers'
+  | 'applications'
+  | 'subscribers'
+  | 'buildlog'
+  | 'availability';
 
 export default function AdminClient({
   subscribers,
@@ -76,6 +88,9 @@ export default function AdminClient({
   availabilityExceptions,
   bookingRule,
   google,
+  buildLog,
+  stats,
+  chatLogs,
 }: {
   subscribers: Subscriber[];
   applications: Application[];
@@ -85,9 +100,12 @@ export default function AdminClient({
   availabilityExceptions: AvailabilityException[];
   bookingRule: BookingRule;
   google: GoogleConnectionState;
+  buildLog: BuildLogRow[];
+  stats: DashboardStats;
+  chatLogs: ChatLogRow[];
 }) {
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>('applications');
+  const [tab, setTab] = useState<Tab>('overview');
   const [query, setQuery] = useState('');
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -149,20 +167,53 @@ export default function AdminClient({
       </div>
 
       <div className="mt-8 flex flex-wrap items-center gap-3">
-        <div className="flex flex-wrap gap-2">
-          <TabButton active={tab === 'bookings'} onClick={() => setTab('bookings')}>
+        {/* Grouped tab bar — Activity → Pipeline → Content → Settings.
+            Dividers + glyph prefixes give it scannable visual hierarchy. */}
+        <div className="flex flex-wrap items-center gap-2">
+          <TabButton
+            active={tab === 'overview'}
+            primary
+            glyph="◐"
+            onClick={() => setTab('overview')}
+          >
+            Overview
+          </TabButton>
+          <TabButton active={tab === 'bookings'} glyph="▦" onClick={() => setTab('bookings')}>
             Bookings · {bookings.length}
           </TabButton>
-          <TabButton active={tab === 'customers'} onClick={() => setTab('customers')}>
+          <TabButton active={tab === 'chat'} glyph="💬" onClick={() => setTab('chat')}>
+            Chat · {chatLogs.length}
+          </TabButton>
+
+          <TabDivider />
+
+          <TabButton active={tab === 'customers'} glyph="★" onClick={() => setTab('customers')}>
             Customers · {customers.length}
           </TabButton>
-          <TabButton active={tab === 'applications'} onClick={() => setTab('applications')}>
+          <TabButton
+            active={tab === 'applications'}
+            glyph="⌥"
+            onClick={() => setTab('applications')}
+          >
             Applications · {applications.length}
           </TabButton>
-          <TabButton active={tab === 'subscribers'} onClick={() => setTab('subscribers')}>
+          <TabButton active={tab === 'subscribers'} glyph="✉" onClick={() => setTab('subscribers')}>
             Subscribers · {subscribers.length}
           </TabButton>
-          <TabButton active={tab === 'availability'} onClick={() => setTab('availability')}>
+
+          <TabDivider />
+
+          <TabButton active={tab === 'buildlog'} glyph="⊞" onClick={() => setTab('buildlog')}>
+            Build log · {buildLog.length}
+          </TabButton>
+
+          <TabDivider />
+
+          <TabButton
+            active={tab === 'availability'}
+            glyph="⚙"
+            onClick={() => setTab('availability')}
+          >
             Availability
           </TabButton>
         </div>
@@ -185,6 +236,8 @@ export default function AdminClient({
       </div>
 
       <div className="mt-6">
+        {tab === 'overview' && <AdminOverview stats={stats} />}
+        {tab === 'chat' && <AdminChatTab rows={chatLogs} />}
         {tab === 'bookings' && (
           <AdminBookingsTable bookings={bookings} ownerTz={bookingRule.ownerTz} />
         )}
@@ -208,6 +261,7 @@ export default function AdminClient({
             initialRule={bookingRule}
           />
         )}
+        {tab === 'buildlog' && <AdminBuildLogTable entries={buildLog} />}
       </div>
     </div>
   );
@@ -217,23 +271,37 @@ function TabButton({
   active,
   onClick,
   children,
+  glyph,
+  primary = false,
 }: {
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
+  glyph?: string;
+  primary?: boolean;
 }) {
+  const tone = active
+    ? primary
+      ? 'border-[color:var(--bd-lime)] bg-[color:var(--bd-lime)] text-[color:var(--bd-ink)]'
+      : 'border-[color:var(--bd-lime)] bg-[color:var(--bd-lime)]/10 text-[color:var(--bd-lime)]'
+    : 'border-white/10 text-[color:var(--bd-bone)]/70 hover:border-[color:var(--bd-lime)]/40';
   return (
     <button
       onClick={onClick}
-      className={`rounded-full border px-4 py-2 font-mono text-xs tracking-widest uppercase transition-colors ${
-        active
-          ? 'border-[color:var(--bd-lime)] bg-[color:var(--bd-lime)]/10 text-[color:var(--bd-lime)]'
-          : 'border-white/10 text-[color:var(--bd-bone)]/70 hover:border-[color:var(--bd-lime)]/40'
-      }`}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 font-mono text-xs tracking-widest uppercase transition-colors ${tone}`}
     >
-      {children}
+      {glyph && (
+        <span aria-hidden className="text-[13px] leading-none">
+          {glyph}
+        </span>
+      )}
+      <span>{children}</span>
     </button>
   );
+}
+
+function TabDivider() {
+  return <span aria-hidden className="h-5 w-px bg-white/10" />;
 }
 
 function ApplicationsTable({ rows }: { rows: Application[] }) {

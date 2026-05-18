@@ -8,6 +8,7 @@ import { SITE } from '@/lib/copy';
 
 const COL_PRODUCT = [
   { href: '/systems', label: 'Systems' },
+  { href: '/built', label: 'Built' },
   { href: '/journal', label: 'Journal' },
   { href: '/pricing', label: 'Pricing' },
 ];
@@ -25,8 +26,11 @@ export default function Footer() {
     <footer className="relative overflow-hidden border-t border-white/8 bg-[color:var(--bd-ink)]">
       {/* soft lime glow at top edge */}
       <div className="bd-section-glow" />
-      <div className="relative mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-12">
-        <div className="md:col-span-5">
+      {/* Mobile uses a 2-col grid so PRODUCT + STUDIO sit side-by-side and the
+          right edge isn't empty. Hero spans both cols on mobile, then the layout
+          restructures into the original 12-col split at md+. */}
+      <div className="relative mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-12 px-6 py-20 md:grid-cols-12 md:gap-12">
+        <div className="col-span-2 md:col-span-5">
           <Logo className="h-14 md:h-16" />
           <p className="font-display mt-8 max-w-md text-3xl leading-[1.05] font-bold italic">
             We build the machine.{' '}
@@ -84,7 +88,10 @@ export default function Footer() {
           </ul>
         </div>
 
-        <div className="md:col-span-3">
+        {/* STUDIO column right-aligns on mobile only — visually balances the
+            two columns and pulls content toward the right edge that used to
+            sit empty. Resets to left-align at md+ for the desktop layout. */}
+        <div className="text-right md:col-span-3 md:text-left">
           <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
             Studio
           </p>
@@ -103,9 +110,11 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Easter egg: sleeping mascot. Click to wake, click again to stretch. */}
+      {/* Easter egg: sleeping mascot. Click to wake, click again to stretch.
+          On mobile the row stacks (mascot drops below the copyright line) so
+          the text never gets clipped; resumes the horizontal layout at md+. */}
       <div className="border-t border-white/5 px-6 py-8">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
+        <div className="mx-auto flex max-w-7xl flex-col items-start gap-4 md:flex-row md:items-center md:justify-between md:gap-0">
           <p className="font-mono text-[11px] tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
             © {new Date().getFullYear()} BusinessDawg · Built by humans. Shipped on purpose.
           </p>
@@ -115,7 +124,7 @@ export default function Footer() {
               if (!awake) setAwake(true);
               else setStretched((s) => !s);
             }}
-            className="relative inline-flex"
+            className="relative hidden self-end md:inline-flex md:self-auto"
             style={{
               transform: stretched ? 'scale(1.18)' : undefined,
               transition: 'transform 0.4s var(--bd-ease-out)',
