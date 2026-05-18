@@ -45,15 +45,16 @@ export type ManageToken = {
 };
 
 /**
- * Build a token that expires 24h after `startUtc` (further reschedule/cancel
- * after the call ends is meaningless). Returns base64url-encoded `${payload}.${sig}`.
+ * Build a token that expires 1h after `endUtc` (further reschedule/cancel after
+ * the call ends + grace window is meaningless and could leak intent if the link
+ * is forwarded long after). Returns base64url-encoded `${payload}.${sig}`.
  */
 export function signManageToken(args: {
   bookingId: string;
   tokenVersion: number;
-  startUtc: Date;
+  endUtc: Date;
 }): string {
-  const expSec = Math.floor(args.startUtc.getTime() / 1000) + 24 * 3600;
+  const expSec = Math.floor(args.endUtc.getTime() / 1000) + 3600;
   const payload = b64url(`${args.bookingId}${SEPARATOR}${args.tokenVersion}${SEPARATOR}${expSec}`);
   const sig = sign(payload);
   return `${payload}${SEPARATOR}${sig}`;

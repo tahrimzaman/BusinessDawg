@@ -19,7 +19,7 @@ import { signManageToken } from '../src/lib/booking/tokens';
   const token = signManageToken({
     bookingId: booking.id,
     tokenVersion: booking.tokenVersion,
-    startUtc: booking.startUtc,
+    endUtc: booking.endUtc,
   });
   console.log('Booking:', booking.id, booking.name, '·', booking.startUtc.toISOString());
   console.log('Token:  ', token);

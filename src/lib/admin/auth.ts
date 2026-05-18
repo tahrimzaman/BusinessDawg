@@ -27,10 +27,16 @@ export async function setAdminCookie(): Promise<void> {
   const jar = await cookies();
   jar.set(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    // Always secure. Browsers tolerate Secure on localhost, so this is safe
+    // for local dev too and prevents any chance of the cookie crossing an
+    // unencrypted link on a LAN-tested mobile device.
+    secure: true,
+    // 'strict' instead of 'lax' — there is no inbound cross-site flow we
+    // need to preserve for /admin. This blocks the entire CSRF surface.
+    sameSite: 'strict',
     // Broad enough to cover both /admin pages AND /api/admin/* endpoints
-    // (e.g. CSV export). Without this, the export link 401s.
+    // (e.g. CSV export). Without this, the export link 401s. A future refactor
+    // can split the prefix and tighten this to /admin.
     path: '/',
     maxAge: 60 * 60 * 24 * 7, // 7 days
   });
