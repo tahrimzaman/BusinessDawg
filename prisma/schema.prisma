@@ -221,6 +221,11 @@ model EmailOutbox {
   status    String   @default("unsent")
   // { type: 'visitor_confirmation' | 'admin_notification' | ..., bookingId?: string }
   context   Json?
+  // Dedup key — `${type}:${bookingId}` when bookingId is present. Used as the
+  // upsert key in writeOutbox so a retry of an already-failed send updates
+  // the existing row (attempts++, lastError) instead of creating duplicates.
+  // Nullable because some email types have no bookingId (newsletter welcome).
+  dedupeKey String?  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

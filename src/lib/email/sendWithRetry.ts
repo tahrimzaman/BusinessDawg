@@ -134,18 +134,36 @@ async function writeOutbox(
     const bodyHtml = typeof opts.html === 'string' ? opts.html : '';
     const bodyText = typeof opts.text === 'string' ? opts.text : null;
 
-    const row = await prisma.emailOutbox.create({
-      data: {
-        to,
-        subject,
-        bodyHtml,
-        bodyText,
-        attempts,
-        lastError,
-        status: 'unsent',
-        context: { type: ctx.type, bookingId: ctx.bookingId ?? null },
-      },
-    });
+    // Idempotency key — when a (type, bookingId) is bound to one email instance,
+    // upsert instead of insert so a retry race doesn't leave two outbox rows
+    // for the same logical send. Emails without a bookingId (e.g. newsletter
+    // welcome) skip this and always insert.
+    const dedupeKey = ctx.bookingId ? `${ctx.type}:${ctx.bookingId}` : null;
+    const baseData = {
+      to,
+      subject,
+      bodyHtml,
+      bodyText,
+      attempts,
+      lastError,
+      status: 'unsent',
+      context: { type: ctx.type, bookingId: ctx.bookingId ?? null },
+      dedupeKey,
+    };
+
+    if (dedupeKey) {
+      const row = await prisma.emailOutbox.upsert({
+        where: { dedupeKey },
+        create: baseData,
+        update: {
+          attempts: { increment: attempts },
+          lastError,
+          status: 'unsent',
+        },
+      });
+      return row.id;
+    }
+    const row = await prisma.emailOutbox.create({ data: baseData });
     return row.id;
   } catch (err) {
     // If we can't even persist the failure, we've already lost the email —
