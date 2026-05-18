@@ -17,7 +17,10 @@ const aiCrawlers = [
 ];
 
 export default function robots(): MetadataRoute.Robots {
-  const restricted = ['/studio', '/api', '/admin', '/booking'];
+  // /monitoring is the Sentry tunnel route (set via withSentryConfig in
+  // next.config.ts) — internal pipe for client-side error events, not a
+  // real page. Disallow so it never appears in search results.
+  const restricted = ['/studio', '/api', '/admin', '/booking', '/monitoring'];
   return {
     rules: [
       { userAgent: '*', allow: '/', disallow: restricted },

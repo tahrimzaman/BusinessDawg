@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
@@ -36,4 +37,28 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Wrap with Sentry's Next plugin so production builds upload source maps
+// (Sentry resolves minified stack traces back to TypeScript) and instrument
+// API routes for tracing. The wrapper is a no-op when SENTRY_AUTH_TOKEN is
+// absent, so local builds keep working without Sentry creds.
+export default withSentryConfig(nextConfig, {
+  // Org + project come from .env.local (SENTRY_ORG, SENTRY_PROJECT) — passing
+  // them via env keeps the values out of source control.
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  // Suppress Sentry's own build chatter unless we're in CI.
+  silent: !process.env.CI,
+  // Don't fail the Hostinger build if Sentry source-map upload errors out
+  // (network blip, expired auth token, etc.) — site keeps deploying, we just
+  // lose source maps for that release.
+  errorHandler: (err) => {
+    console.warn('[sentry] source-map upload failed (continuing build):', err.message);
+  },
+  // Trim the JS bundle by removing Sentry SDK logger statements from prod
+  // client builds. Saves ~5–10 KB.
+  disableLogger: true,
+  // Sentry tunnels client requests through a Next route to bypass ad-blockers
+  // that block requests to ingest.sentry.io. Cheap (just a rewrite) and means
+  // we don't lose visibility on users with uBlock installed.
+  tunnelRoute: '/monitoring',
+});

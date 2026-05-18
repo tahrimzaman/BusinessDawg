@@ -18,6 +18,7 @@ import { SITE, SYSTEMS, FOUNDER } from '@/lib/copy';
 import { withLogging } from '@/lib/log/route';
 import { capture } from '@/lib/analytics/posthog-server';
 import { prisma } from '@/lib/db/prisma';
+import * as Sentry from '@sentry/nextjs';
 
 export const runtime = 'nodejs';
 
@@ -173,6 +174,7 @@ async function handlePOST(req: Request) {
     });
   } catch (err) {
     console.error('[/api/chat] fetch error', err);
+    Sentry.captureException(err, { tags: { area: 'chat.fetch' } });
     return NextResponse.json({ error: 'upstream unreachable' }, { status: 502 });
   }
 
@@ -226,6 +228,7 @@ async function handlePOST(req: Request) {
         }
       } catch (err) {
         console.error('[/api/chat] stream error', err);
+        Sentry.captureException(err, { tags: { area: 'chat.stream' } });
       } finally {
         try {
           controller.close();

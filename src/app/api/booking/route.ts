@@ -19,6 +19,7 @@ import { authedClient, getGoogleEnv, insertBookingEvent } from '@/lib/booking/go
 import { notifyVisitorBookingConfirmed, notifyAdminOfBooking } from '@/lib/email/booking';
 import { withLogging } from '@/lib/log/route';
 import { capture } from '@/lib/analytics/posthog-server';
+import * as Sentry from '@sentry/nextjs';
 
 export const runtime = 'nodejs';
 
@@ -274,10 +275,14 @@ async function handlePOST(req: Request) {
       console.error('[/api/booking] gcal insert failed (fail-open)', err);
       // Server-side event so a broken Google integration shows up in PostHog
       // immediately rather than waiting for Tahrim to notice a stack of
-      // "Needs Meet link" badges.
+      // "Needs Meet link" badges. Sentry gets a copy with full stack trace.
       capture('gcal_insert_failed', created.email, {
         bookingId: created.id,
         errorMessage: (err as Error)?.message,
+      });
+      Sentry.captureException(err, {
+        tags: { area: 'booking.gcal_insert' },
+        contexts: { booking: { id: created.id } },
       });
     }
 
@@ -379,6 +384,9 @@ async function handlePOST(req: Request) {
       );
     }
     console.error('[/api/booking] error', err);
+    // Real persistence failure (DB down, schema drift, etc.) — Sentry tracks
+    // it so we don't only find out via lost-conversion analytics.
+    Sentry.captureException(err, { tags: { area: 'booking.persist' } });
     return NextResponse.json({ error: 'persistence failed' }, { status: 500 });
   }
 }
