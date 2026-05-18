@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Reveal from '@/components/motion/Reveal';
 import Honeypot from '@/components/security/Honeypot';
+import MascotReward from '@/components/brand/MascotReward';
 import { BreadcrumbJsonLd, JobPostingJsonLd } from '@/components/seo/JsonLd';
 
 const ROLES = [
@@ -109,58 +110,66 @@ export default function Join() {
       </Reveal>
 
       <Reveal>
-        <form
-          onSubmit={onSubmit}
-          className="relative mt-14 grid gap-4 rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-8"
-        >
-          <h2 className="font-display text-2xl font-bold italic">Apply / pitch us</h2>
-          <Honeypot />
-          <input
-            name="name"
-            required
-            placeholder="Your name"
-            className="h-12 rounded-full border border-white/10 bg-transparent px-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
-          />
-          <input
-            name="email"
-            required
-            type="email"
-            placeholder="Email"
-            className="h-12 rounded-full border border-white/10 bg-transparent px-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
-          />
-          <input
-            name="role"
-            placeholder="Role you want, or invent one (optional)"
-            className="h-12 rounded-full border border-white/10 bg-transparent px-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
-          />
-          <textarea
-            name="note"
-            placeholder="Tell us what you’d build here (optional)"
-            rows={5}
-            className="rounded-3xl border border-white/10 bg-transparent p-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
-          />
-          <input
-            name="portfolio"
-            placeholder="Link to work — Figma, GitHub, site, etc. (optional)"
-            className="h-12 rounded-full border border-white/10 bg-transparent px-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
-          />
-          <button
-            type="submit"
-            disabled={state === 'sending' || state === 'done'}
-            className="inline-flex h-12 w-fit items-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:opacity-60"
+        {state === 'done' ? (
+          // Visible success state — without this the button label-flip is the
+          // only signal and users frequently re-submit thinking it broke.
+          // Mascot card matches the Newsletter post-submit pattern.
+          <div className="mt-14">
+            <MascotReward
+              headline="We've got you."
+              sub="Tahrim reads every application. Expect a reply within 72 hours — if you don't see one, check spam first."
+            />
+          </div>
+        ) : (
+          <form
+            onSubmit={onSubmit}
+            className="relative mt-14 grid gap-4 rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-8"
           >
-            {state === 'sending'
-              ? 'Sending…'
-              : state === 'done'
-                ? 'Got it — we’ll be in touch'
-                : 'Send →'}
-          </button>
-          {state === 'error' && (
-            <p className="text-sm text-[color:var(--bd-signal)]">
-              Something went wrong. Try again.
-            </p>
-          )}
-        </form>
+            <h2 className="font-display text-2xl font-bold italic">Apply / pitch us</h2>
+            <Honeypot />
+            <input
+              name="name"
+              required
+              placeholder="Your name"
+              className="h-12 rounded-full border border-white/10 bg-transparent px-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
+            />
+            <input
+              name="email"
+              required
+              type="email"
+              placeholder="Email"
+              className="h-12 rounded-full border border-white/10 bg-transparent px-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
+            />
+            <input
+              name="role"
+              placeholder="Role you want, or invent one (optional)"
+              className="h-12 rounded-full border border-white/10 bg-transparent px-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
+            />
+            <textarea
+              name="note"
+              placeholder="Tell us what you’d build here (optional)"
+              rows={5}
+              className="rounded-3xl border border-white/10 bg-transparent p-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
+            />
+            <input
+              name="portfolio"
+              placeholder="Link to work — Figma, GitHub, site, etc. (optional)"
+              className="h-12 rounded-full border border-white/10 bg-transparent px-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={state === 'sending'}
+              className="inline-flex h-12 w-fit items-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:opacity-60"
+            >
+              {state === 'sending' ? 'Sending…' : 'Send →'}
+            </button>
+            {state === 'error' && (
+              <p className="text-sm text-[color:var(--bd-signal)]">
+                Something went wrong. Try again.
+              </p>
+            )}
+          </form>
+        )}
       </Reveal>
     </div>
   );
