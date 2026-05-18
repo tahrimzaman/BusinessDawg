@@ -40,7 +40,7 @@ function manageUrl(b: BookingEmailPayload): string | null {
   const token = signManageToken({
     bookingId: b.id,
     tokenVersion: b.tokenVersion,
-    startUtc: b.startUtc,
+    endUtc: b.endUtc,
   });
   return `${BOOKING_BASE_URL}/booking/${token}/manage`;
 }

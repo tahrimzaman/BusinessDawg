@@ -1,5 +1,14 @@
 import { createHmac } from 'node:crypto';
 
+// Fail-loud at module load if IP_HASH_SALT is missing in production, matching
+// the pattern used by CRON_SECRET. Without this, a missing salt would not
+// surface until the first request hit a rate-limited or audited endpoint —
+// potentially long after deploy. The per-call check below remains as a
+// defence-in-depth fallback.
+if (process.env.NODE_ENV === 'production' && !process.env.IP_HASH_SALT) {
+  throw new Error('IP_HASH_SALT must be set in production');
+}
+
 /**
  * One-way HMAC of an IP — same shape as before (16 hex chars), keyed.
  *

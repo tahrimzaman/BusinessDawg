@@ -51,6 +51,19 @@ export default function PricingPage() {
           </p>
         </Reveal>
 
+        {/*
+          Above-the-fold CTA. Pricing is high-intent — visitors should be able
+          to book without scrolling 2000px to find the bottom strip.
+        */}
+        <Reveal delay={0.15}>
+          <div className="mt-10 flex flex-wrap items-center gap-4">
+            <MagneticButton href="/contact">Book the call →</MagneticButton>
+            <span className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/55 uppercase">
+              30 min · free · no decks
+            </span>
+          </div>
+        </Reveal>
+
         <section className="mt-20">
           <Reveal>
             <h2 className="font-display text-2xl font-bold tracking-tight italic md:text-3xl">
