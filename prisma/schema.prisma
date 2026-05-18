@@ -90,6 +90,10 @@ model Booking {
   @@index([startUtc])
   @@index([status])
   @@index([email])
+  // /admin sorts the lead list by createdAt desc — adding this matches the
+  // pattern on Subscriber/Application and stops sequential scans once the
+  // table grows past a few thousand rows.
+  @@index([createdAt])
   // Belt to the advisory lock + overlap check's suspenders: hard-stops the
   // same email from ending up with two rows for the exact same slot if a
   // user double-clicks Submit, retries on a flaky network, or hits a race
@@ -225,6 +229,26 @@ model EmailOutbox {
   updatedAt DateTime @updatedAt
 
   @@index([status, createdAt])
+}
+
+// Chatbot turn log — one row per inbound user message. Captures the prompt
+// (capped) so we can audit jailbreak attempts, see what visitors actually ask,
+// and feed a "common questions → FAQ entry" pipeline. Hashed IP only, never
+// raw. Streaming responses are not logged (would require buffering and break
+// the type-on UX); the assistant reply is reconstructable from PostHog server
+// events if needed.
+model ChatLog {
+  id              String   @id @default(cuid())
+  ipHash          String?
+  userAgent       String?
+  model           String
+  historyLen      Int
+  totalChars      Int
+  lastUserMessage String   @db.Text
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([ipHash, createdAt])
 }
 
 // Audit trail for security-relevant admin actions. Right now: login attempts
