@@ -35,6 +35,9 @@ function allowedOrigins(): Set<string> {
     process.env.BOOKING_BASE_URL,
     process.env.NEXT_PUBLIC_SITE_URL,
     'https://businessdawg.com',
+    // www subdomain is reachable too; both serve the same site, so a user
+    // landing on www.businessdawg.com must not be rejected as cross-origin.
+    'https://www.businessdawg.com',
   ];
   for (const c of candidates) {
     if (!c) continue;
