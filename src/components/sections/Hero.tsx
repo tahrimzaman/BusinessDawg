@@ -75,9 +75,12 @@ export default function Hero() {
                 : 'relative z-10 col-span-7 lg:col-span-7'
           }
         >
+          {/* Above-fold animations use opacity-only fade-in (no y-translate)
+              so the column doesn't reflow on hydration (CLS). The LCP <p>
+              below skips animation entirely so it paints on the first frame. */}
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ duration: dur * 0.5, ease: EASE }}
             className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-white/10 bg-black/30 px-2.5 py-1 font-mono text-[10px] tracking-widest text-[color:var(--bd-bone)]/70 uppercase backdrop-blur-md sm:px-3 sm:text-[11px]"
           >
@@ -86,8 +89,8 @@ export default function Hero() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: reduced ? 0 : 0.1, duration: dur * 0.5, ease: EASE }}
             className="mb-6 sm:mb-8"
           >
@@ -111,18 +114,15 @@ export default function Hero() {
             </span>
           </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: reduced ? 0 : 0.65, duration: dur * 0.7, ease: EASE }}
-            className="mt-8 max-w-xl text-lg text-[color:var(--bd-bone)]/70 sm:text-xl"
-          >
+          {/* LCP-critical: no entrance animation. Renders at final state on
+              first paint so mobile LCP doesn't gate on JS hydration + delay. */}
+          <p className="mt-8 max-w-xl text-lg text-[color:var(--bd-bone)]/70 sm:text-xl">
             Branding, AI, web, and growth systems for founders who actually ship.
-          </motion.p>
+          </p>
 
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: reduced ? 0 : 0.8, duration: dur * 0.7, ease: EASE }}
             className="mt-10 flex flex-wrap items-center gap-4"
           >
