@@ -121,7 +121,7 @@ function CalendarPage({
         fontFamily="Geist, sans-serif"
         letterSpacing="1"
       >
-        {monthShort ? monthShort.toUpperCase() : '—'}
+        {monthShort ? monthShort.toUpperCase() : '--'}
       </text>
       {/* Day number */}
       <text

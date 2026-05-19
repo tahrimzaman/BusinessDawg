@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     description: desc,
     alternates: { canonical: `/built/${post.slug}` },
     openGraph: {
-      title: `${post.title} — BusinessDawg build log`,
+      title: `${post.title} · BusinessDawg build log`,
       description: desc,
       url,
       type: 'article',
@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${post.title} — BusinessDawg build log`,
+      title: `${post.title} · BusinessDawg build log`,
       description: desc,
     },
   };
@@ -132,7 +132,7 @@ export default async function BuildLogEntryPage({ params }: { params: Promise<Pa
             <div className="mt-10 aspect-video overflow-hidden rounded-3xl border border-white/10 bg-black/60">
               <iframe
                 src={embed}
-                title={`${post.title} — Loom`}
+                title={`${post.title} · Loom`}
                 allow="fullscreen"
                 loading="lazy"
                 className="h-full w-full"

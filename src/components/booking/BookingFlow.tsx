@@ -88,7 +88,7 @@ function friendlyError(status: number, code?: string): string {
   if (status === 409 || code === 'slot_taken') {
     return 'That slot was just taken. Pick another and try again.';
   }
-  if (status === 429) return 'Slow down — try again in a moment.';
+  if (status === 429) return 'Slow down. Try again in a moment.';
   if (status === 400) return 'Something looked off with your submission. Double-check and retry.';
   return 'Something went sideways. Try again in a sec.';
 }
@@ -257,7 +257,7 @@ export default function BookingFlow({ slots, ownerTz = 'Asia/Dhaka' }: Props) {
     <div className="w-full max-w-full min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-6 md:p-8">
       <header className="mb-6 flex items-center justify-between">
         <p className="font-mono text-[11px] tracking-widest text-[color:var(--bd-lime)] uppercase">
-          Step {HEADERS[step].index} / {TOTAL_STEPS} — {HEADERS[step].label}
+          Step {HEADERS[step].index} / {TOTAL_STEPS} · {HEADERS[step].label}
         </p>
         {showBack ? (
           <button

@@ -50,7 +50,7 @@ export default function ClockPreview({ slot, visitorTz }: Props) {
     [visitorTz],
   );
 
-  const timeLabel = slot ? fmt.format(new Date(slot.startUtc)) : '—:—';
+  const timeLabel = slot ? fmt.format(new Date(slot.startUtc)) : '--:--';
   const tzLabel = visitorTz.replace(/_/g, ' ');
   const transition = reduced ? 'none' : 'transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1)';
 

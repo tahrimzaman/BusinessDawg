@@ -93,7 +93,7 @@ const PROCESS = [
   { num: '01', title: 'Apply', body: 'Fill the form. Portfolio link if you have one.' },
   {
     num: '02',
-    title: '72-hour reply',
+    title: 'We read it',
     body: 'Every application gets read. Check spam if you don’t hear back.',
   },
   {
@@ -107,7 +107,7 @@ const PROCESS = [
 const FAQ = [
   {
     q: 'How does the pay work?',
-    a: 'Profit share per project. We agree the cut before each engagement. Paid when the client pays — bKash, Payoneer, cash, whichever works.',
+    a: 'Profit share per project. We agree the cut before each engagement. Paid when the client pays: bKash, Payoneer, cash, whichever works.',
   },
   {
     q: 'Are you hiring globally?',
@@ -115,24 +115,24 @@ const FAQ = [
   },
   {
     q: 'How long is a contract?',
-    a: 'Project-based. Some engagements are 2 weeks, some are 2 months. We don’t hold anyone past the scope.',
+    a: 'Project-based. Every engagement is sized to its scope. We don’t hold anyone past it.',
   },
   {
     q: 'Is there a test project?',
     a: 'No. We interview. We trust our instincts and yours.',
   },
   {
-    q: 'No role fits me — can I still apply?',
+    q: 'No role fits me, can I still apply?',
     a: 'Pitch your own. There’s a field on the form for exactly that.',
   },
   {
     q: 'When will I hear back?',
-    a: 'Within 72 hours. If not, check spam first — then ping us on WhatsApp.',
+    a: 'We read every application and get back to you. If you don’t hear back, check spam first, then ping us on WhatsApp.',
   },
 ];
 
 const JOB_DATE_POSTED = '2026-05-15';
-const WA_REFERRAL_MESSAGE = 'Yo — I want to refer someone to BusinessDawg.';
+const WA_REFERRAL_MESSAGE = 'Yo. I want to refer someone to BusinessDawg.';
 
 export default function Join() {
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
@@ -489,7 +489,7 @@ export default function Join() {
           {state === 'done' ? (
             <MascotReward
               headline="We've got you."
-              sub="We read every application. Expect a reply within 72 hours — check spam first if it doesn't show."
+              sub="We read every application and get back to you. If you don't hear back, check spam first."
             />
           ) : (
             <form
@@ -531,7 +531,7 @@ export default function Join() {
               />
               <input
                 name="portfolio"
-                placeholder="Link to work — Figma, GitHub, site, IG. Optional."
+                placeholder="Link to work: Figma, GitHub, site, IG. Optional."
                 className="h-12 rounded-full border border-white/10 bg-transparent px-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
               />
               <button
@@ -564,7 +564,7 @@ export default function Join() {
               </h2>
               <p className="mt-4 max-w-xl text-[color:var(--bd-ink)]/85">
                 Send them our way. If they sign, you get{' '}
-                <span className="font-bold">10% of project value</span>. Paid when they pay — bKash,
+                <span className="font-bold">10% of project value</span>. Paid when they pay: bKash,
                 Payoneer, cash. No dashboard. Just DM us on WhatsApp.
               </p>
               <div className="mt-7">

@@ -34,14 +34,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://businessdawg.com'),
   title: {
-    default: 'BusinessDawg — We build business machines.',
-    template: '%s — BusinessDawg',
+    default: 'BusinessDawg. We build business machines.',
+    template: '%s · BusinessDawg',
   },
   description:
     'Branding, AI, web, and growth systems for founders who actually ship. A Gen Z–native business growth studio.',
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'BusinessDawg — We build business machines.',
+    title: 'BusinessDawg. We build business machines.',
     description: 'Branding, AI, web, and growth systems for founders who actually ship.',
     url: 'https://businessdawg.com',
     siteName: 'BusinessDawg',

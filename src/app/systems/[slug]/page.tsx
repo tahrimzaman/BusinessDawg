@@ -24,14 +24,14 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     description,
     alternates: { canonical: `/systems/${s.slug}` },
     openGraph: {
-      title: `${s.name} — BusinessDawg`,
+      title: `${s.name} · BusinessDawg`,
       description,
       url,
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${s.name} — BusinessDawg`,
+      title: `${s.name} · BusinessDawg`,
       description,
     },
   };
@@ -114,10 +114,7 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
                     key={d.title}
                     className="flex flex-col rounded-3xl border border-white/8 bg-[color:var(--bd-smoke)] p-6"
                   >
-                    <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
-                      {d.timeline}
-                    </p>
-                    <h3 className="font-display mt-3 text-2xl font-bold italic">{d.title}</h3>
+                    <h3 className="font-display text-2xl font-bold italic">{d.title}</h3>
                     <p className="mt-3 text-sm leading-relaxed text-[color:var(--bd-bone)]/75">
                       {d.description}
                     </p>
@@ -158,7 +155,7 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
               {
                 n: '02',
                 t: 'Build',
-                d: 'We ship the system in weeks, not quarters. You see it as it lands.',
+                d: 'We ship the system fast, on purpose. You see it as it lands.',
               },
               {
                 n: '03',

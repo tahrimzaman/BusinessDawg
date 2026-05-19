@@ -57,7 +57,7 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
             Something broke. We&apos;re on it.
           </h1>
           <p style={{ color: 'rgba(250,250,250,0.65)', marginTop: 16 }}>
-            This error was reported automatically. Try reloading — if it sticks, hit us up at{' '}
+            This error was reported automatically. Try reloading. If it sticks, hit us up at{' '}
             <a href="mailto:yo@businessdawg.com" style={{ color: '#C8FF00' }}>
               yo@businessdawg.com
             </a>

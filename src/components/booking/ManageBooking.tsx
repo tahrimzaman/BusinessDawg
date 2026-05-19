@@ -46,9 +46,9 @@ function friendlyError(status: number, code?: string): string {
   if (status === 409 || code === 'slot_taken') {
     return 'That slot was just taken. Pick another and try again.';
   }
-  if (status === 410) return 'This link has been superseded — check your inbox for a newer email.';
+  if (status === 410) return 'This link has been superseded. Check your inbox for a newer email.';
   if (status === 404) return 'This link is invalid or expired.';
-  if (status === 429) return 'Slow down — try again in a moment.';
+  if (status === 429) return 'Slow down. Try again in a moment.';
   return 'Something went sideways. Try again in a sec.';
 }
 

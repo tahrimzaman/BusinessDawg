@@ -19,21 +19,21 @@ import BuildLogSubscribe from '@/components/sections/BuildLogSubscribe';
 export const dynamic = 'force-dynamic';
 
 const description =
-  'What BusinessDawg is shipping, week by week. Real updates from a working studio — features, fixes, experiments, and the occasional postmortem.';
+  'What BusinessDawg is shipping, as it lands. Real updates from a working studio: features, fixes, experiments, and the occasional postmortem.';
 
 export const metadata = {
-  title: 'Built — what we ship, week by week',
+  title: 'Built · what we ship, as it lands',
   description,
   alternates: { canonical: '/built' },
   openGraph: {
-    title: 'Built — BusinessDawg',
+    title: 'Built · BusinessDawg',
     description,
     url: 'https://businessdawg.com/built',
     type: 'website' as const,
   },
   twitter: {
     card: 'summary_large_image' as const,
-    title: 'Built — BusinessDawg',
+    title: 'Built · BusinessDawg',
     description,
   },
 };
@@ -80,7 +80,7 @@ export default async function BuiltIndex() {
       </Reveal>
       <Reveal delay={0.05}>
         <h1 className="font-display mt-3 max-w-4xl text-4xl leading-[1.02] font-extrabold tracking-tight italic sm:text-6xl md:text-7xl">
-          What we&rsquo;re shipping, week by week.
+          What we&rsquo;re shipping, as it lands.
         </h1>
       </Reveal>
       <Reveal delay={0.1}>
@@ -95,7 +95,7 @@ export default async function BuiltIndex() {
           <div className="mt-16 rounded-3xl border border-white/8 bg-[color:var(--bd-smoke)] p-10 text-center">
             <p className="font-display text-2xl font-bold italic">First entry lands soon.</p>
             <p className="mt-3 text-[color:var(--bd-bone)]/70">
-              Check back in a few days, or subscribe below so we can ping you when it does.
+              Check back soon, or subscribe below so we can ping you when it does.
             </p>
           </div>
         </Reveal>

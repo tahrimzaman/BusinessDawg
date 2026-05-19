@@ -58,7 +58,7 @@ export default function BookingSuccess({ slot, visitorTz, email, onDismiss }: Pr
           <span className="text-[color:var(--bd-lime)]">Booked. See you then.</span>
         </h3>
         <p className="mt-3 text-sm text-[color:var(--bd-bone)]/70 sm:text-base">
-          {when} — confirmation + Meet link on the way to{' '}
+          {when}. Confirmation + Meet link on the way to{' '}
           <span className="text-[color:var(--bd-bone)]">{email}</span>.
         </p>
         <button

@@ -4,21 +4,21 @@ import { BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import { JOURNAL } from '@/lib/journal';
 
 const description =
-  'Field notes from BusinessDawg — operator-level essays on growth systems, AI automation, branding, and shipping. Written by founder Tahrim Zaman.';
+  'Field notes from BusinessDawg. Operator-level essays on growth systems, AI automation, branding, and shipping. Written by founder Tahrim Zaman.';
 
 export const metadata = {
   title: 'Journal',
   description,
   alternates: { canonical: '/journal' },
   openGraph: {
-    title: 'Journal — BusinessDawg',
+    title: 'Journal · BusinessDawg',
     description,
     url: 'https://businessdawg.com/journal',
     type: 'website' as const,
   },
   twitter: {
     card: 'summary_large_image' as const,
-    title: 'Journal — BusinessDawg',
+    title: 'Journal · BusinessDawg',
     description,
   },
 };

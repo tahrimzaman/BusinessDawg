@@ -16,19 +16,19 @@ import { SITE } from '@/lib/copy';
 import { BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 
 const description =
-  'Book a free 30-minute call with BusinessDawg. No decks — tell us what’s leaking and we’ll tell you what to do about it. WhatsApp, email, and instant calendar booking all open.';
+  'Book a free 30-minute call with BusinessDawg. No decks. Tell us what’s leaking and we’ll tell you what to do about it. WhatsApp, email, and instant calendar booking all open.';
 
 export const metadata = {
   title: 'Contact',
   description,
   alternates: { canonical: '/contact' },
   openGraph: {
-    title: 'Contact — BusinessDawg',
+    title: 'Contact · BusinessDawg',
     description,
     url: 'https://businessdawg.com/contact',
     type: 'website' as const,
   },
-  twitter: { card: 'summary_large_image' as const, title: 'Contact — BusinessDawg', description },
+  twitter: { card: 'summary_large_image' as const, title: 'Contact · BusinessDawg', description },
 };
 
 export const dynamic = 'force-dynamic';

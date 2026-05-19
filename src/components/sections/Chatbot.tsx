@@ -207,10 +207,10 @@ export default function Chatbot() {
           }
           const fallback =
             res.status === 429
-              ? 'Slow down dawg — getting hammered. Try again in a sec, or hit the Book a Call button.'
+              ? 'Slow down dawg. Getting hammered. Try again in a sec, or hit the Book a Call button.'
               : res.status === 503
-                ? 'My brain isn’t plugged in yet. Hit the Book a Call button — we’ll sort you out.'
-                : 'Something broke on my end. Hit the Book a Call button or WhatsApp us — we’ll sort you out.';
+                ? 'My brain isn’t plugged in yet. Hit the Book a Call button. We’ll sort you out.'
+                : 'Something broke on my end. Hit the Book a Call button or WhatsApp us. We’ll sort you out.';
           setLastAssistant(fallback);
           return;
         }
@@ -226,13 +226,13 @@ export default function Chatbot() {
         }
         if (!acc) {
           setLastAssistant(
-            'Honestly dawg, I don’t have a clean answer for that one. Hit the Book a Call button or WhatsApp us — we’ll sort you out.',
+            'Honestly dawg, I don’t have a clean answer for that one. Hit the Book a Call button or WhatsApp us. We’ll sort you out.',
           );
         }
       } catch (err) {
         console.error('[Chatbot] stream error', err);
         setLastAssistant(
-          'Network hiccup on my end. Hit the Book a Call button or WhatsApp us — we’ll sort you out.',
+          'Network hiccup on my end. Hit the Book a Call button or WhatsApp us. We’ll sort you out.',
         );
       } finally {
         setIsStreaming(false);
@@ -361,7 +361,7 @@ export default function Chatbot() {
               <div className="relative h-full min-h-[420px] w-full">
                 <Image
                   src="/brand/mascot-talk.webp"
-                  alt="BusinessDawg mascot — talking"
+                  alt="BusinessDawg mascot, talking"
                   fill
                   sizes="(min-width: 1024px) 40vw, 80vw"
                   className="object-contain object-bottom"

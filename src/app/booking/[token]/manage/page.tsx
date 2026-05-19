@@ -56,7 +56,7 @@ export default async function ManageBookingPage({
         Reschedule or cancel.
       </h1>
       <p className="mt-4 text-[color:var(--bd-bone)]/70">
-        Hey {booking.name.split(' ')[0] || booking.name} — change your slot or cancel below. Email
+        Hey {booking.name.split(' ')[0] || booking.name}, change your slot or cancel below. Email
         confirmations go to {booking.email}.
       </p>
       <div className="mt-12">

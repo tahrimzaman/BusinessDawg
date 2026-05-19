@@ -34,7 +34,7 @@ export default function About() {
         <Reveal>
           <Image
             src="/brand/logo-vertical.webp"
-            alt="BusinessDawg — wordmark"
+            alt="BusinessDawg wordmark"
             width={990}
             height={715}
             priority
@@ -55,14 +55,14 @@ export default function About() {
         <Reveal delay={0.5}>
           <div className="mt-10 space-y-5 text-lg leading-relaxed text-[color:var(--bd-bone)]/80">
             <p>
-              The tools changed. The factories aren&apos;t smoke and steel anymore — they&apos;re
+              The tools changed. The factories aren&apos;t smoke and steel anymore. They&apos;re
               code, models, automations, content engines. AI rewrote how ideas turn into products,
               how products turn into machines, how machines turn into companies.
             </p>
             <p>
               BusinessDawg is a studio built inside that shift. We don&apos;t write reports about
-              it. We don&apos;t pitch decks about it. We build the systems — brand, web, AI
-              workflows, growth — that turn the new shift into a real, running business.
+              it. We don&apos;t pitch decks about it. We build the systems (brand, web, AI
+              workflows, growth) that turn the new shift into a real, running business.
             </p>
             <p className="text-[color:var(--bd-bone)]/70">
               There are talkers, and there are shippers. We&apos;re the second kind.
@@ -199,7 +199,7 @@ export default function About() {
                 CEO + Founder
               </p>
               <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[color:var(--bd-bone)]/85 sm:text-xl">
-                Recently graduated from Khulna University with a BBA — Major in Marketing, Minor in
+                Recently graduated from Khulna University with a BBA: Major in Marketing, Minor in
                 Finance. Heading to Hult International Business School in Boston, USA, for a dual
                 master&apos;s in Business Analytics &amp; AI and International Marketing. Outside
                 the studio, he runs multiple businesses in Faridpur, Bangladesh.

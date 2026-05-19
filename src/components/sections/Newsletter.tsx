@@ -112,7 +112,7 @@ export default function Newsletter() {
               >
                 <MascotReward
                   headline="You’re in."
-                  sub="Email stashed. Expect the goods — once or twice a month, no fluff."
+                  sub="Email stashed. Expect the goods. Once or twice a month, no fluff."
                 />
               </motion.div>
             )}

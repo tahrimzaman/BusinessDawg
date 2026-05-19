@@ -25,7 +25,7 @@ const PRINCIPLES = [
   {
     n: '01',
     title: 'We don’t consult. We build.',
-    body: 'No 80-page strategy decks. No "we recommend you consider". We get hired to ship — brand identities, AI workflows, websites, growth funnels — and we hand them off as running systems, not slideware.',
+    body: 'No 80-page strategy decks. No "we recommend you consider". We get hired to ship: brand identities, AI workflows, websites, growth funnels. We hand them off as running systems, not slideware.',
     Icon: PrincipleBuildIcon,
   },
   {
@@ -124,7 +124,7 @@ export default function SystemsStack() {
                 />
                 <Image
                   src="/brand/mascot-pos-2.webp"
-                  alt="BusinessDawg mascot — arms crossed"
+                  alt="BusinessDawg mascot, arms crossed"
                   fill
                   sizes="(min-width: 1024px) 30vw, 80vw"
                   className="relative object-contain object-bottom"
@@ -225,7 +225,7 @@ function PrincipleFlipCard({ principle }: { principle: (typeof PRINCIPLES)[numbe
     <div
       tabIndex={0}
       role="button"
-      aria-label={`${principle.title} — ${principle.body}`}
+      aria-label={`${principle.title}: ${principle.body}`}
       aria-pressed={flipped}
       onClick={() => setFlipped((f) => !f)}
       onKeyDown={(e) => {
@@ -292,7 +292,7 @@ function CustomBuildCard() {
   return (
     <Link
       href="/contact"
-      aria-label="Totally customized service — tell us what you need"
+      aria-label="Totally customized service, tell us what you need"
       className="group block w-full max-w-[260px] [perspective:1200px]"
     >
       <div className="relative aspect-square w-full transition-transform duration-700 ease-out [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] group-focus-visible:[transform:rotateY(180deg)]">
@@ -322,8 +322,8 @@ function CustomBuildCard() {
             / Off-stack
           </p>
           <p className="text-sm leading-snug text-[color:var(--bd-bone)]/85">
-            Don&apos;t see your stack? We build fully custom systems too. Pick none of the five —
-            we&apos;ll still ship.
+            Don&apos;t see your stack? We build fully custom systems too. Pick none of the five.
+            We&apos;ll still ship.
           </p>
           <span className="font-mono text-xs font-semibold tracking-widest text-[color:var(--bd-lime)] uppercase">
             Tell us what you need →
@@ -409,7 +409,7 @@ function SystemCard({ system, index }: { system: (typeof SYSTEMS)[number]; index
       <div
         role="link"
         tabIndex={0}
-        aria-label={`${system.name} — ${system.tagline}`}
+        aria-label={`${system.name}: ${system.tagline}`}
         aria-expanded={tapped}
         onClick={() => {
           if (

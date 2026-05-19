@@ -76,7 +76,7 @@ export default function ClosingCTA() {
         >
           <Image
             src="/brand/mascot-pos-3.webp"
-            alt="BusinessDawg mascot — sitting"
+            alt="BusinessDawg mascot, sitting"
             fill
             sizes="(min-width: 1024px) 50vw, 80vw"
             className="object-contain object-bottom"

@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     description: p.excerpt,
     alternates: { canonical: `/journal/${p.slug}` },
     openGraph: {
-      title: `${p.title} — BusinessDawg`,
+      title: `${p.title} · BusinessDawg`,
       description: p.excerpt,
       url,
       type: 'article',
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${p.title} — BusinessDawg`,
+      title: `${p.title} · BusinessDawg`,
       description: p.excerpt,
       images: [ogImage],
     },

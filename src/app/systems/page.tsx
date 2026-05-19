@@ -3,21 +3,21 @@ import Reveal from '@/components/motion/Reveal';
 import { SYSTEMS } from '@/lib/copy';
 
 const description =
-  'Five productized systems from BusinessDawg — Growth, AI Automation, Branding, Web & Product, Marketing Infrastructure. Pick one, stack a few, or go fully custom.';
+  'Five productized systems from BusinessDawg: Growth, AI Automation, Branding, Web & Product, Marketing Infrastructure. Pick one, stack a few, or go fully custom.';
 
 export const metadata = {
   title: 'Systems',
   description,
   alternates: { canonical: '/systems' },
   openGraph: {
-    title: 'The Systems Stack — BusinessDawg',
+    title: 'The Systems Stack · BusinessDawg',
     description,
     url: 'https://businessdawg.com/systems',
     type: 'website' as const,
   },
   twitter: {
     card: 'summary_large_image' as const,
-    title: 'The Systems Stack — BusinessDawg',
+    title: 'The Systems Stack · BusinessDawg',
     description,
   },
 };

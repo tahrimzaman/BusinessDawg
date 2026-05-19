@@ -5,19 +5,19 @@ import { FaqJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import { FAQ } from '@/lib/copy';
 
 const description =
-  'Answers to the questions we keep getting at BusinessDawg — what we build, who we work with, where we are, how fast we ship.';
+  'Answers to the questions we keep getting at BusinessDawg: what we build, who we work with, and where we are.';
 
 export const metadata = {
   title: 'FAQ',
   description,
   alternates: { canonical: '/faq' },
   openGraph: {
-    title: 'FAQ — BusinessDawg',
+    title: 'FAQ · BusinessDawg',
     description,
     url: 'https://businessdawg.com/faq',
     type: 'website' as const,
   },
-  twitter: { card: 'summary_large_image' as const, title: 'FAQ — BusinessDawg', description },
+  twitter: { card: 'summary_large_image' as const, title: 'FAQ · BusinessDawg', description },
 };
 
 export default function FaqPage() {
@@ -43,7 +43,7 @@ export default function FaqPage() {
         </Reveal>
         <Reveal delay={0.1}>
           <p className="mt-6 max-w-2xl text-lg text-[color:var(--bd-bone)]/70">
-            Quick answers. If yours isn’t here, hit Book a Call or WhatsApp — Tahrim picks up.
+            Quick answers. If yours isn’t here, hit Book a Call or WhatsApp. Tahrim picks up.
           </p>
         </Reveal>
       </div>
