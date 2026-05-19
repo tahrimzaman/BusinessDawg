@@ -62,6 +62,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${geistSans.variable} ${geistMono.variable} bg-ink text-bone antialiased`}
     >
       <head>
+        {/* Preconnect to PostHog's asset CDN. PostHog loads from a separate origin
+            after hydration; warming the DNS + TCP + TLS handshake in <head> moves
+            ~300 ms of setup off the LCP critical path on mobile. */}
+        <link rel="preconnect" href="https://us-assets.i.posthog.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://us-assets.i.posthog.com" />
         {/* LCP preloads — the Hero mascot is the largest contentful paint candidate.
             Hoisting them off the parser's discovery path shaves DNS/connection wait
             and gives the browser a head start before React hydrates. */}
