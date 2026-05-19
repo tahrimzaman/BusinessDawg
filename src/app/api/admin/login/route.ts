@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { setAdminCookie, verifyPassword } from '@/lib/admin/auth';
-import { rateLimit, clientIp } from '@/lib/security/ratelimit';
+import { rateLimit, rateLimitKey, clientIp } from '@/lib/security/ratelimit';
 import { hashIp } from '@/lib/security/hash';
 import { prisma } from '@/lib/db/prisma';
 import { capture } from '@/lib/analytics/posthog-server';
@@ -39,7 +39,7 @@ async function recordAttempt(
 
 async function handlePOST(req: Request) {
   const ip = clientIp(req);
-  const limit = rateLimit(`admin-login:${ip}`, { max: 10, windowMs: 5 * 60_000 });
+  const limit = rateLimit(rateLimitKey('admin-login', ip), { max: 10, windowMs: 5 * 60_000 });
   if (!limit.ok) {
     await recordAttempt(req, ip, 'login_rate_limited');
     return NextResponse.json({ error: 'too many attempts' }, { status: 429 });

@@ -122,7 +122,7 @@ export default async function BuiltIndex() {
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={p.imageUrl}
-                            alt={p.imageAlt || ''}
+                            alt={p.imageAlt || p.title}
                             width={140}
                             height={88}
                             loading="lazy"

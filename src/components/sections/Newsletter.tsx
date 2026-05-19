@@ -73,9 +73,13 @@ export default function Newsletter() {
             <button
               type="submit"
               disabled={state === 'loading' || state === 'done'}
-              className="focus-bd inline-flex h-12 items-center justify-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:opacity-60"
+              className="focus-bd inline-flex h-12 items-center justify-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {state === 'loading' ? 'Sending…' : state === 'done' ? 'Subscribed' : 'Subscribe'}
+              {state === 'loading'
+                ? 'Firing it off…'
+                : state === 'done'
+                  ? 'You’re in'
+                  : 'Subscribe'}
             </button>
           </form>
         </Reveal>
@@ -108,7 +112,7 @@ export default function Newsletter() {
               >
                 <MascotReward
                   headline="You’re in."
-                  sub="Playbook drops once or twice a month. No fluff."
+                  sub="Email stashed. Expect the goods — once or twice a month, no fluff."
                 />
               </motion.div>
             )}

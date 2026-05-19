@@ -21,13 +21,29 @@ if (dsn) {
     // Bone-stock breadcrumbs; we don't yet have anything custom worth wiring.
     integrations: [],
     beforeSend(event) {
-      // Strip the request body from breadcrumbs/events — booking and chat
-      // payloads contain visitor PII (name, email, intent) that we'd rather
-      // not ship to a third party. We get URL + method + status which is
-      // enough to triage 95% of issues.
+      // Strip anything that can carry PII before the event leaves the box:
+      //   - request.data: booking/chat/lead payloads (name, email, intent)
+      //   - request.cookies: includes the admin session token
+      //   - request.headers: cookie/authorization headers leak the same
+      //   - query string on request.url: booking manage tokens, UTM-stuffed
+      //     emails, etc. Pathname stays so we can still triage by route.
       if (event.request) {
         delete event.request.data;
         delete event.request.cookies;
+        if (event.request.headers) {
+          delete (event.request.headers as Record<string, unknown>)['cookie'];
+          delete (event.request.headers as Record<string, unknown>)['Cookie'];
+          delete (event.request.headers as Record<string, unknown>)['authorization'];
+          delete (event.request.headers as Record<string, unknown>)['Authorization'];
+        }
+        if (event.request.url) {
+          try {
+            const u = new URL(event.request.url);
+            event.request.url = `${u.origin}${u.pathname}`;
+          } catch {
+            /* malformed url — leave as-is */
+          }
+        }
       }
       return event;
     },

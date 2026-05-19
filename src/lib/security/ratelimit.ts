@@ -53,3 +53,15 @@ export function clientIp(req: Request): string {
   if (real) return real;
   return 'unknown';
 }
+
+import { hashIp } from './hash';
+
+/**
+ * Canonical rate-limit key. Uses the hashed IP rather than the raw value so
+ * an accidental log/Sentry breadcrumb capturing the key string can't leak the
+ * visitor's IP. Inputs of `'unknown'` are passed through untouched so all
+ * IP-less requests share a single bucket (the abuse case is the same).
+ */
+export function rateLimitKey(scope: string, ip: string): string {
+  return `${scope}:${ip === 'unknown' ? 'unknown' : hashIp(ip)}`;
+}

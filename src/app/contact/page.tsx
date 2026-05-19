@@ -79,8 +79,17 @@ export default async function Contact() {
       <div className="mt-12 grid gap-8 md:grid-cols-12">
         <Reveal className="min-w-0 md:col-span-8">
           {slots.length === 0 ? (
-            <div className="rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-8 text-center text-sm text-[color:var(--bd-bone)]/70">
-              No slots available right now. Hit WhatsApp or email and we’ll find a time.
+            <div className="rounded-3xl border border-white/10 bg-[color:var(--bd-smoke)] p-8 text-center">
+              <p className="font-display text-2xl font-bold italic">Booked solid this week.</p>
+              <p className="mt-2 text-sm text-[color:var(--bd-bone)]/70">
+                WhatsApp us and we’ll squeeze you in.
+              </p>
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
+                <MagneticButton href={`https://wa.me/${SITE.whatsapp}`}>WhatsApp →</MagneticButton>
+                <MagneticButton href={`mailto:${SITE.social.email}`} variant="ghost">
+                  Email →
+                </MagneticButton>
+              </div>
             </div>
           ) : (
             <BookingFlow slots={slots} ownerTz={ownerTz} />

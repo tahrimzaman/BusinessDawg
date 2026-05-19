@@ -27,6 +27,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { withLogging } from '@/lib/log/route';
 import { log } from '@/lib/log/logger';
+import { isCronAuthorized } from '@/lib/security/cron';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -37,22 +38,12 @@ if (process.env.NODE_ENV === 'production' && !process.env.CRON_SECRET) {
   throw new Error('CRON_SECRET required in production for /api/cron/purge-pii');
 }
 
-function isAuthorized(req: Request): boolean {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    if (process.env.NODE_ENV !== 'production') return true;
-    return false;
-  }
-  const header = req.headers.get('authorization');
-  return header === `Bearer ${secret}`;
-}
-
 const DAY_MS = 86_400_000;
 const RETENTION_DAYS = 365;
 const OUTBOX_RETENTION_DAYS = 30;
 
 async function handleGET(req: Request) {
-  if (!isAuthorized(req)) {
+  if (!isCronAuthorized(req)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 

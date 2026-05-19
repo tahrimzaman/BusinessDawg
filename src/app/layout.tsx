@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import nextDynamic from 'next/dynamic';
+import Script from 'next/script';
 import './globals.css';
 import LenisProvider from '@/components/motion/LenisProvider';
 import WoofListener from '@/components/motion/WoofListener';
@@ -75,13 +76,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="text-bone min-h-screen font-sans">
         {/* First-touch capture: remember the landing pathname so booking
-            attribution survives same-tab navigation. Runs before hydration. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "try{if(!sessionStorage.getItem('bd:first-touch'))sessionStorage.setItem('bd:first-touch',location.pathname);}catch(e){}",
-          }}
-        />
+            attribution survives same-tab navigation. `beforeInteractive` runs
+            before hydration so the value is set in time for any client code
+            that reads it. Routed through next/script (over raw <script
+            dangerouslySetInnerHTML>) so a future CSP can grant a nonce and
+            keep `script-src 'self'` instead of needing `unsafe-inline`. */}
+        <Script id="bd-first-touch" strategy="beforeInteractive">
+          {`try{if(!sessionStorage.getItem('bd:first-touch'))sessionStorage.setItem('bd:first-touch',location.pathname);}catch(e){}`}
+        </Script>
         <PostHogProvider>
           <LenisProvider>
             <Navbar />

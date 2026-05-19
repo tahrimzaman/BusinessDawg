@@ -537,13 +537,13 @@ export default function Join() {
               <button
                 type="submit"
                 disabled={state === 'sending'}
-                className="inline-flex h-12 w-fit items-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:opacity-60"
+                className="inline-flex h-12 w-fit items-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {state === 'sending' ? 'Sending…' : 'Send →'}
+                {state === 'sending' ? 'Firing it off…' : 'Send →'}
               </button>
               {state === 'error' && (
-                <p className="text-sm text-[color:var(--bd-signal)]">
-                  Something went wrong. Try again.
+                <p role="alert" className="text-sm text-[color:var(--bd-signal)]">
+                  Something tripped on the way out. Give it another shot.
                 </p>
               )}
             </form>
@@ -596,7 +596,7 @@ export default function Join() {
           {FAQ.map((f, i) => (
             <Reveal key={i} delay={i * 0.03}>
               <details className="group p-6 md:p-7">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--bd-lime)]">
                   <span className="font-display text-lg font-bold italic md:text-xl">{f.q}</span>
                   <span
                     aria-hidden

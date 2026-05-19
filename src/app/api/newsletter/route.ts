@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db/prisma';
-import { rateLimit, clientIp } from '@/lib/security/ratelimit';
+import { rateLimit, rateLimitKey, clientIp } from '@/lib/security/ratelimit';
 import { isLikelyBot, HONEYPOT_FIELD, TIMESTAMP_FIELD } from '@/lib/security/honeypot';
 import { hashIp } from '@/lib/security/hash';
 import { lookupGeo, formatApproxLocation } from '@/lib/security/geoip';
@@ -24,7 +24,7 @@ async function handlePOST(req: Request) {
   if (!raw) return NextResponse.json({ error: 'invalid body' }, { status: 400 });
 
   const ip = clientIp(req);
-  const limit = rateLimit(`newsletter:${ip}`, { max: 5, windowMs: 60_000 });
+  const limit = rateLimit(rateLimitKey('newsletter', ip), { max: 5, windowMs: 60_000 });
   if (!limit.ok) {
     return NextResponse.json(
       { error: 'too many requests' },

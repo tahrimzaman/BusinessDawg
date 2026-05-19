@@ -229,7 +229,7 @@ export default function BookingForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="focus-bd mt-6 inline-flex h-12 w-full items-center justify-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:opacity-60 sm:w-auto sm:min-w-[220px]"
+        className="focus-bd mt-6 inline-flex h-12 w-full items-center justify-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:min-w-[220px]"
       >
         {isSubmitting ? 'Confirming…' : 'Confirm booking →'}
       </button>

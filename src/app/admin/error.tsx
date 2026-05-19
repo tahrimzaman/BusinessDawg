@@ -19,11 +19,12 @@ export default function AdminError({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Surface in the browser console so Tahrim can grab the digest when
-    // filing a bug — the server-side structured log will have the matching
-    // requestId. Sentry captures the same error so it shows up grouped with
-    // a stack trace in the dashboard.
-    console.error('[admin] error boundary caught:', error);
+    // Sentry captures the error with a stack trace in production. Console
+    // logging is dev-only — Tahrim grabs the digest from the UI in prod, and
+    // production logs shouldn't carry noisy stack dumps that mirror Sentry.
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[admin] error boundary caught:', error);
+    }
     Sentry.captureException(error, { tags: { boundary: 'admin' } });
   }, [error]);
 

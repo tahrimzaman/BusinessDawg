@@ -42,7 +42,7 @@ export default function Faq({
                   aria-controls={`faq-panel-${i}`}
                   id={`faq-trigger-${i}`}
                   onClick={() => setOpen(isOpen ? null : i)}
-                  className="group flex w-full items-center justify-between gap-6 py-6 text-left transition-colors hover:text-[color:var(--bd-lime)] focus-visible:text-[color:var(--bd-lime)] focus-visible:outline-none md:py-7"
+                  className="group flex w-full items-center justify-between gap-6 rounded-lg py-6 text-left transition-colors hover:text-[color:var(--bd-lime)] focus-visible:text-[color:var(--bd-lime)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--bd-lime)] md:py-7"
                 >
                   <span className="font-display text-lg font-bold tracking-tight text-[color:var(--bd-bone)] italic md:text-2xl">
                     {item.q}

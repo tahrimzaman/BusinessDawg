@@ -10,6 +10,7 @@ import { prisma } from '@/lib/db/prisma';
 import { isAuthed } from '@/lib/admin/auth';
 import { getBookingRule } from '@/lib/booking/rules';
 import { authedClient, cancelBookingEvent, getGoogleEnv } from '@/lib/booking/google';
+import { loadGoogleToken } from '@/lib/booking/google-token';
 import { notifyVisitorBookingCancelled } from '@/lib/email/booking';
 import { withLogging } from '@/lib/log/route';
 
@@ -54,7 +55,7 @@ async function handlePOST(
     try {
       const env = getGoogleEnv();
       if (env) {
-        const token = await prisma.googleToken.findUnique({ where: { id: 'singleton' } });
+        const token = await loadGoogleToken();
         if (token) {
           const client = authedClient(env, token);
           await cancelBookingEvent(client, env, booking.gcalEventId);

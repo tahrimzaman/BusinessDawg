@@ -11,11 +11,13 @@ import { NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
-import { rateLimit, clientIp } from '@/lib/security/ratelimit';
+import { rateLimit, rateLimitKey, clientIp } from '@/lib/security/ratelimit';
 import { isLikelyBot, HONEYPOT_FIELD, TIMESTAMP_FIELD } from '@/lib/security/honeypot';
 import { hashIp } from '@/lib/security/hash';
 import { getBookingRule } from '@/lib/booking/rules';
 import { authedClient, getGoogleEnv, insertBookingEvent } from '@/lib/booking/google';
+import { loadGoogleToken } from '@/lib/booking/google-token';
+import { encryptToken } from '@/lib/security/crypto';
 import { notifyVisitorBookingConfirmed, notifyAdminOfBooking } from '@/lib/email/booking';
 import { withLogging } from '@/lib/log/route';
 import { capture } from '@/lib/analytics/posthog-server';
@@ -58,7 +60,7 @@ async function handlePOST(req: Request) {
   if (!raw) return NextResponse.json({ error: 'invalid body' }, { status: 400 });
 
   const ip = clientIp(req);
-  const limit = rateLimit(`booking:${ip}`, { max: 5, windowMs: 60_000 });
+  const limit = rateLimit(rateLimitKey('booking', ip), { max: 5, windowMs: 60_000 });
   if (!limit.ok) {
     return NextResponse.json(
       { error: 'too many requests' },
@@ -240,7 +242,7 @@ async function handlePOST(req: Request) {
     try {
       const env = getGoogleEnv();
       if (env) {
-        const token = await prisma.googleToken.findUnique({ where: { id: 'singleton' } });
+        const token = await loadGoogleToken();
         if (token) {
           googleConfigured = true;
           const client = authedClient(env, token);
@@ -256,14 +258,14 @@ async function handlePOST(req: Request) {
           meetUrl = event.meetUrl;
           gcalEventId = event.eventId || null;
 
-          // If the OAuth client refreshed the access token, persist it so
-          // the next call reuses it instead of round-tripping again.
+          // If the OAuth client refreshed the access token, persist it (encrypted)
+          // so the next call reuses it instead of round-tripping again.
           const creds = client.credentials;
           if (creds.access_token && creds.access_token !== token.accessToken) {
             await prisma.googleToken.update({
               where: { id: 'singleton' },
               data: {
-                accessToken: creds.access_token,
+                accessToken: encryptToken(creds.access_token),
                 expiresAt: creds.expiry_date ? new Date(creds.expiry_date) : null,
                 lastRefreshAt: new Date(),
               },

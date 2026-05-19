@@ -191,15 +191,23 @@ export default async function SystemPage({ params }: { params: Promise<Params> }
         </Reveal>
 
         <Reveal>
-          <div className="mt-14 border-t border-white/8 pt-10">
-            <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
-              Next system
-            </p>
+          <div className="mt-14 flex flex-wrap items-end justify-between gap-6 border-t border-white/8 pt-10">
+            <div>
+              <p className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase">
+                Next system
+              </p>
+              <Link
+                href={`/systems/${next.slug}`}
+                className="mt-2 inline-flex items-center gap-2 text-3xl font-bold italic hover:text-[color:var(--bd-lime)]"
+              >
+                {next.name} →
+              </Link>
+            </div>
             <Link
-              href={`/systems/${next.slug}`}
-              className="mt-2 inline-flex items-center gap-2 text-3xl font-bold italic hover:text-[color:var(--bd-lime)]"
+              href="/#systems"
+              className="font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/65 uppercase underline-offset-4 hover:text-[color:var(--bd-lime)] hover:underline"
             >
-              {next.name} →
+              ← All systems
             </Link>
           </div>
         </Reveal>

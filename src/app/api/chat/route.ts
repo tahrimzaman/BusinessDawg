@@ -12,7 +12,7 @@
 
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { rateLimit, clientIp } from '@/lib/security/ratelimit';
+import { rateLimit, rateLimitKey, clientIp } from '@/lib/security/ratelimit';
 import { hashIp } from '@/lib/security/hash';
 import { lookupGeo, formatApproxLocation } from '@/lib/security/geoip';
 import { SITE, SYSTEMS, FOUNDER } from '@/lib/copy';
@@ -97,7 +97,7 @@ async function handlePOST(req: Request) {
   if (!raw) return NextResponse.json({ error: 'invalid body' }, { status: 400 });
 
   const ip = clientIp(req);
-  const limit = rateLimit(`chat:${ip}`, { max: 20, windowMs: 60_000 });
+  const limit = rateLimit(rateLimitKey('chat', ip), { max: 20, windowMs: 60_000 });
   if (!limit.ok) {
     return NextResponse.json(
       { error: 'too many requests' },

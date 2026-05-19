@@ -26,8 +26,16 @@
 
 import * as Sentry from '@sentry/nextjs';
 import { log, withRequest, type LogContext } from './logger';
+import { recordAdminAction } from '@/lib/admin/audit';
 
 type Handler<TCtx> = (req: Request, ctx: TCtx) => Promise<Response> | Response;
+
+const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+
+// Routes that handle their own audit row or don't warrant one. `admin.login`
+// writes both success + failure rows already; `admin.logout` is uninteresting
+// for compliance + would be the most-frequent row by far.
+const AUDIT_SKIP = new Set(['admin.login', 'admin.logout']);
 
 export function withLogging<TCtx>(routeName: string, handler: Handler<TCtx>): Handler<TCtx> {
   return async (req: Request, ctx: TCtx) => {
@@ -49,6 +57,16 @@ export function withLogging<TCtx>(routeName: string, handler: Handler<TCtx>): Ha
         status: res.status,
         durationMs,
       });
+      // Audit every successful admin mutation. Fire-and-forget so a DB blip
+      // doesn't punish the admin's response time.
+      if (
+        routeName.startsWith('admin.') &&
+        MUTATING_METHODS.has(req.method) &&
+        !AUDIT_SKIP.has(routeName) &&
+        res.status < 400
+      ) {
+        recordAdminAction(req, routeName, { status: res.status, requestId });
+      }
       return res;
     } catch (err) {
       const durationMs = Date.now() - start;

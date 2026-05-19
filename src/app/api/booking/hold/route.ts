@@ -9,7 +9,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db/prisma';
-import { rateLimit, clientIp } from '@/lib/security/ratelimit';
+import { rateLimit, rateLimitKey, clientIp } from '@/lib/security/ratelimit';
 import { getBookingRule } from '@/lib/booking/rules';
 import { withLogging } from '@/lib/log/route';
 
@@ -23,7 +23,7 @@ const HOLD_TTL_MS = 5 * 60_000;
 
 async function handlePOST(req: Request) {
   const ip = clientIp(req);
-  const limit = rateLimit(`hold:${ip}`, { max: 20, windowMs: 60_000 });
+  const limit = rateLimit(rateLimitKey('hold', ip), { max: 20, windowMs: 60_000 });
   if (!limit.ok) {
     return NextResponse.json(
       { error: 'too many requests' },

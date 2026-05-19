@@ -56,7 +56,7 @@ export default function AdminLogin() {
         <button
           type="submit"
           disabled={state === 'sending'}
-          className="inline-flex h-12 items-center justify-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] hover:bg-[color:var(--bd-bone)] disabled:opacity-60"
+          className="inline-flex h-12 items-center justify-center rounded-full bg-[color:var(--bd-lime)] px-6 text-sm font-semibold text-[color:var(--bd-ink)] hover:bg-[color:var(--bd-bone)] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {state === 'sending' ? 'Checking…' : 'Enter'}
         </button>

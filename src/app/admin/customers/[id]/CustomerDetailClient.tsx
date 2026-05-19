@@ -431,7 +431,7 @@ export default function CustomerDetailClient({
           type="button"
           onClick={save}
           disabled={saveState === 'saving'}
-          className="inline-flex h-11 items-center rounded-full bg-[color:var(--bd-lime)] px-5 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:opacity-60"
+          className="inline-flex h-11 items-center rounded-full bg-[color:var(--bd-lime)] px-5 text-sm font-semibold text-[color:var(--bd-ink)] transition-colors hover:bg-[color:var(--bd-bone)] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {saveState === 'saving' ? 'Saving…' : 'Save changes'}
         </button>

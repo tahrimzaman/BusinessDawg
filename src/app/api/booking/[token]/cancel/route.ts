@@ -7,10 +7,11 @@
 
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
-import { rateLimit, clientIp } from '@/lib/security/ratelimit';
+import { rateLimit, rateLimitKey, clientIp } from '@/lib/security/ratelimit';
 import { verifyManageToken } from '@/lib/booking/tokens';
 import { getBookingRule } from '@/lib/booking/rules';
 import { authedClient, cancelBookingEvent, getGoogleEnv } from '@/lib/booking/google';
+import { loadGoogleToken } from '@/lib/booking/google-token';
 import { notifyVisitorBookingCancelled } from '@/lib/email/booking';
 import { withLogging } from '@/lib/log/route';
 import { capture } from '@/lib/analytics/posthog-server';
@@ -23,7 +24,7 @@ async function handlePOST(
   ctx: { params: Promise<{ token: string }> },
 ): Promise<NextResponse> {
   const ip = clientIp(req);
-  const limit = rateLimit(`cancel:${ip}`, { max: 10, windowMs: 60_000 });
+  const limit = rateLimit(rateLimitKey('cancel', ip), { max: 10, windowMs: 60_000 });
   if (!limit.ok) {
     return NextResponse.json(
       { error: 'too many requests' },
@@ -68,7 +69,7 @@ async function handlePOST(
     try {
       const env = getGoogleEnv();
       if (env) {
-        const token = await prisma.googleToken.findUnique({ where: { id: 'singleton' } });
+        const token = await loadGoogleToken();
         if (token) {
           const client = authedClient(env, token);
           await cancelBookingEvent(client, env, booking.gcalEventId);

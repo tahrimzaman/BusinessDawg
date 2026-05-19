@@ -25,6 +25,50 @@ const nextConfig: NextConfig = {
       },
     ];
     const noStore = [{ key: 'Cache-Control', value: 'no-store, must-revalidate' }];
+
+    // Baseline security headers applied to every response. CSP is intentionally
+    // omitted for now — Next App Router uses inline styles from framer-motion
+    // and an inline first-touch attribution script in layout.tsx, so a correct
+    // CSP requires a nonce strategy. Tracked as a follow-up; the headers below
+    // are the low-risk wins.
+    const securityHeaders = [
+      // Clickjacking. We don't intentionally embed any page of the site in an
+      // iframe; DENY is correct (SAMEORIGIN would only matter if we embedded
+      // ourselves, which we don't).
+      { key: 'X-Frame-Options', value: 'DENY' },
+      // Stop browsers from guessing content types and executing things like
+      // image/* as scripts.
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      // Send origin only for cross-origin navigations. Keeps full URL on
+      // same-origin so PostHog/Sentry pageview attribution stays accurate.
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+      // Deny powerful features we don't use anywhere. Killing the surface
+      // means a future XSS can't silently turn on the user's camera or geo.
+      {
+        key: 'Permissions-Policy',
+        value: [
+          'camera=()',
+          'microphone=()',
+          'geolocation=()',
+          'payment=()',
+          'usb=()',
+          'interest-cohort=()',
+        ].join(', '),
+      },
+      // HSTS only in production. On localhost (HTTP) the browser would still
+      // cache this and refuse plain http on the dev host, which is annoying.
+      ...(process.env.NODE_ENV === 'production'
+        ? [
+            {
+              key: 'Strict-Transport-Security',
+              value: 'max-age=31536000; includeSubDomains; preload',
+            },
+          ]
+        : []),
+      // No cross-origin window opener leaks.
+      { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+    ];
+
     return [
       // Static assets — long-cache, immutable
       { source: '/brand/:path*', headers: immutable },
@@ -33,6 +77,8 @@ const nextConfig: NextConfig = {
       // response that references build-hash chunks, a later redeploy makes
       // those chunks 404 → unstyled page. no-store kills that whole failure mode.
       { source: '/((?!_next/|brand/|api/).*)', headers: noStore },
+      // Security headers on everything.
+      { source: '/:path*', headers: securityHeaders },
     ];
   },
 };
