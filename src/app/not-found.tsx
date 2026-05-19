@@ -21,7 +21,7 @@ export default function NotFound() {
         This page got fetched too hard.
       </h1>
       <p className="mt-6 max-w-md text-[color:var(--bd-bone)]/70">
-        While you’re here, the dawg wants treats. Arrow keys to move. Hit Esc to pause.
+        While you’re here, the dawg wants treats. Drag to chase, or use arrow keys.
       </p>
 
       <DawgGame />
