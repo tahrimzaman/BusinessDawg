@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { setAdminCookie, verifyPassword } from '@/lib/admin/auth';
+import { setAdminCookie } from '@/lib/admin/auth';
+import { verifyCredentials } from '@/lib/admin/credentials';
 import { rateLimit, rateLimitKey, clientIp } from '@/lib/security/ratelimit';
 import { hashIp } from '@/lib/security/hash';
 import { prisma } from '@/lib/db/prisma';
@@ -9,10 +10,8 @@ import { withLogging } from '@/lib/log/route';
 
 export const runtime = 'nodejs';
 
-// Cap the submitted password length so a malicious POST can't make us run a
-// timing-safe compare against a 10MB string. Real admin passwords fit well
-// under 200 chars; anything bigger is abuse.
 const LoginPayload = z.object({
+  email: z.string().email().max(320),
   password: z.string().min(1).max(256),
 });
 
@@ -31,8 +30,7 @@ async function recordAttempt(
       },
     });
   } catch {
-    // If the audit table write fails (DB down, schema drift), don't break
-    // login itself — we'd rather Tahrim get in than the site lock down.
+    /* don't fail login if audit write fails */
   }
   capture(action, hashIp(ip), { userAgent });
 }
@@ -51,9 +49,10 @@ async function handlePOST(req: Request) {
     await recordAttempt(req, ip, 'login_failure');
     return NextResponse.json({ error: 'invalid payload' }, { status: 400 });
   }
-  if (!verifyPassword(parsed.data.password)) {
+  const ok = await verifyCredentials(parsed.data.email, parsed.data.password);
+  if (!ok) {
     await recordAttempt(req, ip, 'login_failure');
-    return NextResponse.json({ error: 'invalid password' }, { status: 401 });
+    return NextResponse.json({ error: 'invalid email or password' }, { status: 401 });
   }
 
   await setAdminCookie();

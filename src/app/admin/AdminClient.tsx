@@ -112,6 +112,7 @@ export default function AdminClient({
   const [tab, setTab] = useState<Tab>('overview');
   const [query, setQuery] = useState('');
   const [loggingOut, setLoggingOut] = useState(false);
+  const [pwOpen, setPwOpen] = useState(false);
 
   const filteredSubs = useMemo(() => {
     if (!query) return subscribers;
@@ -161,14 +162,23 @@ export default function AdminClient({
             {subscribers.length === 1 ? '' : 's'}
           </p>
         </div>
-        <button
-          onClick={logout}
-          disabled={loggingOut}
-          className="rounded-full border border-white/10 px-4 py-2 font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/70 uppercase hover:border-[color:var(--bd-lime)]/60 hover:text-[color:var(--bd-lime)] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {loggingOut ? 'Logging out…' : 'Log out'}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setPwOpen(true)}
+            className="rounded-full border border-white/10 px-4 py-2 font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/70 uppercase hover:border-[color:var(--bd-lime)]/60 hover:text-[color:var(--bd-lime)]"
+          >
+            Change password
+          </button>
+          <button
+            onClick={logout}
+            disabled={loggingOut}
+            className="rounded-full border border-white/10 px-4 py-2 font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/70 uppercase hover:border-[color:var(--bd-lime)]/60 hover:text-[color:var(--bd-lime)] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loggingOut ? 'Logging out…' : 'Log out'}
+          </button>
+        </div>
       </div>
+      {pwOpen && <ChangePasswordModal onClose={() => setPwOpen(false)} />}
 
       <div className="mt-8 flex flex-wrap items-center gap-3">
         {/* Grouped tab bar — Activity → Pipeline → Content → Settings.
@@ -402,6 +412,114 @@ function SubscribersTable({ rows }: { rows: Subscriber[] }) {
 function Empty({ children }: { children: React.ReactNode }) {
   return (
     <div className="px-6 py-16 text-center text-sm text-[color:var(--bd-bone)]/65">{children}</div>
+  );
+}
+
+function ChangePasswordModal({ onClose }: { onClose: () => void }) {
+  const [current, setCurrent] = useState('');
+  const [next, setNext] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle');
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    if (next.length < 8) {
+      setError('new password must be at least 8 characters');
+      return;
+    }
+    if (next !== confirm) {
+      setError('new passwords do not match');
+      return;
+    }
+    setState('sending');
+    try {
+      const r = await fetch('/api/admin/change-password', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ currentPassword: current, newPassword: next }),
+      });
+      if (r.ok) {
+        setState('done');
+        setTimeout(onClose, 900);
+      } else {
+        const data = await r.json().catch(() => ({}));
+        setError(data.error || 'failed');
+        setState('idle');
+      }
+    } catch {
+      setError('network error');
+      setState('idle');
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+      onClick={onClose}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md rounded-2xl border border-white/10 bg-[color:var(--bd-smoke)] p-6"
+      >
+        <p className="font-mono text-xs tracking-widest text-[color:var(--bd-lime)] uppercase">
+          / Account
+        </p>
+        <h2 className="font-display mt-2 text-2xl font-extrabold tracking-tight italic">
+          Change password
+        </h2>
+        <form onSubmit={submit} className="mt-6 grid gap-3">
+          <input
+            type="password"
+            required
+            autoComplete="current-password"
+            placeholder="Current password"
+            value={current}
+            onChange={(e) => setCurrent(e.target.value)}
+            className="h-11 rounded-full border border-white/10 bg-black/30 px-4 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
+          />
+          <input
+            type="password"
+            required
+            autoComplete="new-password"
+            placeholder="New password (8+ chars)"
+            value={next}
+            onChange={(e) => setNext(e.target.value)}
+            className="h-11 rounded-full border border-white/10 bg-black/30 px-4 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
+          />
+          <input
+            type="password"
+            required
+            autoComplete="new-password"
+            placeholder="Confirm new password"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            className="h-11 rounded-full border border-white/10 bg-black/30 px-4 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
+          />
+          {error && <p className="text-sm text-[color:var(--bd-signal)]">{error}</p>}
+          {state === 'done' && (
+            <p className="text-sm text-[color:var(--bd-lime)]">Password updated.</p>
+          )}
+          <div className="mt-2 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-full border border-white/10 px-4 py-2 font-mono text-xs tracking-widest text-[color:var(--bd-bone)]/70 uppercase hover:border-[color:var(--bd-lime)]/60 hover:text-[color:var(--bd-lime)]"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={state === 'sending' || state === 'done'}
+              className="rounded-full bg-[color:var(--bd-lime)] px-4 py-2 font-mono text-xs tracking-widest text-[color:var(--bd-ink)] uppercase hover:bg-[color:var(--bd-bone)] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {state === 'sending' ? 'Saving…' : 'Save'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
 

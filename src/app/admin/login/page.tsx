@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 export default function AdminLogin() {
   const router = useRouter();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [state, setState] = useState<'idle' | 'sending' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +18,7 @@ export default function AdminLogin() {
       const r = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email, password }),
       });
       if (r.ok) {
         router.push('/admin');
@@ -45,9 +46,19 @@ export default function AdminLogin() {
 
       <form onSubmit={onSubmit} className="mt-10 grid gap-4">
         <input
-          type="password"
+          type="email"
           required
           autoFocus
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          className="h-12 rounded-full border border-white/10 bg-[color:var(--bd-smoke)] px-5 text-sm focus:border-[color:var(--bd-lime)] focus:outline-none"
+        />
+        <input
+          type="password"
+          required
+          autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"

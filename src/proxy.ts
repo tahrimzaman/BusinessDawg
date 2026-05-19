@@ -14,11 +14,9 @@
  * benefit from per-request correlation. Edge code runs on every match —
  * keep its scope as narrow as the value it adds.
  *
- * Why Web Crypto (not node:crypto): proxy runs on Edge by default. The
- * isAuthed() helper in @/lib/admin/auth uses node:crypto.timingSafeEqual,
- * which isn't available here. We mirror its semantics with SubtleCrypto +
- * a constant-time string compare. Source of truth for the cookie shape
- * stays in `@/lib/admin/auth` — keep this in sync if you change that file.
+ * Cookie shape is mirrored from `@/lib/admin/auth` (HMAC-signed `payload.sig`
+ * where payload = base64url(JSON.stringify({iat})), sig = HMAC-SHA256(secret,
+ * payload)). Keep these two in sync.
  *
  * Naming: Next 16 renamed the `middleware.ts` file convention to `proxy.ts`
  * and the exported function from `middleware()` to `proxy()`. Same semantics,
@@ -29,15 +27,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const ADMIN_COOKIE = 'bd_admin';
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
-/**
- * Defense-in-depth CSRF on admin mutation requests. The admin cookie is
- * SameSite=Strict which kills most CSRF; this Origin/Referer check closes
- * the gap on legacy browsers + WebView quirks. Skip safe methods (GET/HEAD).
- *
- * Allowed origins: BOOKING_BASE_URL / NEXT_PUBLIC_SITE_URL / businessdawg.com,
- * plus localhost in dev. Anything else gets 403.
- */
 function allowedOrigins(): Set<string> {
   const out = new Set<string>();
   const candidates = [
@@ -81,26 +72,58 @@ function csrfReject(req: NextRequest, requestId: string): NextResponse | null {
   return null;
 }
 
+function base64urlToBytes(s: string): Uint8Array {
+  const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4));
+  const b64 = s.replace(/-/g, '+').replace(/_/g, '/') + pad;
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+function bytesToBase64url(bytes: Uint8Array): string {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
 async function isAuthedEdge(req: NextRequest): Promise<boolean> {
-  const pw = process.env.ADMIN_PASSWORD;
   const secret =
     process.env.ADMIN_SESSION_SECRET ||
     (process.env.NODE_ENV !== 'production' ? 'change-me-in-production-DEV-ONLY' : null);
-  if (!pw || !secret) return false;
+  if (!secret) return false;
   const got = req.cookies.get(ADMIN_COOKIE)?.value;
   if (!got) return false;
-  const data = new TextEncoder().encode(`${pw}:${secret}`);
-  const hashBuf = await crypto.subtle.digest('SHA-256', data);
-  const expected = Array.from(new Uint8Array(hashBuf))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-  if (expected.length !== got.length) return false;
-  // Constant-time compare — never short-circuit on first mismatch.
+  const dot = got.indexOf('.');
+  if (dot < 1 || dot === got.length - 1) return false;
+  const payload = got.slice(0, dot);
+  const sig = got.slice(dot + 1);
+
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+  const sigBuf = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(payload));
+  const expected = bytesToBase64url(new Uint8Array(sigBuf));
+  if (expected.length !== sig.length) return false;
   let diff = 0;
   for (let i = 0; i < expected.length; i++) {
-    diff |= expected.charCodeAt(i) ^ got.charCodeAt(i);
+    diff |= expected.charCodeAt(i) ^ sig.charCodeAt(i);
   }
-  return diff === 0;
+  if (diff !== 0) return false;
+
+  try {
+    const json = new TextDecoder().decode(base64urlToBytes(payload));
+    const parsed = JSON.parse(json) as { iat?: unknown };
+    const iat = typeof parsed.iat === 'number' ? parsed.iat : 0;
+    const age = Date.now() - iat;
+    return Number.isFinite(age) && age >= 0 && age <= MAX_AGE_MS;
+  } catch {
+    return false;
+  }
 }
 
 export async function proxy(req: NextRequest) {
@@ -111,18 +134,13 @@ export async function proxy(req: NextRequest) {
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set('x-request-id', requestId);
 
-  // CSRF check runs before the auth check so a stolen cookie used from a
-  // cross-origin context is still rejected (defense in depth on top of
-  // SameSite=Strict). Applies to every admin route including /login —
-  // login CSRF would let an attacker pin a victim to a known admin session.
   const pathname = req.nextUrl.pathname;
   if (pathname.startsWith('/api/admin/')) {
     const rejected = csrfReject(req, requestId);
     if (rejected) return rejected;
   }
 
-  // Admin perimeter check. /api/admin/login is the only exemption — it's the
-  // endpoint that creates the session, so the caller can't be authed yet.
+  // /api/admin/login is the only exemption — it creates the session.
   if (pathname.startsWith('/api/admin/') && !pathname.startsWith('/api/admin/login')) {
     if (!(await isAuthedEdge(req))) {
       const res = NextResponse.json({ error: 'unauthorized' }, { status: 401 });
@@ -132,7 +150,6 @@ export async function proxy(req: NextRequest) {
   }
 
   const res = NextResponse.next({ request: { headers: requestHeaders } });
-  // Echo back so clients can use it when filing bugs.
   res.headers.set('x-request-id', requestId);
   return res;
 }

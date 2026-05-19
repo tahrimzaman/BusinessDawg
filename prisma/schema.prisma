@@ -288,6 +288,17 @@ model BuildLogEntry {
   @@index([published, date])
 }
 
+// Single-row table holding the admin's email + password hash. Replaces the
+// previous env-var-only ADMIN_PASSWORD so the password can be rotated from
+// the admin panel without a redeploy. Seeded on first login attempt from
+// hardcoded defaults in src/lib/admin/credentials.ts.
+model AdminCredential {
+  id           Int      @id @default(1)
+  email        String   @unique
+  passwordHash String
+  updatedAt    DateTime @updatedAt
+}
+
 // Audit trail for security-relevant admin actions. Right now: login attempts
 // (success + failure). Future: booking cancels by admin, customer edits, etc.
 model AdminAudit {

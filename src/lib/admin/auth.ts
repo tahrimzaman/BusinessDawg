@@ -1,12 +1,13 @@
-import { createHash, timingSafeEqual } from 'node:crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
 
 const COOKIE_NAME = 'bd_admin';
+const MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
 // Resolve the session secret per-call rather than at module load. In production
 // we refuse to fall back to a default — a missing secret makes admin auth
-// fail-closed (every isAuthed/verifyPassword returns false). In dev we allow a
-// known-weak fallback so local work isn't blocked.
+// fail-closed (every isAuthed call returns false). In dev we allow a known-weak
+// fallback so local work isn't blocked.
 function sessionSecret(): string | null {
   const s = process.env.ADMIN_SESSION_SECRET;
   if (s) return s;
@@ -14,31 +15,31 @@ function sessionSecret(): string | null {
   return 'change-me-in-production-DEV-ONLY';
 }
 
-function expectedToken(): string | null {
-  const pw = process.env.ADMIN_PASSWORD;
-  const secret = sessionSecret();
-  if (!pw || !secret) return null;
-  return createHash('sha256').update(`${pw}:${secret}`).digest('hex');
+function base64urlEncode(buf: Buffer): string {
+  return buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function base64urlDecode(s: string): Buffer {
+  const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4));
+  return Buffer.from(s.replace(/-/g, '+').replace(/_/g, '/') + pad, 'base64');
+}
+
+function sign(payload: string, secret: string): string {
+  return base64urlEncode(createHmac('sha256', secret).update(payload).digest());
 }
 
 export async function setAdminCookie(): Promise<void> {
-  const token = expectedToken();
-  if (!token) throw new Error('ADMIN_PASSWORD not configured');
+  const secret = sessionSecret();
+  if (!secret) throw new Error('ADMIN_SESSION_SECRET not configured');
+  const payload = base64urlEncode(Buffer.from(JSON.stringify({ iat: Date.now() })));
+  const sig = sign(payload, secret);
   const jar = await cookies();
-  jar.set(COOKIE_NAME, token, {
+  jar.set(COOKIE_NAME, `${payload}.${sig}`, {
     httpOnly: true,
-    // Always secure. Browsers tolerate Secure on localhost, so this is safe
-    // for local dev too and prevents any chance of the cookie crossing an
-    // unencrypted link on a LAN-tested mobile device.
     secure: true,
-    // 'strict' instead of 'lax' — there is no inbound cross-site flow we
-    // need to preserve for /admin. This blocks the entire CSRF surface.
     sameSite: 'strict',
-    // Broad enough to cover both /admin pages AND /api/admin/* endpoints
-    // (e.g. CSV export). Without this, the export link 401s. A future refactor
-    // can split the prefix and tighten this to /admin.
     path: '/',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    maxAge: MAX_AGE_SECONDS,
   });
 }
 
@@ -48,28 +49,32 @@ export async function clearAdminCookie(): Promise<void> {
 }
 
 export async function isAuthed(): Promise<boolean> {
-  const expected = expectedToken();
-  if (!expected) return false;
+  const secret = sessionSecret();
+  if (!secret) return false;
   const jar = await cookies();
   const got = jar.get(COOKIE_NAME)?.value;
   if (!got) return false;
+  const dot = got.indexOf('.');
+  if (dot < 1 || dot === got.length - 1) return false;
+  const payload = got.slice(0, dot);
+  const sig = got.slice(dot + 1);
+  const expected = sign(payload, secret);
   try {
-    const a = Buffer.from(expected, 'hex');
-    const b = Buffer.from(got, 'hex');
+    const a = Buffer.from(expected);
+    const b = Buffer.from(sig);
     if (a.length !== b.length) return false;
-    return timingSafeEqual(a, b);
+    if (!timingSafeEqual(a, b)) return false;
   } catch {
     return false;
   }
-}
-
-export function verifyPassword(submitted: string): boolean {
-  const pw = process.env.ADMIN_PASSWORD;
-  // Also require a session secret to be configured in production — otherwise
-  // the cookie we set wouldn't validate on subsequent requests.
-  if (!pw || sessionSecret() === null) return false;
-  const a = Buffer.from(submitted);
-  const b = Buffer.from(pw);
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
+  let iat = 0;
+  try {
+    const parsed = JSON.parse(base64urlDecode(payload).toString('utf8'));
+    iat = typeof parsed?.iat === 'number' ? parsed.iat : 0;
+  } catch {
+    return false;
+  }
+  const ageMs = Date.now() - iat;
+  if (!Number.isFinite(ageMs) || ageMs < 0) return false;
+  return ageMs <= MAX_AGE_SECONDS * 1000;
 }
