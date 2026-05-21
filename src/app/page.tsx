@@ -1,6 +1,7 @@
 import nextDynamic from 'next/dynamic';
 import Hero from '@/components/sections/Hero';
 import DawgRail from '@/components/motion/DawgRail';
+import Preloader from '@/components/motion/Preloader';
 
 // Static prerender. The stale-build risk (Next auto-emitting s-maxage=31536000
 // on prerendered HTML, which Hostinger's HCDN then caches for ~10h past a
@@ -24,6 +25,7 @@ const ClosingCTA = nextDynamic(() => import('@/components/sections/ClosingCTA'))
 export default function HomePage() {
   return (
     <>
+      <Preloader />
       <DawgRail />
 
       <div id="hero">

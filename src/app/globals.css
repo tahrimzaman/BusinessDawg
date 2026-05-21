@@ -246,6 +246,78 @@ body {
   }
 }
 
+/*
+ * Preloader — pre-hydration black cover.
+ * `bd-intro-pending` is set by an inline beforeInteractive script on a first
+ * homepage visit so the page is covered from the very first paint, before
+ * React mounts the intro overlay. The Preloader removes the class at reveal.
+ */
+html.bd-intro-pending,
+html.bd-intro-pending body {
+  overflow: hidden;
+}
+html.bd-intro-pending::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  /* Pure black so the no-alpha logo-mark.webp blends seamlessly with the
+     preloader overlay (which is also bg-black). */
+  background: #000;
+  /* Fail-safe: if JS never runs, the cover dismisses itself so the site is
+     never permanently hidden. React removes the class long before this. */
+  animation: bd-intro-failsafe 0.3s ease 4s forwards;
+}
+@keyframes bd-intro-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/*
+ * Preloader boot cinematic — CRT scanlines, film grain, terminal cursor.
+ * Motion is gated behind prefers-reduced-motion (the component also renders a
+ * static boot panel for reduced-motion users).
+ */
+.bd-boot-scanlines {
+  /* Overscan top/bottom so the bd-scan translate never exposes an edge. */
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -20%;
+  bottom: -20%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 0, 0, 0.6) 3px,
+    transparent 4px
+  );
+}
+.bd-boot-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  opacity: 0.055;
+}
+@keyframes bd-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bd-boot-scanlines {
+    animation: bd-scan 6s linear infinite;
+  }
+  .bd-boot-cursor {
+    animation: bd-blink 1.1s steps(1, end) infinite;
+  }
+}
+
 /* Lenis smooth scroll guard */
 html.lenis,
 html.lenis body {

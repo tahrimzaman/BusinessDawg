@@ -59,6 +59,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
+      // The bd-intro-gate script below adds `bd-intro-pending` to <html>
+      // before hydration, so the server/client className intentionally
+      // differs. Suppress the warning for this element only (not children).
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} bg-ink text-bone antialiased`}
     >
       <head>
@@ -88,6 +92,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             keep `script-src 'self'` instead of needing `unsafe-inline`. */}
         <Script id="bd-first-touch" strategy="beforeInteractive">
           {`try{if(!sessionStorage.getItem('bd:first-touch'))sessionStorage.setItem('bd:first-touch',location.pathname);}catch(e){}`}
+        </Script>
+        {/* Intro gate: on every full document load of the homepage, paint a
+            brandless black cover before first paint (via the .bd-intro-pending
+            CSS layer) so a slow load never shows a half-built hero. The
+            content-driven Preloader removes it the moment the page is ready —
+            imperceptibly fast on a quick load, or after the boot cinematic on
+            a slow one. Runs beforeInteractive so the class lands before paint. */}
+        <Script id="bd-intro-gate" strategy="beforeInteractive">
+          {`try{if(location.pathname==='/')document.documentElement.classList.add('bd-intro-pending');}catch(e){}`}
         </Script>
         <PostHogProvider>
           <LenisProvider>
