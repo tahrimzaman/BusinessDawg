@@ -247,57 +247,195 @@ body {
 }
 
 /*
- * Preloader — pre-hydration black cover.
- * `bd-intro-pending` is set by an inline beforeInteractive script on a first
- * homepage visit so the page is covered from the very first paint, before
- * React mounts the intro overlay. The Preloader removes the class at reveal.
+ * Preloader — content-driven "system boot" loading screen.
+ *
+ * #bd-loader is server-rendered markup (see Preloader.tsx) animated entirely in
+ * CSS, so the screen appears on first paint and stays through a slow JS
+ * download — it never depends on the JS bundle. `bd-intro-pending` is added to
+ * <html> by a raw inline script (layout.tsx) on a full load of "/"; it gates
+ * visibility (a soft-nav must not flash it) and locks scroll. The React
+ * controller triggers the reveal once the page's contents are ready.
  */
+@property --bd-pct {
+  syntax: '<integer>';
+  /* Must inherit so the ::after pseudo that prints the counter picks up the
+     animated value from .bd-loader-pct. */
+  inherits: true;
+  initial-value: 0;
+}
+
 html.bd-intro-pending,
 html.bd-intro-pending body {
   overflow: hidden;
 }
-html.bd-intro-pending::before {
-  content: '';
+
+#bd-loader {
+  display: none;
+}
+html.bd-intro-pending #bd-loader {
   position: fixed;
   inset: 0;
-  z-index: 90;
-  /* Pure black so the no-alpha logo-mark.webp blends seamlessly with the
-     preloader overlay (which is also bg-black). */
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   background: #000;
-  /* Fail-safe: if JS never runs, the cover dismisses itself so the site is
-     never permanently hidden. React removes the class long before this. */
-  animation: bd-intro-failsafe 0.3s ease 4s forwards;
-}
-@keyframes bd-intro-failsafe {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
+  /* No-JS fail-safe: if the JS bundle never runs, fade the screen away so the
+     site is never permanently hidden. The React controller reveals well before
+     this on any normal — even slow — connection. */
+  animation: bd-loader-failsafe 0.6s ease 14s forwards;
 }
 
-/*
- * Preloader boot cinematic — CRT scanlines, film grain, terminal cursor.
- * Motion is gated behind prefers-reduced-motion (the component also renders a
- * static boot panel for reduced-motion users).
- */
-.bd-boot-scanlines {
-  /* Overscan top/bottom so the bd-scan translate never exposes an edge. */
+.bd-loader-panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 28rem;
+  padding: 0 1.75rem;
+  font-family: var(--font-mono);
+  /* Hidden for the first 220ms: a fast load reveals before this, so a quick
+     connection shows nothing but a sub-perceptible flash of black. */
+  opacity: 0;
+  animation: bd-loader-fade-in 0.4s ease 0.22s forwards;
+}
+
+.bd-loader-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.6rem;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--bd-bone) 90%, transparent);
+}
+.bd-loader-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--bd-lime);
+}
+
+.bd-loader-log {
+  font-size: 12.5px;
+  line-height: 1.75;
+}
+.bd-loader-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  opacity: 0;
+  animation: bd-loader-line-in 0.3s ease forwards;
+}
+.bd-loader-caret {
+  color: color-mix(in srgb, var(--bd-lime) 60%, transparent);
+}
+.bd-loader-label {
+  color: color-mix(in srgb, var(--bd-bone) 75%, transparent);
+  white-space: nowrap;
+}
+.bd-loader-leader {
+  flex: 1;
+  transform: translateY(-3px);
+  border-bottom: 1px dotted color-mix(in srgb, var(--bd-bone) 16%, transparent);
+}
+.bd-loader-ok {
+  color: var(--bd-lime);
+  letter-spacing: 0.12em;
+}
+.bd-loader-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 13px;
+  margin-left: 3px;
+  transform: translateY(1px);
+  background: var(--bd-lime);
+}
+
+.bd-loader-bar {
+  position: relative;
+  margin-top: 1.8rem;
+  height: 2px;
+  background: color-mix(in srgb, var(--bd-bone) 12%, transparent);
+}
+.bd-loader-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: var(--bd-lime);
+  animation: bd-loader-fill 9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+}
+.bd-loader-pct {
+  position: absolute;
+  right: 0;
+  top: 9px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--bd-bone) 65%, transparent);
+  animation: bd-loader-count 9s linear 0.3s forwards;
+}
+.bd-loader-pct::after {
+  counter-reset: bd-pct var(--bd-pct);
+  content: counter(bd-pct);
+}
+
+.bd-loader-scanlines {
   position: absolute;
   left: 0;
   right: 0;
+  /* Overscan so the bd-scan translate never exposes an edge. */
   top: -20%;
   bottom: -20%;
+  pointer-events: none;
   background: repeating-linear-gradient(
     0deg,
     transparent 0,
     transparent 2px,
-    rgba(0, 0, 0, 0.6) 3px,
+    rgba(0, 0, 0, 0.55) 3px,
     transparent 4px
   );
 }
-.bd-boot-grain {
+.bd-loader-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-  opacity: 0.055;
+}
+
+/* Reveal — the React controller adds .bd-loader-out, then unmounts #bd-loader
+   after the animation. Timer-driven on the React side so a backgrounded tab
+   still tears down. */
+html.bd-intro-pending #bd-loader.bd-loader-out {
+  animation: bd-loader-glitch 0.4s steps(2, end) forwards;
+}
+
+@keyframes bd-loader-fade-in {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes bd-loader-line-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes bd-loader-fill {
+  to {
+    width: 90%;
+  }
+}
+@keyframes bd-loader-count {
+  to {
+    --bd-pct: 90;
+  }
 }
 @keyframes bd-blink {
   0%,
@@ -309,11 +447,48 @@ html.bd-intro-pending::before {
     opacity: 0;
   }
 }
+@keyframes bd-loader-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@keyframes bd-loader-glitch {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  22% {
+    opacity: 0.35;
+    transform: translateX(-7px);
+  }
+  40% {
+    opacity: 1;
+    transform: translateX(6px);
+  }
+  60% {
+    opacity: 0.2;
+    transform: translateX(-3px);
+  }
+  80% {
+    opacity: 0.7;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(0);
+  }
+}
+
+/* Looping motion only when the user hasn't asked for reduced motion. The
+   global reduced-motion rule above neutralises the one-shot entrance/reveal
+   animations into instant state changes, which is the desired fallback. */
 @media (prefers-reduced-motion: no-preference) {
-  .bd-boot-scanlines {
+  .bd-loader-scanlines {
     animation: bd-scan 6s linear infinite;
   }
-  .bd-boot-cursor {
+  .bd-loader-cursor {
     animation: bd-blink 1.1s steps(1, end) infinite;
   }
 }

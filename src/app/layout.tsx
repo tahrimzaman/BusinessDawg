@@ -93,15 +93,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script id="bd-first-touch" strategy="beforeInteractive">
           {`try{if(!sessionStorage.getItem('bd:first-touch'))sessionStorage.setItem('bd:first-touch',location.pathname);}catch(e){}`}
         </Script>
-        {/* Intro gate: on every full document load of the homepage, paint a
-            brandless black cover before first paint (via the .bd-intro-pending
-            CSS layer) so a slow load never shows a half-built hero. The
-            content-driven Preloader removes it the moment the page is ready —
-            imperceptibly fast on a quick load, or after the boot cinematic on
-            a slow one. Runs beforeInteractive so the class lands before paint. */}
-        <Script id="bd-intro-gate" strategy="beforeInteractive">
-          {`try{if(location.pathname==='/')document.documentElement.classList.add('bd-intro-pending');}catch(e){}`}
-        </Script>
+        {/* Intro gate — a RAW inline <script>, deliberately not next/script.
+            It must run synchronously before first paint with zero dependency
+            on the JS bundle: on a full load of "/" it marks <html> so the
+            CSS loading screen (#bd-loader) shows immediately, even while the
+            bundle is still downloading on a slow connection. next/script's
+            `beforeInteractive` queues into __next_s and waits for the Next
+            runtime to execute it — far too late on a slow connection, which
+            is exactly when the loading screen matters most. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(location.pathname==='/')document.documentElement.classList.add('bd-intro-pending')}catch(e){}`,
+          }}
+        />
         <PostHogProvider>
           <LenisProvider>
             <Navbar />
