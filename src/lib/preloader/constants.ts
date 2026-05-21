@@ -9,8 +9,8 @@
 /** React-side fail-safe — reveal even if readiness never resolves (seconds). */
 export const MAX_DURATION = 8;
 
-/** Reveal (glitch-out) length — the controller unmounts after this (seconds). */
-export const REVEAL_DURATION = 0.4;
+/** Reveal (CRT power-off) length — the controller unmounts after this (seconds). */
+export const REVEAL_DURATION = 0.5;
 
 /**
  * System-boot log — rendered as static markup and revealed by staggered CSS
